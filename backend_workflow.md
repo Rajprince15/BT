@@ -68,7 +68,7 @@ Roles: **Super Admin · Admin · Customer**. Enforce on every server route — n
 - **bcrypt rounds ≥ 12.**
 
 ### API Security
-- Rate limiting (see Phase 3).
+- Rate limiting (see Phase 3B).
 - zod request validation on every endpoint.
 - Input sanitization (DOMPurify on rich-text fields server-side).
 - Output encoding by default (JSON; no HTML).
@@ -199,21 +199,29 @@ LOG_LEVEL=info
 
 ## 7. EXECUTION PROGRESS
 
-> Mark a phase `✅ COMPLETED (YYYY-MM-DD)` ONLY after every checkbox is done and verified. Each phase ≈ **5–6 credits**.
+> Each phase ≈ **5–6 credits**. Mark a phase `✅ COMPLETED (YYYY-MM-DD)` ONLY after every checkbox is done and verified. Heavy phases were split into A/B sub-phases so every phase stays within budget — **no feature has been removed**.
 
-| #  | Phase                                              | Credits | Status     |
-|----|----------------------------------------------------|---------|------------|
-| 0  | Foundation Brief & Contract Lock-in                | 2–3     | ⬜ Pending |
-| 1  | Project Foundation, MySQL Schema & Migrations      | 5–6     | ⬜ Pending |
-| 2  | Authentication System (JWT + Refresh + Email)      | 5–6     | ⬜ Pending |
-| 3  | RBAC, Security Middleware & Hardening              | 5–6     | ⬜ Pending |
-| 4  | Categories & Products APIs                         | 5–6     | ⬜ Pending |
-| 5  | Cloudinary Integration & Media APIs                | 5–6     | ⬜ Pending |
-| 6  | Cart, Wishlist, Addresses & Coupon APIs            | 5–6     | ⬜ Pending |
-| 7  | Orders, Razorpay & Invoice Generation              | 5–6     | ⬜ Pending |
-| 8  | Admin APIs (analytics, orders, coupons, banners)   | 5–6     | ⬜ Pending |
-| 9  | Reviews, Wholesale, Newsletter, Contact APIs       | 5–6     | ⬜ Pending |
-| 10 | SEO, Logging, Backups & VPS Deployment             | 5–6     | ⬜ Pending |
+| #    | Phase                                                              | Credits | Status     |
+|------|--------------------------------------------------------------------|---------|------------|
+| 0    | Foundation Brief & Contract Lock-in                                | 2–3     | ⬜ Pending |
+| 1A   | Project Foundation, TS Setup & MySQL Migrations                    | 5–6     | ⬜ Pending |
+| 1B   | Seed Data, Module Skeletons & Healthcheck                          | 5–6     | ⬜ Pending |
+| 2A   | Auth Core (register / login / refresh / logout / me / change-pwd)  | 5–6     | ⬜ Pending |
+| 2B   | Password Reset, Email Verification & All Email Templates           | 5–6     | ⬜ Pending |
+| 3A   | Auth, Role, Ownership Middleware & zod Validation Layer            | 5–6     | ⬜ Pending |
+| 3B   | Helmet/CSP, CORS, Rate-Limit, CSRF, Lockout, Security Logs         | 5–6     | ⬜ Pending |
+| 4A   | Public Categories & Products APIs (filters, FULLTEXT, collections) | 5–6     | ⬜ Pending |
+| 4B   | Admin Categories & Products CRUD, Variants, Stock & Publish        | 5–6     | ⬜ Pending |
+| 5    | Cloudinary Integration & Media APIs                                | 5–6     | ⬜ Pending |
+| 6A   | Cart APIs (server-computed totals) & Coupon Validation             | 5–6     | ⬜ Pending |
+| 6B   | Wishlist & Address Book APIs                                       | 5–6     | ⬜ Pending |
+| 7A   | Checkout Quote, Razorpay Order Create, Verify & Stock Transaction  | 5–6     | ⬜ Pending |
+| 7B   | Orders (list/detail/cancel), RP Webhooks & PDF Invoice             | 5–6     | ⬜ Pending |
+| 8A   | Admin Dashboard KPIs, Orders & Customers APIs                      | 5–6     | ⬜ Pending |
+| 8B   | Admin Coupons, Banners, Reviews, Wholesale Mgmt & Audit Logs       | 5–6     | ⬜ Pending |
+| 9    | Reviews, Wholesale Inquiry, Newsletter & Contact APIs              | 5–6     | ⬜ Pending |
+| 10A  | SEO Endpoints, Logging & Monitoring (Winston/Sentry/Healthchecks)  | 5–6     | ⬜ Pending |
+| 10B  | Backups, Docker, VPS Deployment (Nginx/PM2/SSL) & Go-Live          | 5–6     | ⬜ Pending |
 
 ---
 
@@ -231,7 +239,7 @@ LOG_LEVEL=info
 
 ---
 
-## PHASE 1 — Project Foundation, MySQL Schema & Migrations  `(5–6 credits)`
+## PHASE 1A — Project Foundation, TS Setup & MySQL Migrations  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 - [ ] Init Node + TypeScript (strict). Folders: `src/{config,middleware,modules,db,utils,types}`, `tests/`, `logs/`, `deploy/`.
@@ -240,41 +248,85 @@ LOG_LEVEL=info
 - [ ] Create migrations from `schema.sql` (one migration per logical group OR import via Prisma `db pull`/`db push` + hand-written migration).
 - [ ] Tables MUST exist exactly as `schema.sql`: `users`, `refresh_tokens`, `addresses`, `categories`, `products`, `product_images`, `product_variants`, `carts`, `cart_items`, `wishlists`, `orders`, `order_items`, `payments`, `reviews`, `coupons`, `coupon_usages`, `banners`, `wholesale_inquiries`, `newsletter_subscribers`, `contact_messages`, `audit_logs`, `security_logs`.
 - [ ] Verify all indexes, FKs, FULLTEXT, JSON columns, CHECK constraints.
-- [ ] Seed script: 1 super_admin, 1 admin, 1 customer, **full category tree** (see Section 10), 6 sample products with images & variants.
-- [ ] `GET /api/health` → `{status:'ok', db:'up', uptime, version}`.
-- [ ] Module skeleton for every module (see Section 5).
+- [ ] Configure ESLint + Prettier + strict `tsconfig`.
+- [ ] `.env.example` mirrors Section 6 exactly.
 
-> **Done when:** migrations apply cleanly, seed populates, healthcheck 200, sample queries return seeded data.
+> **Done when:** migrations apply cleanly on a fresh DB; `npm run build` passes with zero TS errors.
 
 ---
 
-## PHASE 2 — Authentication (JWT + Refresh + Email)  `(5–6 credits)`
+## PHASE 1B — Seed Data, Module Skeletons & Healthcheck  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+- [ ] Seed script: 1 super_admin, 1 admin, 1 customer (bcrypt-hashed passwords).
+- [ ] Seed **full category tree** (Section 10): Bedroom (Bedsheets, Blankets & Comforters, Pillows & Bedding Accessories) · Living Room (Soft Furnishings, Curtains, Rugs & Carpets, Door Mats) · Bath (Towels, Bath Mats) · Home Decor · Handloom Heritage · Handicrafts · Special Collections — including every sub-category listed.
+- [ ] Seed 6 sample products with images + variants + price + sale_price + stock + flags (featured/best_seller/new_arrival).
+- [ ] Seed 1 active home_hero banner + 1 active coupon.
+- [ ] Module skeleton for every backend module (Section 5): `auth · users · categories · products · media · cart · wishlist · addresses · coupons · checkout · orders · payments · reviews · wholesale · newsletter · contact · admin · banners · audit`.
+- [ ] `GET /api/health` → `{status:'ok', db:'up', uptime, version}`.
+- [ ] Bootstrap Express app: body-parser, cookie-parser, request-id, base error handler, response envelope util (Section 5).
+
+> **Done when:** seed populates idempotently, `/api/health` returns 200, sample queries against seeded data succeed in a Postman smoke run.
+
+---
+
+## PHASE 2A — Auth Core (register / login / refresh / logout / me / change-password)  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 ### Endpoints
 | Method | Path | Purpose |
 |--|--|--|
-| POST | `/api/auth/register` | bcrypt hash, send verification email |
-| POST | `/api/auth/login` | issue access + refresh |
+| POST | `/api/auth/register` | bcrypt hash, create user (unverified), enqueue verification email |
+| POST | `/api/auth/login` | issue access + refresh; reject if `email_verified=0` (configurable grace) |
 | POST | `/api/auth/refresh` | rotate refresh, return new access |
-| POST | `/api/auth/logout` | revoke refresh |
-| GET  | `/api/auth/me` | current user |
-| POST | `/api/auth/forgot-password` | email reset token |
-| POST | `/api/auth/reset-password` | reset with token |
-| GET  | `/api/auth/verify-email` | verify token |
-| POST | `/api/auth/resend-verification` | resend |
-| POST | `/api/auth/change-password` | auth-required |
+| POST | `/api/auth/logout` | revoke refresh row |
+| GET  | `/api/auth/me` | current user (auth-required) |
+| POST | `/api/auth/change-password` | auth-required; old + new; revokes all refresh rows |
 
-### Token rules — see Section 2.
+### Rules
+- Access JWT: HS256, 15 min, `{sub, role, ver}`.
+- Refresh: 64 random bytes, SHA-256-hashed in `refresh_tokens`, 7-day TTL, `httpOnly Secure SameSite=Lax` cookie.
+- Rotation on every refresh; reuse of revoked token → chain-revoke + security log.
+- bcrypt rounds ≥ 12; strong password (min 8, upper + lower + digit + symbol).
 
-### Email templates (handlebars / MJML)
-`verify-email` · `welcome` · `forgot-password` · `password-changed` · `order-placed` · `order-shipped` · `order-delivered` · `order-cancelled` · `refund-processed` · `wholesale-inquiry-ack`.
-
-> **Done when:** all 10 endpoints pass via Postman; refresh rotation tested; reused refresh triggers chain revoke; reset email arrives in dev SMTP.
+> **Done when:** 6 endpoints pass Postman; refresh rotation tested; reused refresh triggers chain revoke; change-password invalidates all sessions.
 
 ---
 
-## PHASE 3 — RBAC, Security Middleware & Hardening  `(5–6 credits)`
+## PHASE 2B — Password Reset, Email Verification & Email Templates  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+### Endpoints
+| Method | Path | Purpose |
+|--|--|--|
+| POST | `/api/auth/forgot-password` | email reset token (32 random bytes, hashed in DB, 30-min expiry, single-use) |
+| POST | `/api/auth/reset-password` | reset with token; revoke all refresh tokens |
+| GET  | `/api/auth/verify-email` | verify email token |
+| POST | `/api/auth/resend-verification` | resend (rate-limited) |
+
+### Email service
+- [ ] Pluggable provider: `smtp` / `sendgrid` / `ses` via `EMAIL_PROVIDER`.
+- [ ] Queue-friendly send wrapper (retry x3 with backoff) + dev MailHog/Mailtrap config.
+
+### Email templates (handlebars / MJML)
+- [ ] `verify-email`
+- [ ] `welcome`
+- [ ] `forgot-password`
+- [ ] `password-changed`
+- [ ] `order-placed` (with invoice PDF attachment hook)
+- [ ] `order-shipped`
+- [ ] `order-delivered`
+- [ ] `order-cancelled`
+- [ ] `refund-processed`
+- [ ] `wholesale-inquiry-ack`
+
+All templates: responsive, gold/ivory brand styling, plain-text fallback, brand logo, footer with unsubscribe link.
+
+> **Done when:** reset → email → token works E2E; verify-email link works; all 10 templates render in dev mail UI.
+
+---
+
+## PHASE 3A — Auth, Role, Ownership Middleware & zod Validation Layer  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 ### Middleware order
@@ -285,18 +337,36 @@ cors → helmet → request-id → morgan → rate-limit → body-parser → coo
 ```
 
 ### Tasks
-- [ ] `authMiddleware` — verifies JWT, attaches `req.user`.
-- [ ] `roleMiddleware(['admin','super_admin'])`.
-- [ ] `ownershipMiddleware` — user accesses only own resources (orders, addresses, reviews, cart, wishlist).
-- [ ] Helmet (CSP below) + secure cookie flags.
-- [ ] CORS strict whitelist from `FRONTEND_ORIGINS`, `credentials:true`.
-- [ ] Rate limiting: 5 / 15 min on auth; 10 / hour on public forms; 120 / min public reads; 300 / min auth; 600 / min admin.
-- [ ] zod validation on **every** endpoint (body, query, params).
-- [ ] Parameterized queries everywhere.
-- [ ] HTML sanitization (DOMPurify) on any rich-text input.
+- [ ] `authMiddleware` — verifies JWT, attaches `req.user`; supports optional vs required mode.
+- [ ] `roleMiddleware(['admin','super_admin'])` — role-based gate.
+- [ ] `ownershipMiddleware` — user accesses only own resources (orders, addresses, reviews, cart, wishlist) by checking `user_id` on the resource before the controller runs.
+- [ ] zod request validator (body, query, params) wired into every existing & future endpoint.
+- [ ] Centralized error handler returning the Section-5 envelope; **no stack trace to client in prod**.
+- [ ] Response formatter helper for `{success:true, data, meta?}`.
+- [ ] HTML sanitization (DOMPurify) on any rich-text input (product description, review).
+- [ ] Parameterized queries / ORM enforced across modules (lint rule + code review checklist).
+
+### Forbidden-capability integration tests (must all return 401/403)
+- Customer hitting `/api/admin/*`
+- User A reading user B's orders / addresses / reviews
+- Modifying order amount, product price, stock from client
+- Calling protected endpoints with no token / expired token
+
+> **Done when:** RBAC + ownership integration tests pass; zod validation rejects malformed payloads with structured `fields` errors.
+
+---
+
+## PHASE 3B — Helmet/CSP, CORS, Rate-Limit, CSRF, Lockout, Security Logs  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+- [ ] Helmet with full CSP below + secure cookie flags.
+- [ ] CORS strict whitelist from `FRONTEND_ORIGINS`, `credentials: true`.
+- [ ] Rate limiting: 5/15-min on auth; 10/hour on public forms (wholesale, contact, newsletter); 120/min public reads; 300/min auth; 600/min admin.
 - [ ] CSRF: `SameSite=Lax` refresh cookie + `X-CSRF` header (or double-submit) on state-changing routes.
-- [ ] Login lockout: 5 failed → 15 min cooldown by `(ip, email)`; bump `users.failed_login_count` / `lockout_until`.
-- [ ] Security logs → `security_logs` table + `security-*.log`.
+- [ ] Login lockout: 5 failed → 15-min cooldown by `(ip, email)`; bump `users.failed_login_count` / `lockout_until`.
+- [ ] File-upload guards (Phase 5 enforces Cloudinary side too): MIME, size, filename sanitization at the controller boundary.
+- [ ] Security logs to `security_logs` table + `security-*.log`: login attempts, failed logins, lockouts, password changes, admin writes, role changes, suspicious requests.
+- [ ] Replay-attack protection helper (Idempotency-Key parser for Phase 7A).
 
 ### CSP (helmet)
 ```
@@ -309,52 +379,60 @@ frame-ancestors 'none';
 ```
 Plus: HSTS · `X-Content-Type-Options: nosniff` · `X-Frame-Options: DENY` · `Referrer-Policy: strict-origin-when-cross-origin` · `Permissions-Policy: camera=(),mic=(),geo=()`.
 
-### Forbidden-capability tests (must all return 401/403)
-- Customer hitting `/api/admin/*`
-- User A reading user B's orders / addresses / reviews
-- Modifying order amount, product price, stock from client
-- Replaying payment verification
-- Uploading SVG / oversized files
-
-> **Done when:** OWASP top-10 mitigations verified, RBAC integration tests pass, lockout works, no admin endpoint reachable without role.
+> **Done when:** securityheaders.com scan ≥ A; lockout proven via 6-failure test; rate-limits trip on flood; CSP allows Razorpay & Cloudinary only.
 
 ---
 
-## PHASE 4 — Categories & Products APIs  `(5–6 credits)`
+## PHASE 4A — Public Categories & Products APIs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-### Public
+### Endpoints
 | Method | Path | Purpose |
 |--|--|--|
-| GET | `/api/categories` | Nested tree |
-| GET | `/api/categories/:slug` | Detail |
+| GET | `/api/categories` | Nested tree (parent → children) |
+| GET | `/api/categories/:slug` | Detail + immediate children |
 | GET | `/api/products` | List w/ filters `category, q, min_price, max_price, color, size, sort, page, limit, flag` |
-| GET | `/api/products/:slug` | PDP (images, variants, rating, count) |
+| GET | `/api/products/:slug` | PDP payload (images, variants, avg rating, review count) |
 | GET | `/api/collections/:key` | new-arrivals · best-sellers · summer · winter · festive · wedding |
-| GET | `/api/banners?placement=` | Active banners (filtered by `start_at/end_at`) |
-
-### Admin
-| Method | Path |
-|--|--|
-| `GET/POST/PATCH/DELETE` | `/api/admin/categories[/:id]` |
-| `GET/POST/PATCH/DELETE` | `/api/admin/products[/:id]` |
-| `POST/PATCH/DELETE` | `/api/admin/products/:id/variants[/:varId]` |
-| `PATCH` | `/api/admin/products/:id/publish` |
-| `PATCH` | `/api/admin/products/:id/stock` (atomic increment/decrement, audit-logged) |
+| GET | `/api/banners?placement=` | Active banners filtered by `start_at/end_at` and `is_active=1` |
 
 ### Rules
-- Slug auto-generated + unique.
-- Soft delete via `deleted_at`; default queries exclude soft-deleted rows.
-- Search uses MySQL FULLTEXT (`MATCH ... AGAINST` in BOOLEAN MODE).
+- Slugs unique; soft-deleted rows excluded by default.
+- Search uses MySQL FULLTEXT (`MATCH ... AGAINST` BOOLEAN MODE) on `products(name, short_description, description)`.
 - Pagination meta `{ page, limit, total, totalPages }` in response.
+- Avoid N+1: batch fetch product images/variants by product id list.
+- Cache headers (`Cache-Control: public, max-age=60, stale-while-revalidate=300`) on public reads.
 
-### Product Upload Workflow (Admin)
-1. **Enter info:** name, description, category, SKU, price, sale price, stock.
-2. **Upload images:** request signed params from `/api/admin/upload/signature`, upload directly to Cloudinary, persist `{secure_url, public_id, alt, sort_order}` via `POST /api/admin/products/:id/images`.
-3. **Create variants:** size, color, stock, price (optional override).
-4. **Publish:** `PATCH /api/admin/products/:id/publish` → status = `published`.
+> **Done when:** filters return correct results; FULLTEXT search works; collections route returns correct flag-based data; banners respect schedule window.
 
-> **Done when:** all endpoints work; filters return correct results; FULLTEXT search works; slugs unique; integration tests cover happy + edge cases.
+---
+
+## PHASE 4B — Admin Categories & Products CRUD, Variants, Stock & Publish  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+### Endpoints
+| Method | Path |
+|--|--|
+| `GET/POST/PATCH/DELETE` | `/api/admin/categories[/:id]` (nested categories supported via `parent_id`) |
+| `POST` | `/api/admin/categories/:id/image` (Cloudinary URL persist) |
+| `GET/POST/PATCH/DELETE` | `/api/admin/products[/:id]` |
+| `POST/PATCH/DELETE` | `/api/admin/products/:id/variants[/:varId]` (size, color, stock, price override) |
+| `PATCH` | `/api/admin/products/:id/publish` (status = `draft` ↔ `published`) |
+| `PATCH` | `/api/admin/products/:id/stock` (atomic increment/decrement; audit-logged) |
+
+### Rules
+- Slug auto-generated from name; uniqueness enforced.
+- Soft delete via `deleted_at`.
+- Every write logged to `audit_logs` with actor/before/after JSON.
+- zod-validated payloads; SKU unique; price ≥ 0; stock ≥ 0.
+
+### Product Upload Workflow (Admin) — full sequence
+1. **Enter info:** name, description, short_description, category_id, SKU, price, sale_price, stock, flags.
+2. **Upload images:** request signed params from `/api/admin/upload/signature` (Phase 5) → upload directly to Cloudinary → persist `{secure_url, public_id, alt, sort_order}` via `POST /api/admin/products/:id/images`.
+3. **Create variants:** size, color, stock, optional price override.
+4. **Publish:** `PATCH /api/admin/products/:id/publish` → `status='published'`.
+
+> **Done when:** non-admin gets 403 on every admin endpoint; CRUD flow + publish + stock adjust all work; audit log records each write.
 
 ---
 
@@ -368,144 +446,202 @@ Plus: HSTS · `X-Content-Type-Options: nosniff` · `X-Frame-Options: DENY` · `R
 - [ ] Filename sanitization (slug + uuid before upload).
 - [ ] `POST /api/admin/products/:id/images` persists `{secure_url, public_id, alt_text, sort_order}` (capped at 10).
 - [ ] `DELETE /api/admin/products/:id/images/:imgId` → `cloudinary.uploader.destroy(public_id)` + DB delete.
-- [ ] Banner + Category image endpoints (`/api/admin/banners`, `/api/admin/categories/:id/image`).
-- [ ] Optional weekly orphan sweeper job (cron) — deletes Cloudinary assets not referenced in DB.
+- [ ] Banner image endpoints (`/api/admin/banners` upload flow).
+- [ ] Category image endpoint (`/api/admin/categories/:id/image`).
+- [ ] Optional weekly orphan sweeper cron — deletes Cloudinary assets not referenced in DB.
+- [ ] Malware-scan hook stub (configurable webhook before persist).
 
-> **Done when:** signed upload works, oversized / SVG uploads rejected, deletion cascades to Cloudinary.
+> **Done when:** signed upload works; oversized / SVG uploads rejected; deletion cascades to Cloudinary; orphan sweeper script runs on demand.
 
 ---
 
-## PHASE 6 — Cart, Wishlist, Addresses & Coupon APIs  `(5–6 credits)`
+## PHASE 6A — Cart APIs & Coupon Validation  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 ### Endpoints
 | Method | Path | Purpose |
 |--|--|--|
-| GET    | `/api/cart` | Server-computed totals (subtotal, shipping, tax, discount, total) |
-| POST   | `/api/cart/items` | Add item (stock checked) |
-| PATCH  | `/api/cart/items/:id` | Update qty |
+| GET    | `/api/cart` | Server-computed totals: subtotal, shipping, tax, discount, total |
+| POST   | `/api/cart/items` | Add item (stock checked; variant supported) |
+| PATCH  | `/api/cart/items/:id` | Update qty (stock re-checked) |
 | DELETE | `/api/cart/items/:id` | Remove |
-| POST   | `/api/cart/coupon` | Apply coupon |
+| POST   | `/api/cart/coupon` | Apply coupon code |
 | DELETE | `/api/cart/coupon` | Remove coupon |
-| GET    | `/api/wishlist` | List |
-| POST   | `/api/wishlist` | Add `{product_id}` |
-| DELETE | `/api/wishlist/:productId` | Remove |
-| GET/POST/PATCH/DELETE | `/api/me/addresses[/:id]` | Address book |
-| POST   | `/api/me/addresses/:id/default` | Set default (single SQL transaction; unsets siblings) |
-| POST   | `/api/coupons/validate` | Validate code against current cart |
+| POST   | `/api/coupons/validate` | Validate code against current cart (dry-run) |
 
 ### Rules
-- Totals are **server-computed only**.
+- Totals are **server-computed only** (subtotal · shipping policy · GST/tax · discount · total).
 - Cart bound to `user_id`; ownership enforced.
-- Coupon validation: code valid · within `start_date/end_date` · `is_active=1` · `min_cart_value` met · `usage_limit > used_count` · `per_user_limit` checked via `coupon_usages`.
-- Address `is_default` is mutually exclusive per user.
+- Coupon validation: code valid · within `start_date/end_date` · `is_active=1` · `min_cart_value` met · `usage_limit > used_count` · `per_user_limit` checked via `coupon_usages` · discount type `percentage`/`fixed`.
+- Cart item snapshot keeps unit price for stable totals between adds and checkout quote.
 
-> **Done when:** cross-user access returns 403; totals always recomputed; expired/exhausted/per-user-limit coupon cases handled.
+> **Done when:** cross-user access returns 403; totals always recomputed; expired/exhausted/per-user-limit coupon cases handled with specific error codes.
 
 ---
 
-## PHASE 7 — Orders, Razorpay & Invoice Generation  `(5–6 credits)`
+## PHASE 6B — Wishlist & Address Book APIs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 ### Endpoints
 | Method | Path | Purpose |
 |--|--|--|
-| POST | `/api/checkout/quote` | Server recomputes totals |
-| POST | `/api/checkout/razorpay/order` | Create RP order from server-computed amount |
-| POST | `/api/checkout/razorpay/verify` | Verify HMAC, create order, decrement stock |
-| POST | `/api/webhooks/razorpay` | Webhook sync (`payment.captured`, `payment.failed`, `refund.created`) |
-| GET  | `/api/orders` | Customer's own orders |
-| GET  | `/api/orders/:orderNumber` | Detail |
-| POST | `/api/orders/:orderNumber/cancel` | Cancel if status allows |
-| GET  | `/api/orders/:orderNumber/invoice` | PDF download (auth + ownership) |
+| GET    | `/api/wishlist` | List items with product summary |
+| POST   | `/api/wishlist` | Add `{product_id}` (idempotent) |
+| DELETE | `/api/wishlist/:productId` | Remove |
+| POST   | `/api/wishlist/:productId/move-to-cart` | Move to cart |
+| GET/POST/PATCH/DELETE | `/api/me/addresses[/:id]` | Address CRUD |
+| POST   | `/api/me/addresses/:id/default` | Set default (single SQL transaction; unsets siblings) |
+
+### Rules
+- Wishlist unique on `(user_id, product_id)`.
+- Address `is_default` is mutually exclusive per user.
+- Pincode validated (India 6-digit) via zod regex.
+- Soft delete on addresses keeps order history intact.
+
+> **Done when:** ownership enforced (User A cannot touch User B); default-flip is transactional; pincode validation rejects bad input.
+
+---
+
+## PHASE 7A — Checkout Quote, Razorpay Order Create, Verify & Stock Transaction  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+### Endpoints
+| Method | Path | Purpose |
+|--|--|--|
+| POST | `/api/checkout/quote` | Server recomputes totals (subtotal · shipping · tax · discount · total) |
+| POST | `/api/checkout/razorpay/order` | Create RP order from server-computed amount; insert `payments` row `status='created'` |
+| POST | `/api/checkout/razorpay/verify` | Verify HMAC, create order, decrement stock atomically |
 
 ### Razorpay flow (canonical)
-1. Frontend → `POST /api/checkout/quote` (server recomputes totals).
+1. Frontend → `POST /api/checkout/quote` (server recomputes totals from DB cart + selected address).
 2. Frontend → `POST /api/checkout/razorpay/order` — server calls `razorpay.orders.create({ amount: total*100, currency:'INR', receipt: order_number })` and inserts a `payments` row with `status='created'`. Returns `{ razorpay_order_id, amount, currency, key_id }`.
 3. Frontend opens Razorpay Checkout with returned params.
-4. On success → `POST /api/checkout/razorpay/verify` with `{ razorpay_order_id, razorpay_payment_id, razorpay_signature }`.
+4. On success → `POST /api/checkout/razorpay/verify` with `{ razorpay_order_id, razorpay_payment_id, razorpay_signature }` and `Idempotency-Key` header.
 5. Server HMAC: `crypto.createHmac('sha256', RP_SECRET).update(order_id + '|' + payment_id).digest('hex')` **must equal** `razorpay_signature`.
 6. **Inside a DB transaction:**
    - `SELECT ... FOR UPDATE` on each product/variant; abort + refund + email if any OOS.
-   - Insert `orders` + `order_items` (use immutable snapshot of product name/SKU/price).
+   - Insert `orders` + `order_items` (immutable snapshot of product name/SKU/price).
    - Update `payments` row (`payment_id`, `signature`, `status='captured'`). UNIQUE on `razorpay_payment_id` blocks replay.
    - Insert `coupon_usages`; increment `coupons.used_count`.
    - Clear cart.
-7. Send order-confirmation email with PDF invoice.
-8. Return order number.
+7. Enqueue `order-placed` email with invoice PDF (Phase 7B builds PDF).
+8. Return `{order_number}`.
 
-### Order status state-machine
-`pending → confirmed → processing → shipped → delivered` OR `cancelled` (allowed from `pending` / `confirmed`).
-
-### Idempotency
-- Accept `Idempotency-Key` header on the verify endpoint.
+### Idempotency / Replay
+- `Idempotency-Key` header on verify endpoint stored in payments meta.
 - Unique constraint on `payments.razorpay_payment_id` blocks dupes.
+- Log every step to `payment-*.log` (redact signature).
 
-### Invoice
-- `pdfkit` (or puppeteer) → A4 PDF with line items, taxes, billing/shipping address, order number, payment id, timestamp.
-- Download secured by auth + ownership.
-
-> **Done when:** end-to-end Razorpay test flow works; signature failures logged; stock decremented atomically; invoice downloads.
+> **Done when:** Razorpay test mode flow works E2E; signature mismatch returns 400 + security log; stock decremented atomically; replay attempt returns 409.
 
 ---
 
-## PHASE 8 — Admin APIs  `(5–6 credits)`
+## PHASE 7B — Orders (list/detail/cancel), RP Webhooks & PDF Invoice  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+### Endpoints
+| Method | Path | Purpose |
+|--|--|--|
+| GET  | `/api/orders` | Customer's own orders (paginated, status-filterable) |
+| GET  | `/api/orders/:orderNumber` | Detail (auth + ownership) |
+| POST | `/api/orders/:orderNumber/cancel` | Cancel if status in `{pending, confirmed}`; restore stock atomically |
+| GET  | `/api/orders/:orderNumber/invoice` | PDF download (auth + ownership) |
+| POST | `/api/webhooks/razorpay` | Webhook sync (`payment.captured`, `payment.failed`, `refund.created`); HMAC-verified with `RAZORPAY_WEBHOOK_SECRET` |
+
+### Order status state-machine
+`pending → confirmed → processing → shipped → delivered` OR `cancelled` (allowed from `pending`/`confirmed` only).
+
+### Invoice (pdfkit)
+- A4 PDF with brand header (gold + ivory), line items, taxes, billing/shipping address, order number, payment id, timestamp, terms footer.
+- Download secured by auth + ownership.
+
+### Webhook handler
+- Verify signature header `x-razorpay-signature`.
+- Idempotent: dedupe by `payments.razorpay_payment_id` + event id.
+- Drives `payments.status` and (on refund) `orders.payment_status='refunded'`.
+- Log every event to `payment-*.log`.
+
+> **Done when:** customer can view + cancel + download invoice; webhook idempotently updates payment status; cancel restores stock in a transaction.
+
+---
+
+## PHASE 8A — Admin Dashboard KPIs, Orders & Customers APIs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 All routes behind `roleMiddleware(['admin','super_admin'])`.
 
 | Group | Routes |
 |--|--|
-| Dashboard | `GET /api/admin/dashboard` — KPIs (total sales, orders, customers, products) + revenue time-series |
-| Orders | `GET /api/admin/orders`, `GET /api/admin/orders/:id`, `PATCH /api/admin/orders/:id/status`, `POST /api/admin/orders/:id/refund` |
-| Customers | `GET /api/admin/customers`, `GET /api/admin/customers/:id` |
-| Wholesale | `GET /api/admin/wholesale-inquiries`, `PATCH /api/admin/wholesale-inquiries/:id`, `GET /api/admin/wholesale-inquiries/export.csv` |
-| Coupons | `GET/POST/PATCH/DELETE /api/admin/coupons[/:id]` |
-| Banners | `GET/POST/PATCH/DELETE /api/admin/banners[/:id]` |
-| Reviews | `GET /api/admin/reviews`, `PATCH /api/admin/reviews/:id` (approve/reject) |
-| Audit (👑) | `GET /api/admin/audit-logs` (super_admin only) |
-| Users  (👑) | `GET/PATCH /api/admin/users[/:id]` — change status/role (super_admin only) |
+| Dashboard | `GET /api/admin/dashboard` — KPIs (total sales, orders, customers, products) + revenue time-series (day/week/month) + top-selling products |
+| Orders | `GET /api/admin/orders` (filter by status/date/customer), `GET /api/admin/orders/:id`, `PATCH /api/admin/orders/:id/status`, `POST /api/admin/orders/:id/refund` (calls Razorpay refund API) |
+| Customers | `GET /api/admin/customers` (search/sort/paginate), `GET /api/admin/customers/:id` (profile + order history + lifetime value) |
 
 ### Rules
-- Every admin write logs to `audit_logs` (actor, action, entity, before/after JSON, ip, user_agent).
-- Order status updates send email to customer (`order-shipped`, `order-delivered`, `order-cancelled`).
-- Refund uses Razorpay API → `payments.status='refunded'`, `orders.payment_status='refunded'`.
-- All admin lists paginated + sortable + filterable.
+- Order status updates send the appropriate customer email (`order-shipped`, `order-delivered`, `order-cancelled`).
+- Refund updates `payments.status='refunded'` + `orders.payment_status='refunded'` + audit log + customer email (`refund-processed`).
+- All admin lists paginated + sortable + filterable (URL-driven).
+- Every write logs to `audit_logs` with before/after JSON.
 
-> **Done when:** RBAC enforced everywhere; dashboards return real aggregates; CSV export works; audit log captures every write.
+> **Done when:** dashboards return real aggregates; status transitions enforced server-side; refund flow tested in Razorpay test mode.
 
 ---
 
-## PHASE 9 — Reviews, Wholesale, Newsletter, Contact APIs  `(5–6 credits)`
+## PHASE 8B — Admin Coupons, Banners, Reviews, Wholesale Mgmt, Users & Audit Logs  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+All routes behind `roleMiddleware(['admin','super_admin'])`.
+
+| Group | Routes |
+|--|--|
+| Coupons | `GET/POST/PATCH/DELETE /api/admin/coupons[/:id]` — code, discount_type, discount_value, min_cart_value, usage_limit, per_user_limit, start_date, end_date, is_active |
+| Banners | `GET/POST/PATCH/DELETE /api/admin/banners[/:id]` — placement (`home_hero`, `category`, `promotional`), image, link, schedule (`start_at`, `end_at`), sort_order |
+| Reviews | `GET /api/admin/reviews`, `PATCH /api/admin/reviews/:id` (approve/reject) — triggers avg-rating recompute |
+| Wholesale | `GET /api/admin/wholesale-inquiries`, `PATCH /api/admin/wholesale-inquiries/:id` (status: new → contacted → converted/closed), `GET /api/admin/wholesale-inquiries/export.csv` |
+| Users 👑 | `GET/PATCH /api/admin/users[/:id]` — change status/role (super_admin only) |
+| Audit 👑 | `GET /api/admin/audit-logs` — paginated, filter by actor/entity/date (super_admin only) |
+
+### Rules
+- 👑 = super_admin only. Hard gate; admin gets 403.
+- Every write logs to `audit_logs`.
+- CSV export streams (no full in-memory) for big inquiry lists.
+
+> **Done when:** all CRUD works; super-admin-only endpoints reject admin; CSV export downloads valid file; review approve/reject reflects in PDP rating.
+
+---
+
+## PHASE 9 — Reviews, Wholesale, Newsletter & Contact APIs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 | Method | Path | Notes |
 |--|--|--|
-| POST   | `/api/products/:id/reviews` | Auth; **verified purchaser only** (must have a `delivered` order containing this product); 1 review per `(user, product, order)` |
+| POST   | `/api/products/:id/reviews` | Auth; **verified purchaser only** (must have a `delivered` order containing this product); 1 review per `(user, product, order)`; default `status='pending'` |
 | GET    | `/api/products/:id/reviews` | Paginated, only `status='approved'` |
 | PATCH  | `/api/reviews/:id` | Edit own (resets `status='pending'`) |
 | DELETE | `/api/reviews/:id` | Delete own |
 | POST   | `/api/wholesale-inquiry` | Public, rate-limited, captcha-ready; emails ops + acks lead (`wholesale-inquiry-ack`) |
 | POST   | `/api/contact` | Public, rate-limited; stores in `contact_messages`, emails ops |
 | POST   | `/api/newsletter/subscribe` | Public, optional double opt-in |
+| GET    | `/api/newsletter/unsubscribe?token=` | Unsubscribe via signed token |
 
 ### Rules
-- Avg rating + count updated on review approve/reject (via trigger or service).
-- Spam protection on **every** public POST: honeypot field + rate-limit + optional reCAPTCHA hook.
+- Avg rating + count updated on review approve/reject (via service or DB trigger).
+- Spam protection on **every** public POST: honeypot field + rate-limit + optional reCAPTCHA hook (`RECAPTCHA_SECRET`).
 - All inputs zod-validated.
+- Wholesale fields: company_name, contact_person, email, phone, business_type (Hotel/Resort/Hospital/Hostel/Retail/Interior Designer/Corporate Gifting/Other), product_interest, quantity_requirement, message.
 
-> **Done when:** every public form stores data, sends correct emails, and is rate-limited.
+> **Done when:** verified-purchaser rule blocks non-buyers; every public form stores data, sends correct emails, and is rate-limited; unsubscribe link works.
 
 ---
 
-## PHASE 10 — SEO, Logging, Backups & VPS Deployment  `(5–6 credits)`
+## PHASE 10A — SEO Endpoints, Logging & Monitoring  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 ### SEO (backend responsibilities)
-- [ ] `GET /sitemap.xml` — dynamic from products + categories + collections (OR delegated to Next.js if frontend handles it; pick one).
+- [ ] `GET /sitemap.xml` — dynamic from products + categories + collections + static pages (OR delegated to Next.js if frontend handles it; pick one and document).
 - [ ] `GET /robots.txt` — disallow `/admin`, `/account`, `/cart`, `/checkout`, `/api`.
-- [ ] JSON-LD helpers: `Product`, `BreadcrumbList`, `Organization`, `WebSite+SearchAction` (consumed by frontend `generateMetadata`).
-- [ ] Canonical URL helper for product/category endpoints.
+- [ ] JSON-LD helpers (server-rendered into product/category responses): `Product`, `BreadcrumbList`, `Organization`, `WebSite+SearchAction` — consumed by frontend `generateMetadata`.
+- [ ] Canonical URL helper for product / category endpoints.
+- [ ] Open Graph + Twitter Card meta fields included in product/category payload for frontend consumption.
 
 ### Logging & Monitoring
 - [ ] Winston + daily-rotate-file:
@@ -515,31 +651,45 @@ All routes behind `roleMiddleware(['admin','super_admin'])`.
   - `security-*.log` (auth, lockout, suspicious)
   - `payment-*.log` (RP order/verify/webhook)
   - Retain 30 days · gzip rotated.
-- [ ] Sensitive bodies redacted (password, signature, token).
+- [ ] Sensitive bodies redacted (password, signature, token, cookie).
 - [ ] Centralized error handler — safe responses; **no stack to client in prod**.
-- [ ] Sentry on backend (`@sentry/node`) with release tags.
+- [ ] Sentry on backend (`@sentry/node`) with release tags + environment + user context (id only).
 - [ ] `GET /api/health` (shallow) + `GET /api/health/deep` (DB + Cloudinary + RP ping).
+- [ ] Audit-log viewer query path (read side already shipped in Phase 8B).
 
-### Backups & DR
-- [ ] Daily `mysqldump --single-transaction --routines --triggers` → encrypted S3/B2/R2, retain 14 days.
-- [ ] Weekly full, retain 8 weeks.
+> **Done when:** sitemap + robots reachable; Rich Results test passes on a sample product; Sentry receives a forced error; rotated logs visible in `logs/`.
+
+---
+
+## PHASE 10B — Backups, Docker, VPS Deployment & Go-Live  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+### Backups & Disaster Recovery
+- [ ] Daily `mysqldump --single-transaction --routines --triggers` → encrypted S3/B2/R2 (AES-256), retain 14 days.
+- [ ] Weekly full backup, retain 8 weeks.
+- [ ] Media: rely on Cloudinary's redundancy + monthly inventory snapshot.
 - [ ] Optional binlog shipping (RPO ≤ 5 min).
 - [ ] Quarterly restore drill on staging — documented + signed off.
+- [ ] Backup cron `0 2 * * *` runs `deploy/scripts/backup-db.sh`.
+
+### Docker (parity)
+- [ ] `Dockerfile` for backend (multi-stage build, non-root user).
+- [ ] `docker-compose.yml` for local + staging (api + mysql + mailhog).
+- [ ] Healthchecks in compose; volumes for MySQL data + logs.
 
 ### Deployment (Ubuntu 22.04 VPS)
-- [ ] Node 20 LTS via nvm · MySQL 8.0 · Nginx · PM2 · certbot.
+- [ ] Node 20 LTS via nvm · MySQL 8.0 · Nginx · PM2 · certbot · UFW · Fail2ban.
 - [ ] PM2 ecosystem file: `bhavita-api` (cluster mode, `max_instances`, `max_memory_restart: 600M`) + `bhavita-web` (2 instances).
 - [ ] `pm2 startup` + `pm2 save`.
 - [ ] Nginx reverse proxy:
   - 80 → 443 redirect
-  - HSTS, CSP, gzip + brotli
+  - HSTS · CSP · gzip + brotli
   - `/api/` → `127.0.0.1:4000`
   - `/`     → `127.0.0.1:3000`
 - [ ] Let's Encrypt via certbot, auto-renew (`systemctl status certbot.timer`).
 - [ ] UFW: allow 22 / 80 / 443 only; MySQL bound to `127.0.0.1`.
 - [ ] Fail2ban watching `sshd` + nginx 401/403.
-- [ ] Backup cron `0 2 * * *` running `deploy/scripts/backup-db.sh`.
-- [ ] Docker setup (optional) — `Dockerfile` + `docker-compose.yml` for local + staging parity.
+- [ ] Deployment checklist + rollback runbook in `deploy/README.md`.
 
 ### Go-Live Checklist (verify before flipping DNS)
 - [ ] SSL A+ on `securityheaders.com`.
@@ -576,7 +726,7 @@ Target customers: Hotels · Resorts · Hospitals · Hostels · Retail Stores · 
 
 ## 10. CATALOG REFERENCE (for seed + admin pre-fill)
 
-Used by Phase 1 seed and admin category create UI.
+Used by Phase 1B seed and admin category create UI.
 
 **Bedroom Collection**
 - Bedsheets: Cotton · Handloom · Printed · Premium Collection · King Size · Queen Size · Kids Collection
@@ -610,20 +760,20 @@ New Arrivals · Best Sellers · Summer · Winter · Festive · Wedding.
 ## 11. DELIVERABLES (sign-off list)
 
 1. Complete MySQL schema (`schema.sql`) — ✅ in repo
-2. Backend folder structure (Phase 1)
-3. Backend APIs (Phases 2–9)
-4. Authentication system (Phase 2)
-5. RBAC + security middleware (Phase 3)
-6. Razorpay integration (Phase 7)
+2. Backend folder structure (Phase 1A/1B)
+3. Backend APIs (Phases 2A → 9)
+4. Authentication system (Phases 2A + 2B)
+5. RBAC + security middleware (Phases 3A + 3B)
+6. Razorpay integration (Phases 7A + 7B)
 7. Cloudinary integration (Phase 5)
-8. Database migrations & seed (Phase 1)
-9. Deployment guide for Ubuntu VPS (Phase 10)
-10. Nginx configuration (Phase 10)
-11. PM2 configuration (Phase 10)
+8. Database migrations & seed (Phases 1A + 1B)
+9. Deployment guide for Ubuntu VPS (Phase 10B)
+10. Nginx configuration (Phase 10B)
+11. PM2 configuration (Phase 10B)
 12. Environment variable strategy (Section 6)
-13. Docker setup (Phase 10 — optional but recommended)
-14. Production checklist (Phase 10)
-15. Logging, monitoring, backups (Phase 10)
+13. Docker setup (Phase 10B)
+14. Production checklist (Phase 10B)
+15. Logging, monitoring, backups (Phases 10A + 10B)
 
 ---
 

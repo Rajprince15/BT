@@ -135,7 +135,7 @@ Error:   { \"success\": false, \"error\": { \"code\": \"STRING_CODE\", \"message
 Base URL = `NEXT_PUBLIC_API_URL` (e.g. `https://bhavitatextiles.com/api`). Every backend route is under `/api`.
 
 ### Frontend `services/` layer
-Generate a typed Axios client for every endpoint listed in `backend_workflow.md` (Phases 2, 4, 5, 6, 7, 8, 9). One file per resource: `services/auth.ts`, `services/products.ts`, `services/cart.ts`, `services/orders.ts`, `services/admin/*.ts`, etc.
+Generate a typed Axios client for every endpoint listed in `backend_workflow.md` (Phases 2A/2B, 4A/4B, 5, 6A/6B, 7A/7B, 8A/8B, 9). One file per resource: `services/auth.ts`, `services/products.ts`, `services/cart.ts`, `services/orders.ts`, `services/admin/*.ts`, etc.
 
 ### Token storage rules (CRITICAL)
 - Access JWT: **in-memory only** + injected via Axios interceptor. **Never** `localStorage`.
@@ -164,21 +164,27 @@ NEXT_PUBLIC_SENTRY_DSN=
 
 ## 7. EXECUTION PROGRESS
 
-> Mark a phase `✅ COMPLETED (YYYY-MM-DD)` ONLY after every checkbox is done and verified. Each phase ≈ **5–6 credits**.
+> Each phase ≈ **5–6 credits**. Mark a phase `✅ COMPLETED (YYYY-MM-DD)` ONLY after every checkbox is done and verified. Heavy phases were split into A/B sub-phases so every phase stays within budget — **no feature has been removed**.
 
-| #  | Phase                                            | Credits | Status     |
-|----|--------------------------------------------------|---------|------------|
-| 0  | Foundation Brief & Contract Lock-in              | 2–3     | ⬜ Pending |
-| 1  | Project Setup & Luxury Design System             | 5–6     | ⬜ Pending |
-| 2  | Global Layout, Header, Footer & Theming          | 5–6     | ⬜ Pending |
-| 3  | Home Page (All Sections)                         | 5–6     | ⬜ Pending |
-| 4  | Shop / Category & Product Listing Pages          | 5–6     | ⬜ Pending |
-| 5  | Product Detail Page                              | 5–6     | ⬜ Pending |
-| 6  | Authentication Pages & Auth Flow                 | 5–6     | ⬜ Pending |
-| 7  | Cart, Wishlist & Checkout (Razorpay UI)          | 5–6     | ⬜ Pending |
-| 8  | Customer Profile, Addresses & Orders             | 5–6     | ⬜ Pending |
-| 9  | Admin Dashboard UI (full panel)                  | 5–6     | ⬜ Pending |
-| 10 | Static Pages, SEO, Animations & Polish           | 5–6     | ⬜ Pending |
+| #    | Phase                                                          | Credits | Status     |
+|------|----------------------------------------------------------------|---------|------------|
+| 0    | Foundation Brief & Contract Lock-in                            | 2–3     | ⬜ Pending |
+| 1    | Project Setup & Luxury Design System                           | 5–6     | ⬜ Pending |
+| 2    | Global Layout, Header, Mega-menu, Footer & Theming             | 5–6     | ⬜ Pending |
+| 3A   | Home — Hero, Featured Categories, New Arrivals, Best Sellers   | 5–6     | ⬜ Pending |
+| 3B   | Home — Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter | 5–6 | ⬜ Pending |
+| 4    | Shop / Category PLP, Filters, Sort, Pagination, Search, Collections | 5–6 | ⬜ Pending |
+| 5A   | PDP — Gallery, Info, Variants, Add to Cart/Wishlist, Tabs      | 5–6     | ⬜ Pending |
+| 5B   | PDP — Reviews UI, Write-Review Form, Related, JSON-LD, Share, Breadcrumbs | 5–6 | ⬜ Pending |
+| 6    | Authentication Pages & Auth Flow                               | 5–6     | ⬜ Pending |
+| 7A   | Cart, Wishlist Pages & Coupon UI                               | 5–6     | ⬜ Pending |
+| 7B   | Checkout Multi-step Flow, Razorpay UI, Success & Invoice DL    | 5–6     | ⬜ Pending |
+| 8A   | Account — Layout, Profile, Addresses, Change Password          | 5–6     | ⬜ Pending |
+| 8B   | Account — Orders List/Detail, Cancel, Re-order, Reviews-to-write, Wishlist Page | 5–6 | ⬜ Pending |
+| 9A   | Admin — Layout, Dashboard KPIs, Categories, Products CRUD (Cloudinary) | 5–6 | ⬜ Pending |
+| 9B   | Admin — Orders, Customers, Wholesale, Coupons, Banners, Reviews, Audit Log, Settings | 5–6 | ⬜ Pending |
+| 10A  | Static Pages (About/Contact/Wholesale/Policies) + Public Forms | 5–6     | ⬜ Pending |
+| 10B  | SEO (metadata/JSON-LD/sitemap/robots), Performance, Accessibility & Polish | 5–6 | ⬜ Pending |
 
 ---
 
@@ -186,7 +192,7 @@ NEXT_PUBLIC_SENTRY_DSN=
 **Status:** ⬜ Pending · **Completed on:** —
 
 - [ ] Read this file + `schema.sql` + `backend_workflow.md` end-to-end.
-- [ ] Lock the API contract — every endpoint in `backend_workflow.md` Phases 2/4/6/7/8/9 has a typed client in `services/`.
+- [ ] Lock the API contract — every endpoint in `backend_workflow.md` Phases 2A/2B/4A/4B/5/6A/6B/7A/7B/8A/8B/9 has a typed client in `services/`.
 - [ ] Lock the TypeScript types (Section 5) — fields match `schema.sql`.
 - [ ] Confirm response envelope (Section 4) and error code catalog.
 - [ ] Confirm sitemap (Section 3) is complete.
@@ -232,7 +238,7 @@ frontend/
 
 ---
 
-## PHASE 2 — Global Layout, Header, Footer & Theming  `(5–6 credits)`
+## PHASE 2 — Global Layout, Header, Mega-menu, Footer & Theming  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 - [ ] Root layout with `QueryClientProvider` + `ThemeProvider` + `Toaster`.
@@ -250,75 +256,108 @@ frontend/
 
 ---
 
-## PHASE 3 — Home Page (All Sections)  `(5–6 credits)`
+## PHASE 3A — Home: Hero, Featured Categories, New Arrivals, Best Sellers  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Hero Banner (data from `GET /api/banners?placement=home_hero`).
-- [ ] Featured Categories grid (6–8 cards).
-- [ ] New Arrivals carousel (`GET /api/products?flag=new_arrival`).
-- [ ] Best Sellers (`flag=best_seller`).
-- [ ] Seasonal Collections block.
-- [ ] Handloom Heritage Collection — editorial storytelling layout.
-- [ ] Testimonials carousel.
-- [ ] Brand Story (asymmetric editorial layout).
-- [ ] Wholesale CTA → `/wholesale`.
-- [ ] Newsletter signup → `POST /api/newsletter/subscribe`.
+- [ ] Hero Banner section (data from `GET /api/banners?placement=home_hero`) — full-bleed, cinematic, slide carousel with autoplay + manual controls + reduced-motion respect.
+- [ ] Featured Categories grid (6–8 cards) — serif labels, gold underline hover, lazy-loaded images.
+- [ ] New Arrivals carousel (`GET /api/products?flag=new_arrival`) — uses shared `ProductCard`.
+- [ ] Best Sellers section (`flag=best_seller`) — alternate editorial layout.
+- [ ] Reusable `ProductCard` component: image with hover swap, name (serif), price + sale price, badges (New / Best Seller / Sale).
+- [ ] Section-level skeletons + error states.
 - [ ] Subtle staggered entrance animations (40–80 ms steps).
+- [ ] Mobile-first responsive (1 → 2 → 3 → 4 cols).
 
-> **Done when:** every section is responsive, data via React Query, motion restrained (no AI-slop).
+> **Done when:** four sections render with live data, animations restrained, no AI-slop gradients.
 
 ---
 
-## PHASE 4 — Shop / Category & Product Listing  `(5–6 credits)`
+## PHASE 3B — Home: Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Dynamic route `app/(shop)/shop/[[...slug]]/page.tsx`.
-- [ ] `ProductCard`: image, name, price, sale price, badges (New / Best Seller / Sale).
+- [ ] Seasonal Collections block (Summer / Winter / Festive / Wedding) — links to `/collections/<key>`.
+- [ ] Handloom Heritage Collection — editorial storytelling layout (asymmetric grid, ivory background, gold dividers).
+- [ ] Testimonials carousel (static seed or admin-managed) with rating stars and customer name.
+- [ ] Brand Story — asymmetric editorial layout: heritage tagline, signature craft image, founder quote.
+- [ ] Wholesale CTA → `/wholesale` (full-width dark band, gold CTA button, supporting copy for hotels / resorts / designers).
+- [ ] Newsletter signup → `POST /api/newsletter/subscribe` (with honeypot, success/error toasts, double opt-in copy).
+- [ ] Section spacing tuned for premium whitespace.
+- [ ] Reduced-motion respected throughout.
+
+> **Done when:** complete home page (3A + 3B) renders smoothly on mobile + desktop, Lighthouse score holds.
+
+---
+
+## PHASE 4 — Shop / Category PLP, Filters, Sort, Pagination, Search & Collections  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+- [ ] Dynamic route `app/(shop)/shop/[[...slug]]/page.tsx` (1+ level nested categories).
+- [ ] `ProductCard` (re-used from Phase 3A) — image, name, price, sale price, badges.
 - [ ] Product grid responsive (1 / 2 / 3 / 4 cols).
-- [ ] `FilterSidebar`: category tree · price range · color · size · availability.
+- [ ] `FilterSidebar`: category tree · price range slider · color · size · availability · flag toggles (New / Best Seller / Sale).
 - [ ] Sort dropdown: new · price ↑↓ · best sellers · rating.
-- [ ] Pagination / infinite scroll (React Query infinite).
-- [ ] Search results page (`/search?q=`).
+- [ ] Pagination + infinite scroll fallback (React Query infinite).
+- [ ] Search results page (`/search?q=`) with same grid + filter behaviour.
 - [ ] Empty + skeleton states.
 - [ ] Special Collections routes (`/collections/new-arrivals` etc.).
 - [ ] Filters reflect in URL search params (shareable links).
 - [ ] Canonical URL on filtered PLPs = base category.
+- [ ] Mobile filter drawer (Sheet) with sticky \"Apply\" bar.
 
 ### API call
 ```
 GET /api/products?category=<slug>&q=&min_price=&max_price=&color=&size=&sort=&page=&limit=&flag=
 ```
 
-> **Done when:** filters work via URL, pagination performant on mobile, no layout shift.
+> **Done when:** filters work via URL, pagination performant on mobile, no layout shift, canonical correctly emitted.
 
 ---
 
-## PHASE 5 — Product Detail Page  `(5–6 credits)`
+## PHASE 5A — PDP: Gallery, Info, Variants, Add to Cart/Wishlist, Tabs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Image gallery: thumbnail strip + hover zoom + mobile swipe.
-- [ ] Product info block: name, price, sale price, SKU, short desc, stock indicator.
-- [ ] Variant selectors (size, color) — disable OOS combos.
-- [ ] Quantity stepper · Add to Cart · Add to Wishlist.
-- [ ] Tabs: Description · Care · Shipping · Returns.
-- [ ] Reviews + ratings list (paginated) + write-review form (login-gated, verified-purchaser-only).
-- [ ] Related products carousel.
-- [ ] Product JSON-LD: `name, image, sku, offers.price, offers.priceCurrency, offers.availability, aggregateRating`.
-- [ ] Share buttons (WhatsApp · Copy link).
-- [ ] Breadcrumbs with full category chain.
+- [ ] Image gallery: thumbnail strip + hover zoom + mobile swipe + fullscreen modal.
+- [ ] Product info block: name (serif), price, sale price (strike-through original), SKU, short description, stock indicator (In Stock / Low Stock / Out of Stock).
+- [ ] Variant selectors (size, color) — disable OOS combos; selected variant updates price + stock + image.
+- [ ] Quantity stepper (min 1, max stock).
+- [ ] Add to Cart button → `POST /api/cart/items` with toast + cart count update.
+- [ ] Add to Wishlist button → `POST /api/wishlist` (toggle state).
+- [ ] Tabs (ShadCN): Description · Care Instructions · Shipping · Returns.
+- [ ] Sticky add-to-cart bar on mobile.
 
 ### APIs
-`GET /api/products/:slug` · `GET /api/products/:id/reviews` · `POST /api/cart/items` · `POST /api/wishlist`.
+`GET /api/products/:slug` · `POST /api/cart/items` · `POST /api/wishlist`.
 
-> **Done when:** variants change price/stock; add-to-cart works; Product schema passes Rich Results test.
+> **Done when:** variants change price/stock/image atomically; add-to-cart works and reflects in header count; tabs render content.
+
+---
+
+## PHASE 5B — PDP: Reviews, Write-Review Form, Related Products, JSON-LD, Share, Breadcrumbs  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+- [ ] Reviews list (paginated) with rating, customer name, date, review text — only `status='approved'`.
+- [ ] Write-review form (login-gated + verified-purchaser-only — backend enforces; UI hides for non-buyers).
+- [ ] Edit / delete own review.
+- [ ] Aggregate rating + count summary at top of reviews tab.
+- [ ] Related products carousel (same category, excluding current).
+- [ ] Product JSON-LD (Schema.org): `name, image, sku, offers.price, offers.priceCurrency, offers.availability, aggregateRating, brand`.
+- [ ] Share buttons (WhatsApp · Copy link · Email).
+- [ ] Breadcrumbs with full category chain (also emits `BreadcrumbList` JSON-LD).
+- [ ] PDP canonical URL.
+- [ ] OG + Twitter cards via `generateMetadata`.
+
+### APIs
+`GET /api/products/:id/reviews` · `POST /api/products/:id/reviews` · `PATCH /api/reviews/:id` · `DELETE /api/reviews/:id`.
+
+> **Done when:** Product schema passes Rich Results test; review CRUD works; related carousel populated.
 
 ---
 
 ## PHASE 6 — Authentication Pages & Auth Flow  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] `/auth/register` (name, email, phone, password) — zod schema matches backend.
-- [ ] `/auth/login` + remember-me + forgot link.
+- [ ] `/auth/register` (name, email, phone, password, confirm) — zod schema matches backend.
+- [ ] `/auth/login` + remember-me + forgot link + redirect via `?next=` param.
 - [ ] `/auth/forgot-password`.
 - [ ] `/auth/reset-password?token=`.
 - [ ] `/auth/verify-email?token=`.
@@ -327,112 +366,168 @@ GET /api/products?category=<slug>&q=&min_price=&max_price=&color=&size=&sort=&pa
 - [ ] `middleware.ts` protects `/account` and `/admin` (server-side check via cookie + role).
 - [ ] Logout flow clears in-memory token + invalidates queries.
 - [ ] Password strength meter + show/hide toggle.
+- [ ] Resend verification CTA after register.
 
 ### Token storage (CRITICAL — see Section 4)
 - Access token: in-memory + Axios header. **Do NOT** store in localStorage.
 - Refresh token: server-set httpOnly cookie.
 
-> **Done when:** full auth lifecycle works E2E with backend; protected routes redirect to login with `next` param.
+> **Done when:** full auth lifecycle works E2E with backend; protected routes redirect to login with `next` param; verify-email + reset-password links work.
 
 ---
 
-## PHASE 7 — Cart, Wishlist & Checkout (Razorpay UI)  `(5–6 credits)`
+## PHASE 7A — Cart, Wishlist Pages & Coupon UI  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Cart page: line items · qty update · remove · subtotal · shipping · tax · discount · total — **all amounts from `GET /api/cart`** (never compute on client).
-- [ ] Wishlist page: grid view · move to cart · remove.
-- [ ] CouponBox: `POST /api/cart/coupon` → refresh cart query.
-- [ ] Checkout step 1: select / add address.
-- [ ] Checkout step 2: review (re-fetch totals via `POST /api/checkout/quote`).
-- [ ] Checkout step 3: Razorpay Checkout (script lazy-loaded only here).
-- [ ] On success → `POST /api/checkout/razorpay/verify` → redirect `/checkout/success?orderId=`.
-- [ ] Order confirmation page with order number + summary.
-- [ ] Invoice download (`GET /api/orders/:orderNumber/invoice`).
-- [ ] Empty states + loading guards (disable Pay until quote returns).
+- [ ] Cart page: line items (image, name, variant, qty stepper, line subtotal, remove) · subtotal · shipping · tax · discount · total — **all amounts from `GET /api/cart`** (never compute on client).
+- [ ] Empty cart state with CTA to /shop.
+- [ ] Wishlist page: grid view · move to cart · remove · empty state.
+- [ ] CouponBox component: apply / remove → refreshes cart query; shows applied coupon badge + savings.
+- [ ] Inline error messages for stock issues, invalid coupon, expired coupon, etc.
+- [ ] \"Proceed to Checkout\" CTA disabled when cart empty or any line OOS.
+- [ ] Mobile-friendly sticky cart total bar.
+
+### APIs
+`GET /api/cart` · `POST /api/cart/items` · `PATCH /api/cart/items/:id` · `DELETE /api/cart/items/:id` · `POST /api/cart/coupon` · `DELETE /api/cart/coupon` · `GET/POST/DELETE /api/wishlist`.
+
+> **Done when:** cart totals match backend; coupon flows tested (valid / expired / under-min / used-up); wishlist CRUD works.
+
+---
+
+## PHASE 7B — Checkout Multi-step Flow, Razorpay UI, Success & Invoice Download  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+- [ ] Checkout step 1: select existing address / add new address (inline form).
+- [ ] Checkout step 2: review — re-fetch totals via `POST /api/checkout/quote`; show order summary + delivery address.
+- [ ] Checkout step 3: payment — `POST /api/checkout/razorpay/order` → open Razorpay Checkout (script lazy-loaded only here).
+- [ ] On success → `POST /api/checkout/razorpay/verify` with `Idempotency-Key` → redirect `/checkout/success?orderId=`.
+- [ ] On payment failure / cancel → friendly error state with retry option.
+- [ ] Order confirmation page (`/checkout/success`) with order number, summary, estimated delivery, next-steps copy.
+- [ ] Invoice download button (`GET /api/orders/:orderNumber/invoice`).
+- [ ] Loading guards (disable Pay until quote returns).
+- [ ] Stepper UI with back navigation (data preserved).
 
 ### Razorpay UI rules
-- Use `NEXT_PUBLIC_RAZORPAY_KEY_ID` only — never the secret.
+- Use `NEXT_PUBLIC_RAZORPAY_KEY_ID` only — **never** the secret.
 - `amount` and `currency` come from the **backend** verify-order response, never from the cart UI.
+- Lazy-load `checkout.razorpay.com/v1/checkout.js` only on this page.
 
-> **Done when:** end-to-end checkout works in Razorpay test mode; orders appear in `/account/orders`.
+> **Done when:** end-to-end checkout works in Razorpay test mode; orders appear in `/account/orders`; invoice downloads.
 
 ---
 
-## PHASE 8 — Customer Profile, Addresses & Orders  `(5–6 credits)`
+## PHASE 8A — Account: Layout, Profile, Addresses, Change Password  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Account layout with sidebar: Profile · Addresses · Orders · Wishlist · Reviews · Logout.
-- [ ] Edit profile (name, phone) + change password.
-- [ ] Address book CRUD + set default.
-- [ ] Order history list with status badges.
-- [ ] Order detail with timeline (Pending → Confirmed → Processing → Shipped → Delivered).
-- [ ] Cancel order (if status allows) → `POST /api/orders/:orderNumber/cancel`.
-- [ ] Re-order button (adds same items to cart).
-- [ ] \"Reviews to write\" tab — list of delivered orders not yet reviewed.
-- [ ] Download invoice.
-- [ ] Mobile-friendly screens.
+- [ ] `/account` layout with sidebar: Profile · Addresses · Orders · Wishlist · Reviews · Logout.
+- [ ] `/account/profile`: edit name + phone; show verified-email status + resend verification.
+- [ ] Change password form (current + new + confirm) with strength meter.
+- [ ] `/account/addresses`: list · add new · edit · delete · set default (single-default invariant).
+- [ ] Address form with pincode validation (India 6-digit).
+- [ ] Empty states + skeletons.
+- [ ] Mobile-friendly screens (sidebar collapses to top tabs).
 
-> **Done when:** all account actions hit secured APIs; UI never shows another user's data.
+> **Done when:** all profile + address CRUD works; ownership enforced server-side; change-password forces re-login.
 
 ---
 
-## PHASE 9 — Admin Dashboard UI (full panel)  `(5–6 credits)`
+## PHASE 8B — Account: Orders List/Detail, Cancel, Re-order, Reviews-to-write, Wishlist Page  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+- [ ] `/account/orders`: order history list with status badges + search/filter.
+- [ ] `/account/orders/[orderNumber]`: detail with timeline (Pending → Confirmed → Processing → Shipped → Delivered → Cancelled), line items, payment info, address, totals.
+- [ ] Cancel order button (visible only when status ∈ {pending, confirmed}) → `POST /api/orders/:orderNumber/cancel`.
+- [ ] Re-order button (adds same items to cart, respecting current stock).
+- [ ] Download invoice button (`GET /api/orders/:orderNumber/invoice`).
+- [ ] `/account/reviews` — \"Reviews to write\" tab listing delivered orders not yet reviewed + \"My reviews\" tab with edit/delete.
+- [ ] `/account/wishlist` page (reuses Phase 7A wishlist if needed).
+- [ ] Mobile-friendly screens.
+
+> **Done when:** all account actions hit secured APIs; UI never shows another user's data; cancel and re-order work end-to-end.
+
+---
+
+## PHASE 9A — Admin: Layout, Dashboard KPIs, Categories, Products CRUD (Cloudinary)  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 - [ ] Admin layout sidebar: Dashboard · Products · Categories · Orders · Customers · Wholesale Inquiries · Coupons · Banners · Reviews · Audit Log (super_admin) · Settings.
-- [ ] Dashboard KPIs (Total Sales · Total Orders · Total Customers · Total Products) + revenue chart + recent orders table.
-- [ ] Categories tree CRUD + image upload (nested categories supported).
-- [ ] Products data table + add/edit form (info, images via signed Cloudinary upload, variants, stock).
-- [ ] Orders table + detail + status update (`Pending · Confirmed · Processing · Shipped · Delivered · Cancelled`).
-- [ ] Customers list + detail with order history.
-- [ ] Wholesale inquiries table + CSV export.
-- [ ] Coupons CRUD (discount type, value, min cart, usage limit, per-user limit, expiry).
-- [ ] Banners CRUD (placement, schedule, image, link).
-- [ ] Reviews moderation (approve / reject).
-- [ ] Audit log viewer (super_admin only).
-- [ ] All admin pages **gated by `role` from `useAuth` (UX)** AND **backend RBAC (security)**. Never rely on UI checks alone.
+- [ ] `/admin/dashboard`: KPIs (Total Sales · Total Orders · Total Customers · Total Products) + revenue chart (Recharts or similar) + recent orders table + top-selling products.
+- [ ] `/admin/categories`: tree CRUD + image upload (nested categories supported).
+- [ ] `/admin/products`: data table (search/sort/filter/paginate) + bulk soft-delete.
+- [ ] `/admin/products/new` and `/admin/products/[id]`: full multi-step form — info → images (Cloudinary signed upload) → variants → publish toggle → stock adjust.
+- [ ] Cloudinary upload flow:
+  1. `POST /api/admin/upload/signature` → returns `{signature, timestamp, api_key, folder, cloud_name}`.
+  2. Upload directly to Cloudinary.
+  3. `POST` returned `{secure_url, public_id}` to persist via backend.
+- [ ] Validate file types (jpg/jpeg/png/webp/avif) + size (≤5 MB) on the client too.
+- [ ] All admin pages **gated by `role` from `useAuth` (UX)** AND **backend RBAC (security)**.
 
-### Cloudinary upload flow (admin)
-1. `POST /api/admin/upload/signature` → returns `{signature, timestamp, api_key, folder, cloud_name}`.
-2. Upload directly to Cloudinary with those params.
-3. `POST` returned `{secure_url, public_id}` to the relevant backend endpoint to persist.
-
-> **Done when:** CRUD works for every entity; non-admins get 403 on direct URL hits; charts render real backend data.
+> **Done when:** dashboard charts render real data; product CRUD with variants + images works end-to-end; non-admins get 403 on direct URL hits.
 
 ---
 
-## PHASE 10 — Static Pages, SEO, Animations & Polish  `(5–6 credits)`
+## PHASE 9B — Admin: Orders, Customers, Wholesale, Coupons, Banners, Reviews, Audit Log, Settings  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-### Static Pages (linked from footer)
-- [ ] About Us
-- [ ] Contact Us  (form → `POST /api/contact`)
-- [ ] Privacy Policy
-- [ ] Terms and Conditions
-- [ ] Return Policy
-- [ ] Shipping Policy
-- [ ] Wholesale Inquiry page (form → `POST /api/wholesale-inquiry`)
+- [ ] `/admin/orders`: table + detail + status update (`Pending · Confirmed · Processing · Shipped · Delivered · Cancelled`) + refund button (Razorpay refund).
+- [ ] `/admin/customers`: list + detail with order history + lifetime value.
+- [ ] `/admin/wholesale-inquiries`: table + status update + CSV export.
+- [ ] `/admin/coupons`: CRUD (discount type, value, min cart, usage limit, per-user limit, start/end dates).
+- [ ] `/admin/banners`: CRUD (placement, schedule, image upload via Cloudinary, link, sort order).
+- [ ] `/admin/reviews`: moderation queue (approve / reject).
+- [ ] `/admin/audit-logs` (super_admin only): paginated filterable viewer (actor, entity, action, date).
+- [ ] `/admin/settings` (super_admin): admin/user role management, site-level toggles.
+- [ ] Confirm dialogs on destructive actions; all writes use optimistic updates with rollback on error.
+
+> **Done when:** every admin CRUD works; super-admin-only pages reject regular admin; CSV export downloads; refund completes in test mode.
+
+---
+
+## PHASE 10A — Static Pages & Public Forms  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
+
+Static Pages (linked from footer) — premium editorial layouts, serif headings, generous whitespace:
+- [ ] `/about` — Brand story, heritage, craft, team (long-form layout).
+- [ ] `/contact` — Form → `POST /api/contact` with honeypot, success toast, contact info (address, phone, email, hours), map embed (optional).
+- [ ] `/privacy` — Privacy Policy.
+- [ ] `/terms` — Terms and Conditions.
+- [ ] `/return-policy` — Return Policy.
+- [ ] `/shipping-policy` — Shipping Policy.
+- [ ] `/wholesale` — Wholesale info (audiences: Hotels · Resorts · Hospitals · Hostels · Retail · Designers · Corporate Gifting) + Wholesale Inquiry Form (fields: company_name, contact_person, email, phone, business_type, product_interest, quantity_requirement, message) → `POST /api/wholesale-inquiry`.
+- [ ] Footer correctly links all 7 pages.
+- [ ] Forms use react-hook-form + zod with field-level error mapping from backend `error.fields`.
+
+> **Done when:** every static page is live, linked in footer, and renders gracefully on mobile; both forms submit successfully and show backend-validated errors.
+
+---
+
+## PHASE 10B — SEO, Performance, Accessibility & Polish  `(5–6 credits)`
+**Status:** ⬜ Pending · **Completed on:** —
 
 ### SEO (frontend)
-- [ ] `generateMetadata()` per route — title, description, OG, Twitter cards.
-- [ ] JSON-LD: `Organization` (root) · `WebSite + SearchAction` (home) · `BreadcrumbList` (everywhere) · `Product` + `AggregateRating` (PDP).
-- [ ] `app/sitemap.ts` — dynamic, includes products + categories + collections + static pages.
+- [ ] `generateMetadata()` per route — title, description, OG, Twitter cards (product, category, home, static, collection).
+- [ ] JSON-LD: `Organization` (root layout) · `WebSite + SearchAction` (home) · `BreadcrumbList` (everywhere) · `Product` + `AggregateRating` (PDP).
+- [ ] `app/sitemap.ts` — dynamic, includes products + categories + collections + static pages (or delegate to backend; pick one).
 - [ ] `app/robots.ts` — disallow `/admin`, `/account`, `/cart`, `/checkout`, `/api`.
 - [ ] Canonical URLs on dynamic routes; filtered PLP canonical = base category.
 
 ### Performance (target Lighthouse mobile ≥ 90)
-- [ ] `next/image` everywhere with Cloudinary loader; AVIF/WebP auto; blur placeholders.
-- [ ] Lazy-load offscreen images + non-critical components.
-- [ ] Code splitting + dynamic imports for Razorpay Checkout, admin charts, heavy modals.
+- [ ] `next/image` everywhere with Cloudinary loader; AVIF/WebP auto; blur placeholders; responsive `sizes`.
+- [ ] Lazy-load offscreen images + non-critical components (Razorpay script, admin charts, heavy modals).
+- [ ] Code splitting + dynamic imports.
 - [ ] Caching strategy: React Query staleTime tuned per resource; CDN-ready assets.
-- [ ] Core Web Vitals optimized (LCP < 2.5 s · CLS < 0.1 · INP < 200 ms).
+- [ ] Core Web Vitals targets: LCP < 2.5 s · CLS < 0.1 · INP < 200 ms.
+- [ ] Font preloading + `font-display: swap`.
 
 ### Accessibility & Polish
 - [ ] Focus rings · ARIA labels · `alt` text · skip-link · ≥ 44 × 44 px taps.
 - [ ] Reduced-motion respected (`prefers-reduced-motion`).
-- [ ] Sentry on frontend (`@sentry/nextjs`) with release tags.
+- [ ] WCAG AA contrast verified across both themes.
+- [ ] Sentry on frontend (`@sentry/nextjs`) with release tags + user context (id only).
+- [ ] 404 + 500 pages branded.
+- [ ] Final polish pass on motion + spacing + typography.
 
-> **Done when:** Lighthouse mobile ≥ 90 (Perf, SEO, A11y, Best Practices); structured data passes validators; all static pages live and linked in footer.
+> **Done when:** Lighthouse mobile ≥ 90 (Perf, SEO, A11y, Best Practices); structured data passes validators; all static pages live and linked; Sentry receives a forced error.
 
 ---
 
