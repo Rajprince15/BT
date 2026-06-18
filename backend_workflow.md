@@ -1,13 +1,205 @@
-# BHAVITA TEXTILES — BACKEND WORKFLOW
+# BHAVITA TEXTILES — BACKEND WORKFLOW (SINGLE SOURCE OF TRUTH)
 
-**Stack:** Node.js 20 LTS · Express.js + TypeScript · Prisma (or Knex) · MySQL 8.0 · JWT + Refresh Rotation · RBAC · Cloudinary · Razorpay · Winston · Sentry
-**Deployment:** Ubuntu 22.04 VPS · Nginx · PM2 · Let's Encrypt SSL · UFW · Fail2ban
-
-> **How to use:** Mark a phase `✅ COMPLETED (YYYY-MM-DD)` ONLY after every checkbox is done and verified. Each phase = **5–6 credits**. Always read `BT_project_plan.md` + `schema.sql` + `frontend_workflow.md` before coding so DB columns, response shapes, and routes line up.
+> **Read me first.** This file is **self-sufficient**. Everything from `BT_Project_plan.md` that is backend-relevant is inlined here. The companion `schema.sql` defines the database; the companion `frontend_workflow.md` mirrors this contract on the UI side. **Do not split logic into more files.**
 
 ---
 
-## Progress Overview
+## 0. PROJECT CONTEXT (do not skip)
+
+**Brand:** BHAVITA TEXTILES — premium luxury textile & home-furnishing e-commerce.
+**Positioning:** *Handcrafted Home Textiles & Decor for Elegant Living* (alt: *Premium Handloom, Home Furnishing & Handicrafts*).
+**This is NOT a college project.** Treat every line as production code: real customers, real payments, real inventory. When a choice exists between \"quick\" and \"secure/production-grade\", **always pick production-grade**.
+
+**Target users:** Retail Customers · Wholesale/Bulk Buyers · Interior Designers · Hotels & Resorts · Corporate Buyers · Administrators.
+
+**Quality bar:** Production Ready · Scalable · Secure · Modular · Maintainable · Well Documented · Enterprise Grade.
+
+---
+
+## 1. TECH STACK (LOCKED)
+
+| Layer | Choice |
+|---|---|
+| Runtime | Node.js 20 LTS |
+| Framework | Express.js + TypeScript (strict). *Next.js API Routes acceptable only if frontend & backend ship together; the rest of this doc assumes Express.* |
+| ORM/Query | Prisma **or** Knex (pick one and stay) |
+| DB | MySQL 8.0 (InnoDB · utf8mb4 · utf8mb4_unicode_ci) |
+| Auth | JWT access + Refresh-token rotation · bcrypt (rounds ≥ 12) |
+| RBAC | `customer` · `admin` · `super_admin` |
+| File Storage | Cloudinary (signed uploads only) |
+| Payments | Razorpay (test → live) |
+| Email | SMTP / SendGrid / Amazon SES (configurable) |
+| Logging | Winston + winston-daily-rotate-file · Morgan |
+| Monitoring | Sentry (`@sentry/node`) · UptimeRobot |
+| PDF | pdfkit (invoices) |
+| Validation | zod on every request |
+| Deployment | Ubuntu 22.04 VPS · Nginx · PM2 · Let's Encrypt · UFW · Fail2ban |
+
+---
+
+## 2. ENTERPRISE SECURITY REQUIREMENTS (NON-NEGOTIABLE)
+
+### Access Control (RBAC)
+Roles: **Super Admin · Admin · Customer**. Enforce on every server route — never trust the client.
+
+| Resource | Customer | Admin | Super Admin |
+|---|:--:|:--:|:--:|
+| Own profile/addresses/orders/wishlist/reviews | RW | R | R |
+| Other users' data | ✗ | R | RW |
+| Catalog (categories/products) | R | RW | RW |
+| Stock/prices | ✗ | RW | RW |
+| All orders | ✗ | RW | RW |
+| Coupons/banners/wholesale | ✗ | RW | RW |
+| Manage admins / roles / settings / audit | ✗ | R (limited) | RW |
+
+**Hard rules:**
+- Users **never** access admin pages by URL manipulation.
+- Users **never** access another user's data, orders, addresses, reviews.
+- Users **never** modify prices, totals, or stock from the client.
+- Every protected route passes `authMiddleware` → `roleMiddleware` → `ownershipMiddleware` → `zod-validate`.
+
+### Authentication
+- **Access JWT:** HS256, secret `JWT_ACCESS_SECRET`, TTL **15 min**, claims `{ sub, role, ver }`.
+- **Refresh token:** 64 random bytes, stored as **SHA-256 hash** in `refresh_tokens`, TTL **7 days**, delivered as `httpOnly · Secure · SameSite=Lax` cookie.
+- **Rotation:** every refresh issues a new token + revokes the old; reuse of a revoked token → revoke the whole chain.
+- **Logout** revokes the refresh token row.
+- **Email verification** & **password reset** tokens: 32 random bytes, hashed, single-use, 30-min expiry.
+- **Strong password policy:** min 8, upper + lower + digit + symbol (zod).
+- **bcrypt rounds ≥ 12.**
+
+### API Security
+- Rate limiting (see Phase 3).
+- zod request validation on every endpoint.
+- Input sanitization (DOMPurify on rich-text fields server-side).
+- Output encoding by default (JSON; no HTML).
+- Parameterized queries / ORM **only** — never string concatenation.
+
+### Protection Against (OWASP Top 10 mitigations REQUIRED)
+SQL Injection · XSS · CSRF · SSRF · Clickjacking · Session Hijacking · Broken Authentication · Broken Access Control · Directory Traversal · File Upload Exploits.
+
+### File Upload Security (Cloudinary)
+- Image MIME validation (jpg, jpeg, png, webp, avif). **Deny SVG.**
+- Max size 5 MB · max 10 images per product.
+- Filename sanitization (slug + uuid).
+- Folder allow-list (`bhavita/products`, `bhavita/banners`, `bhavita/categories`).
+- Malware-scan hook support (configurable).
+- Cloudinary upload preset restricts formats + size at the provider level.
+
+### Security Logging (`security_logs` table + `security-*.log`)
+Log: login attempts, failed logins, password changes, admin actions, product updates, order status changes, lockouts, suspicious requests.
+
+---
+
+## 3. PAYMENT SECURITY REQUIREMENTS
+
+**Never trust the client for payment data.**
+- Order amount computed **only** on the backend from the current DB cart.
+- Cart re-validated immediately before payment.
+- Razorpay signature **must** be HMAC-verified on the server.
+- Order row created **only after** signature verification.
+- Stock decremented **only after** payment confirmation (`SELECT ... FOR UPDATE` inside a transaction).
+- Prevent duplicate payments — `payments.razorpay_payment_id` is `UNIQUE`.
+- Prevent replay — accept `Idempotency-Key` header on the verify endpoint.
+- Invoices generated server-side, secured by auth + ownership.
+
+---
+
+## 4. PRODUCTION DATABASE REQUIREMENTS
+
+- Proper indexing on every FK and high-read column (see `schema.sql`).
+- Foreign keys + ON DELETE rules as in `schema.sql`.
+- DB CHECK constraints (price ≥ 0, qty > 0, rating 1–5, coupon window valid).
+- Soft deletes via `deleted_at` (users, categories, products).
+- Audit tables (`audit_logs`, `security_logs`).
+- Transactions for: order creation, stock decrement, refund, coupon usage.
+- Rollback strategy: any failure inside the checkout transaction reverts stock + payment row state.
+
+### Query Optimization Plan
+- FULLTEXT index on `products(name, short_description, description)` for search.
+- Composite indexes on `(featured, best_seller, new_arrival)` and `(order_status)`, `(payment_status)`.
+- Use covering indexes for listing pages where possible.
+- Avoid N+1: batch fetch product images/variants by product id list.
+
+### Backup Strategy
+- Daily `mysqldump --single-transaction --routines --triggers` → encrypted S3/B2/R2 (AES-256), 14-day retention.
+- Weekly full backup, 8-week retention.
+- Optional binlog shipping (RPO ≤ 5 min).
+- Quarterly restore drill on staging.
+
+---
+
+## 5. API CONTRACT (SHARED WITH FRONTEND)
+
+### Response envelope
+```
+Success: { \"success\": true, \"data\": <payload>, \"meta\": <pagination/optional> }
+Error:   { \"success\": false, \"error\": { \"code\": \"STRING_CODE\", \"message\": \"human\", \"fields\": {fieldName: \"msg\"} } }
+```
+All routes are mounted under `/api`.
+
+### Module pattern (per feature)
+```
+src/modules/<name>/
+  routes.ts       // express router; attaches middleware
+  controller.ts   // parse req, return response
+  service.ts      // business logic
+  repository.ts   // DB queries only
+  schema.ts       // zod input/output
+  types.ts
+  __tests__/
+```
+
+---
+
+## 6. ENV VARIABLES (`.env.production`)
+
+```
+NODE_ENV=production
+PORT=4000
+APP_URL=https://bhavitatextiles.com
+API_URL=https://bhavitatextiles.com/api
+FRONTEND_ORIGINS=https://bhavitatextiles.com
+
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=bhavita_textiles
+DB_USER=
+DB_PASS=
+
+JWT_ACCESS_SECRET=
+JWT_REFRESH_SECRET=
+JWT_ACCESS_TTL=15m
+JWT_REFRESH_TTL=7d
+BCRYPT_ROUNDS=12
+
+COOKIE_DOMAIN=.bhavitatextiles.com
+COOKIE_SECURE=true
+
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+EMAIL_PROVIDER=smtp        # smtp | sendgrid | ses
+EMAIL_FROM=\"Bhavita Textiles <no-reply@bhavitatextiles.com>\"
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SENDGRID_API_KEY=
+
+SENTRY_DSN=
+LOG_LEVEL=info
+```
+
+---
+
+## 7. EXECUTION PROGRESS
+
+> Mark a phase `✅ COMPLETED (YYYY-MM-DD)` ONLY after every checkbox is done and verified. Each phase ≈ **5–6 credits**.
 
 | #  | Phase                                              | Credits | Status     |
 |----|----------------------------------------------------|---------|------------|
@@ -28,58 +220,35 @@
 ## PHASE 0 — Foundation Brief & Contract Lock-in  `(2–3 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Read `BT_project_plan.md`, `schema.sql`, `frontend_workflow.md` end-to-end
-- [ ] Confirm tech: Express + TS + Prisma (or Knex), MySQL 8, Cloudinary, Razorpay, SES/SendGrid/SMTP
-- [ ] Lock the API surface (full table in Phase 4–9 plus admin in Phase 8) — every route is `/api/...`
-- [ ] Lock response envelope: `{ success, data, meta }` / `{ success:false, error:{code,message,fields} }`
-- [ ] Lock RBAC matrix (below), validation (zod), and logging conventions
-- [ ] Confirm env var list (see Phase 10) is complete
+- [ ] Read this file + `schema.sql` + `frontend_workflow.md` end-to-end.
+- [ ] Confirm tech: Express + TS + Prisma (or Knex), MySQL 8, Cloudinary, Razorpay, SMTP/SendGrid/SES.
+- [ ] Lock the API surface (full table in Phases 2/4/6/7/8/9) — every route under `/api`.
+- [ ] Lock response envelope (Section 5) and error codes catalog.
+- [ ] Lock RBAC matrix (Section 2) and write it into the backend `README.md` as a \"contract\" section.
+- [ ] Confirm env var list (Section 6) is complete in `.env.example`.
 
-### RBAC Matrix
-| Resource | Customer | Admin | Super Admin |
-|--|:--:|:--:|:--:|
-| Own profile/addresses/orders/wishlist/reviews | RW | R | R |
-| Other users' data | ✗ | R | RW |
-| Catalog (categories/products) | R | RW | RW |
-| Stock/prices | ✗ | RW | RW |
-| All orders | ✗ | RW | RW |
-| Coupons/banners/wholesale | ✗ | RW | RW |
-| Manage admins / roles / settings / audit | ✗ | R (limited) | RW |
-
-> **Done when:** all decisions above are written into `README.md` of backend repo as a \"contract\" section.
+> **Done when:** all decisions above are in `README.md` and shared with the frontend implementer.
 
 ---
 
 ## PHASE 1 — Project Foundation, MySQL Schema & Migrations  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Init Node + TypeScript (strict). Folders: `src/{config,middleware,modules,db,utils,types}`, `tests/`, `logs/`
-- [ ] Install: express, mysql2, prisma (or knex), zod, dotenv, helmet, cors, express-rate-limit, morgan, winston, winston-daily-rotate-file, bcrypt, jsonwebtoken, cookie-parser, multer, cloudinary, razorpay, pdfkit, nodemailer, @sentry/node
-- [ ] Configure MySQL connection pool from env
-- [ ] Create migrations from `schema.sql` (one migration per logical group OR import SQL via Prisma `db pull`/`db push` + add hand-written migration)
-- [ ] Tables to migrate (must match `schema.sql` exactly): `users`, `refresh_tokens`, `addresses`, `categories`, `products`, `product_images`, `product_variants`, `carts`, `cart_items`, `wishlists`, `orders`, `order_items`, `payments`, `reviews`, `coupons`, `coupon_usages`, `banners`, `wholesale_inquiries`, `newsletter_subscribers`, `contact_messages`, `audit_logs`, `security_logs`
-- [ ] Indexes + FKs + FULLTEXT + JSON columns as in `schema.sql`
-- [ ] Seed script: 1 super_admin, 1 admin, 1 customer, full category tree from doc, 6 sample products
-- [ ] `GET /api/health` returns `{status:'ok', db:'up', uptime, version}`
-- [ ] Module skeleton (each module: `routes.ts`, `controller.ts`, `service.ts`, `repository.ts`, `schema.ts`, `types.ts`)
-
-### Module pattern
-```
-src/modules/<name>/
-  routes.ts       // express router, mounts middleware
-  controller.ts   // parses req, returns response
-  service.ts      // business logic
-  repository.ts   // DB queries only (no business logic)
-  schema.ts       // zod input/output schemas
-  types.ts
-  __tests__/
-```
+- [ ] Init Node + TypeScript (strict). Folders: `src/{config,middleware,modules,db,utils,types}`, `tests/`, `logs/`, `deploy/`.
+- [ ] Install: `express mysql2 prisma (or knex) zod dotenv helmet cors express-rate-limit morgan winston winston-daily-rotate-file bcrypt jsonwebtoken cookie-parser multer cloudinary razorpay pdfkit nodemailer @sentry/node uuid`.
+- [ ] Configure MySQL connection pool from env (size 10, queueLimit 0).
+- [ ] Create migrations from `schema.sql` (one migration per logical group OR import via Prisma `db pull`/`db push` + hand-written migration).
+- [ ] Tables MUST exist exactly as `schema.sql`: `users`, `refresh_tokens`, `addresses`, `categories`, `products`, `product_images`, `product_variants`, `carts`, `cart_items`, `wishlists`, `orders`, `order_items`, `payments`, `reviews`, `coupons`, `coupon_usages`, `banners`, `wholesale_inquiries`, `newsletter_subscribers`, `contact_messages`, `audit_logs`, `security_logs`.
+- [ ] Verify all indexes, FKs, FULLTEXT, JSON columns, CHECK constraints.
+- [ ] Seed script: 1 super_admin, 1 admin, 1 customer, **full category tree** (see Section 10), 6 sample products with images & variants.
+- [ ] `GET /api/health` → `{status:'ok', db:'up', uptime, version}`.
+- [ ] Module skeleton for every module (see Section 5).
 
 > **Done when:** migrations apply cleanly, seed populates, healthcheck 200, sample queries return seeded data.
 
 ---
 
-## PHASE 2 — Authentication System (JWT + Refresh + Email)  `(5–6 credits)`
+## PHASE 2 — Authentication (JWT + Refresh + Email)  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 ### Endpoints
@@ -96,25 +265,19 @@ src/modules/<name>/
 | POST | `/api/auth/resend-verification` | resend |
 | POST | `/api/auth/change-password` | auth-required |
 
-### Token rules
-- **Access token:** JWT HS256 with `JWT_ACCESS_SECRET`, TTL **15m**, claims `{ sub, role, ver }`
-- **Refresh token:** 64 random bytes, stored **hashed (sha256)** in `refresh_tokens`, TTL **7d**, sent as **httpOnly + Secure + SameSite=Lax** cookie
-- **Refresh rotation:** every refresh creates new row + revokes old; reused token triggers chain revocation
-- **bcrypt rounds ≥ 12**
-- **Reset/verification tokens:** 32 random bytes, hashed before storage, single-use, 30-min expiry
-- Strong password policy via zod: min 8, upper + lower + digit + symbol
+### Token rules — see Section 2.
 
-### Email templates (handlebars/MJML)
-verify-email · welcome · forgot-password · password-changed · order-placed · order-shipped · order-delivered · order-cancelled · refund-processed · wholesale-inquiry-ack
+### Email templates (handlebars / MJML)
+`verify-email` · `welcome` · `forgot-password` · `password-changed` · `order-placed` · `order-shipped` · `order-delivered` · `order-cancelled` · `refund-processed` · `wholesale-inquiry-ack`.
 
-> **Done when:** all 10 endpoints work via curl/Postman; refresh rotation tested; reused refresh triggers revocation chain; reset email arrives in dev SMTP.
+> **Done when:** all 10 endpoints pass via Postman; refresh rotation tested; reused refresh triggers chain revoke; reset email arrives in dev SMTP.
 
 ---
 
 ## PHASE 3 — RBAC, Security Middleware & Hardening  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-### Middleware stack (in order)
+### Middleware order
 ```
 cors → helmet → request-id → morgan → rate-limit → body-parser → cookie-parser
 → auth (optional/required) → role-guard → ownership-guard → validate(zod)
@@ -122,18 +285,18 @@ cors → helmet → request-id → morgan → rate-limit → body-parser → coo
 ```
 
 ### Tasks
-- [ ] `authMiddleware` — verifies JWT, attaches `req.user`
-- [ ] `roleMiddleware(['admin','super_admin'])`
-- [ ] `ownershipMiddleware` — user can only access own resources (orders, addresses, reviews)
-- [ ] Helmet (CSP below) + secure cookie flags
-- [ ] CORS strict whitelist from `FRONTEND_ORIGINS` env, `credentials:true`
-- [ ] Rate limiting: 5/15min on auth; 10/hour on public forms; 120/min public reads; 300/min auth; 600/min admin
-- [ ] zod validation on every endpoint
-- [ ] Parameterized queries everywhere
-- [ ] Sanitize HTML inputs (DOMPurify on server for rich text)
-- [ ] CSRF: SameSite=Lax on refresh cookie + `X-CSRF` header on state-changing routes (or double-submit)
-- [ ] Login lockout: 5 failed → 15 min cooldown (by ip+email)
-- [ ] Security logs to `security_logs` table
+- [ ] `authMiddleware` — verifies JWT, attaches `req.user`.
+- [ ] `roleMiddleware(['admin','super_admin'])`.
+- [ ] `ownershipMiddleware` — user accesses only own resources (orders, addresses, reviews, cart, wishlist).
+- [ ] Helmet (CSP below) + secure cookie flags.
+- [ ] CORS strict whitelist from `FRONTEND_ORIGINS`, `credentials:true`.
+- [ ] Rate limiting: 5 / 15 min on auth; 10 / hour on public forms; 120 / min public reads; 300 / min auth; 600 / min admin.
+- [ ] zod validation on **every** endpoint (body, query, params).
+- [ ] Parameterized queries everywhere.
+- [ ] HTML sanitization (DOMPurify) on any rich-text input.
+- [ ] CSRF: `SameSite=Lax` refresh cookie + `X-CSRF` header (or double-submit) on state-changing routes.
+- [ ] Login lockout: 5 failed → 15 min cooldown by `(ip, email)`; bump `users.failed_login_count` / `lockout_until`.
+- [ ] Security logs → `security_logs` table + `security-*.log`.
 
 ### CSP (helmet)
 ```
@@ -144,16 +307,16 @@ style-src 'self' 'unsafe-inline';
 connect-src 'self' https://api.razorpay.com;
 frame-ancestors 'none';
 ```
-Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referrer-Policy: strict-origin-when-cross-origin · Permissions-Policy: camera=(),mic=(),geo=()
+Plus: HSTS · `X-Content-Type-Options: nosniff` · `X-Frame-Options: DENY` · `Referrer-Policy: strict-origin-when-cross-origin` · `Permissions-Policy: camera=(),mic=(),geo=()`.
 
-### Forbidden capabilities (tested with integration tests, must all return 403/401)
+### Forbidden-capability tests (must all return 401/403)
 - Customer hitting `/api/admin/*`
-- User A reading user B's orders/addresses/reviews
-- Modifying order amount / product price / stock from client
+- User A reading user B's orders / addresses / reviews
+- Modifying order amount, product price, stock from client
 - Replaying payment verification
 - Uploading SVG / oversized files
 
-> **Done when:** OWASP top-10 mitigations verified, RBAC integration tests pass, lockout works, no admin endpoint is accessible without role.
+> **Done when:** OWASP top-10 mitigations verified, RBAC integration tests pass, lockout works, no admin endpoint reachable without role.
 
 ---
 
@@ -168,7 +331,7 @@ Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referr
 | GET | `/api/products` | List w/ filters `category, q, min_price, max_price, color, size, sort, page, limit, flag` |
 | GET | `/api/products/:slug` | PDP (images, variants, rating, count) |
 | GET | `/api/collections/:key` | new-arrivals · best-sellers · summer · winter · festive · wedding |
-| GET | `/api/banners?placement=` | Active banners |
+| GET | `/api/banners?placement=` | Active banners (filtered by `start_at/end_at`) |
 
 ### Admin
 | Method | Path |
@@ -177,32 +340,38 @@ Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referr
 | `GET/POST/PATCH/DELETE` | `/api/admin/products[/:id]` |
 | `POST/PATCH/DELETE` | `/api/admin/products/:id/variants[/:varId]` |
 | `PATCH` | `/api/admin/products/:id/publish` |
-| `PATCH` | `/api/admin/products/:id/stock` (atomic increment/decrement) |
+| `PATCH` | `/api/admin/products/:id/stock` (atomic increment/decrement, audit-logged) |
 
 ### Rules
-- Slug auto-generated, unique
-- Soft delete via `deleted_at`
-- Search uses MySQL FULLTEXT on `name, short_description, description`
-- Pagination meta in response
+- Slug auto-generated + unique.
+- Soft delete via `deleted_at`; default queries exclude soft-deleted rows.
+- Search uses MySQL FULLTEXT (`MATCH ... AGAINST` in BOOLEAN MODE).
+- Pagination meta `{ page, limit, total, totalPages }` in response.
 
-> **Done when:** all endpoints implemented; filters return correct results; slugs unique; integration tests cover happy + edge cases.
+### Product Upload Workflow (Admin)
+1. **Enter info:** name, description, category, SKU, price, sale price, stock.
+2. **Upload images:** request signed params from `/api/admin/upload/signature`, upload directly to Cloudinary, persist `{secure_url, public_id, alt, sort_order}` via `POST /api/admin/products/:id/images`.
+3. **Create variants:** size, color, stock, price (optional override).
+4. **Publish:** `PATCH /api/admin/products/:id/publish` → status = `published`.
+
+> **Done when:** all endpoints work; filters return correct results; FULLTEXT search works; slugs unique; integration tests cover happy + edge cases.
 
 ---
 
 ## PHASE 5 — Cloudinary Integration & Media APIs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] `POST /api/admin/upload/signature` returns `{signature, timestamp, api_key, folder, cloud_name}`
-- [ ] Server enforces `folder` allow-list: `bhavita/products`, `bhavita/banners`, `bhavita/categories`
-- [ ] Allowed formats: `jpg, jpeg, png, webp, avif` (deny svg)
-- [ ] Max size 5 MB; max 10 images per product
-- [ ] Filename sanitization (slug + uuid)
-- [ ] `POST /api/admin/products/:id/images` to persist `{secure_url, public_id, alt_text, sort_order}`
-- [ ] `DELETE /api/admin/products/:id/images/:imgId` → Cloudinary destroy + DB row delete
-- [ ] Banner + Category image endpoints
-- [ ] Optional weekly orphan sweeper job
+- [ ] `POST /api/admin/upload/signature` returns `{ signature, timestamp, api_key, folder, cloud_name }`.
+- [ ] Server-enforced folder allow-list (`bhavita/products`, `bhavita/banners`, `bhavita/categories`).
+- [ ] Allowed formats: `jpg jpeg png webp avif` — **deny svg**.
+- [ ] Max size 5 MB; max 10 images per product (enforced in service).
+- [ ] Filename sanitization (slug + uuid before upload).
+- [ ] `POST /api/admin/products/:id/images` persists `{secure_url, public_id, alt_text, sort_order}` (capped at 10).
+- [ ] `DELETE /api/admin/products/:id/images/:imgId` → `cloudinary.uploader.destroy(public_id)` + DB delete.
+- [ ] Banner + Category image endpoints (`/api/admin/banners`, `/api/admin/categories/:id/image`).
+- [ ] Optional weekly orphan sweeper job (cron) — deletes Cloudinary assets not referenced in DB.
 
-> **Done when:** signed upload works, oversized/SVG uploads rejected, deletion cascades to Cloudinary.
+> **Done when:** signed upload works, oversized / SVG uploads rejected, deletion cascades to Cloudinary.
 
 ---
 
@@ -212,7 +381,7 @@ Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referr
 ### Endpoints
 | Method | Path | Purpose |
 |--|--|--|
-| GET    | `/api/cart` | Server-computed totals |
+| GET    | `/api/cart` | Server-computed totals (subtotal, shipping, tax, discount, total) |
 | POST   | `/api/cart/items` | Add item (stock checked) |
 | PATCH  | `/api/cart/items/:id` | Update qty |
 | DELETE | `/api/cart/items/:id` | Remove |
@@ -222,16 +391,16 @@ Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referr
 | POST   | `/api/wishlist` | Add `{product_id}` |
 | DELETE | `/api/wishlist/:productId` | Remove |
 | GET/POST/PATCH/DELETE | `/api/me/addresses[/:id]` | Address book |
-| POST   | `/api/me/addresses/:id/default` | Set default |
-| POST   | `/api/coupons/validate` | Validate code against cart |
+| POST   | `/api/me/addresses/:id/default` | Set default (single SQL transaction; unsets siblings) |
+| POST   | `/api/coupons/validate` | Validate code against current cart |
 
 ### Rules
-- Totals (subtotal, shipping, tax, discount, total) computed server-side **only**
-- Cart is bound to user; ownership enforced
-- Coupon validation: code valid, within `start_date/end_date`, `is_active`, `min_cart_value` met, `usage_limit/used_count`, `per_user_limit` via `coupon_usages`
-- Address `is_default` is mutex per user (single SQL transaction)
+- Totals are **server-computed only**.
+- Cart bound to `user_id`; ownership enforced.
+- Coupon validation: code valid · within `start_date/end_date` · `is_active=1` · `min_cart_value` met · `usage_limit > used_count` · `per_user_limit` checked via `coupon_usages`.
+- Address `is_default` is mutually exclusive per user.
 
-> **Done when:** cross-user access returns 403; totals always recomputed server-side; coupon edge cases (expired, exhausted, per-user limit) handled.
+> **Done when:** cross-user access returns 403; totals always recomputed; expired/exhausted/per-user-limit coupon cases handled.
 
 ---
 
@@ -248,61 +417,62 @@ Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referr
 | GET  | `/api/orders` | Customer's own orders |
 | GET  | `/api/orders/:orderNumber` | Detail |
 | POST | `/api/orders/:orderNumber/cancel` | Cancel if status allows |
-| GET  | `/api/orders/:orderNumber/invoice` | PDF download |
+| GET  | `/api/orders/:orderNumber/invoice` | PDF download (auth + ownership) |
 
-### Razorpay flow
-1. Frontend → `/checkout/quote` (server recomputes totals)
-2. Frontend → `/checkout/razorpay/order` → server: `razorpay.orders.create({ amount: total*100, currency:'INR', receipt: order_number })` and inserts `payments` row `status='created'`. Returns `{razorpay_order_id, amount, currency, key_id}`
-3. Frontend opens Razorpay Checkout
-4. On success → `/checkout/razorpay/verify` with `{razorpay_order_id, razorpay_payment_id, razorpay_signature}`
-5. Server HMAC: `crypto.createHmac('sha256', secret).update(order_id+'|'+payment_id).digest('hex')` must equal `razorpay_signature`
-6. **In a DB transaction:**
-   - `SELECT FOR UPDATE` each product/variant; abort if any OOS → refund + email
-   - Insert `orders` + `order_items`
-   - Update `payments` row (payment_id, signature, `status='captured'`) — unique constraint on `razorpay_payment_id` prevents replay
-   - Insert `coupon_usages`, increment `coupons.used_count`
-   - Clear cart
-7. Send order confirmation email with PDF invoice
-8. Return order number
+### Razorpay flow (canonical)
+1. Frontend → `POST /api/checkout/quote` (server recomputes totals).
+2. Frontend → `POST /api/checkout/razorpay/order` — server calls `razorpay.orders.create({ amount: total*100, currency:'INR', receipt: order_number })` and inserts a `payments` row with `status='created'`. Returns `{ razorpay_order_id, amount, currency, key_id }`.
+3. Frontend opens Razorpay Checkout with returned params.
+4. On success → `POST /api/checkout/razorpay/verify` with `{ razorpay_order_id, razorpay_payment_id, razorpay_signature }`.
+5. Server HMAC: `crypto.createHmac('sha256', RP_SECRET).update(order_id + '|' + payment_id).digest('hex')` **must equal** `razorpay_signature`.
+6. **Inside a DB transaction:**
+   - `SELECT ... FOR UPDATE` on each product/variant; abort + refund + email if any OOS.
+   - Insert `orders` + `order_items` (use immutable snapshot of product name/SKU/price).
+   - Update `payments` row (`payment_id`, `signature`, `status='captured'`). UNIQUE on `razorpay_payment_id` blocks replay.
+   - Insert `coupon_usages`; increment `coupons.used_count`.
+   - Clear cart.
+7. Send order-confirmation email with PDF invoice.
+8. Return order number.
 
 ### Order status state-machine
-`pending → confirmed → processing → shipped → delivered` OR `cancelled` (allowed from pending/confirmed)
+`pending → confirmed → processing → shipped → delivered` OR `cancelled` (allowed from `pending` / `confirmed`).
 
 ### Idempotency
-- Accept `Idempotency-Key` header on verify endpoint
-- Unique constraint on `payments.razorpay_payment_id`
+- Accept `Idempotency-Key` header on the verify endpoint.
+- Unique constraint on `payments.razorpay_payment_id` blocks dupes.
 
 ### Invoice
-- pdfkit/puppeteer generates A4 invoice with line items, taxes, billing/shipping address
-- Secured download (auth + ownership)
+- `pdfkit` (or puppeteer) → A4 PDF with line items, taxes, billing/shipping address, order number, payment id, timestamp.
+- Download secured by auth + ownership.
 
 > **Done when:** end-to-end Razorpay test flow works; signature failures logged; stock decremented atomically; invoice downloads.
 
 ---
 
-## PHASE 8 — Admin APIs (analytics, orders, coupons, banners)  `(5–6 credits)`
+## PHASE 8 — Admin APIs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-### Endpoints (all behind `roleMiddleware(['admin','super_admin'])`)
+All routes behind `roleMiddleware(['admin','super_admin'])`.
+
 | Group | Routes |
 |--|--|
-| Dashboard | `GET /api/admin/dashboard` (KPIs + revenue series) |
+| Dashboard | `GET /api/admin/dashboard` — KPIs (total sales, orders, customers, products) + revenue time-series |
 | Orders | `GET /api/admin/orders`, `GET /api/admin/orders/:id`, `PATCH /api/admin/orders/:id/status`, `POST /api/admin/orders/:id/refund` |
 | Customers | `GET /api/admin/customers`, `GET /api/admin/customers/:id` |
 | Wholesale | `GET /api/admin/wholesale-inquiries`, `PATCH /api/admin/wholesale-inquiries/:id`, `GET /api/admin/wholesale-inquiries/export.csv` |
 | Coupons | `GET/POST/PATCH/DELETE /api/admin/coupons[/:id]` |
 | Banners | `GET/POST/PATCH/DELETE /api/admin/banners[/:id]` |
 | Reviews | `GET /api/admin/reviews`, `PATCH /api/admin/reviews/:id` (approve/reject) |
-| Audit (👑) | `GET /api/admin/audit-logs` |
-| Users (👑) | `GET/PATCH /api/admin/users[/:id]` (status, role) |
+| Audit (👑) | `GET /api/admin/audit-logs` (super_admin only) |
+| Users  (👑) | `GET/PATCH /api/admin/users[/:id]` — change status/role (super_admin only) |
 
 ### Rules
-- Every admin write logs to `audit_logs` (actor, action, entity, before/after JSON, ip, user_agent)
-- Order status updates send email to customer
-- Refund uses Razorpay API; updates `payments.status='refunded'`, `orders.payment_status='refunded'`
-- All admin lists paginated + sortable + filterable
+- Every admin write logs to `audit_logs` (actor, action, entity, before/after JSON, ip, user_agent).
+- Order status updates send email to customer (`order-shipped`, `order-delivered`, `order-cancelled`).
+- Refund uses Razorpay API → `payments.status='refunded'`, `orders.payment_status='refunded'`.
+- All admin lists paginated + sortable + filterable.
 
-> **Done when:** RBAC enforced everywhere; dashboards return real aggregated data; CSV export works; audit log captures every write.
+> **Done when:** RBAC enforced everywhere; dashboards return real aggregates; CSV export works; audit log captures every write.
 
 ---
 
@@ -311,18 +481,18 @@ Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referr
 
 | Method | Path | Notes |
 |--|--|--|
-| POST   | `/api/products/:id/reviews` | Auth; verified purchaser only (must have a `delivered` order with this product); 1 review per (user, product, order) |
+| POST   | `/api/products/:id/reviews` | Auth; **verified purchaser only** (must have a `delivered` order containing this product); 1 review per `(user, product, order)` |
 | GET    | `/api/products/:id/reviews` | Paginated, only `status='approved'` |
-| PATCH  | `/api/reviews/:id` | Edit own (resets to `pending`) |
+| PATCH  | `/api/reviews/:id` | Edit own (resets `status='pending'`) |
 | DELETE | `/api/reviews/:id` | Delete own |
-| POST   | `/api/wholesale-inquiry` | Public, rate-limited, captcha-ready; emails ops + acks lead |
+| POST   | `/api/wholesale-inquiry` | Public, rate-limited, captcha-ready; emails ops + acks lead (`wholesale-inquiry-ack`) |
 | POST   | `/api/contact` | Public, rate-limited; stores in `contact_messages`, emails ops |
-| POST   | `/api/newsletter/subscribe` | Public, double opt-in optional |
+| POST   | `/api/newsletter/subscribe` | Public, optional double opt-in |
 
 ### Rules
-- Aggregate avg rating + count updated on review approve/reject (triggers or service)
-- Spam protection on all public POSTs (honeypot field + rate-limit + optional reCAPTCHA hook)
-- All inputs zod-validated
+- Avg rating + count updated on review approve/reject (via trigger or service).
+- Spam protection on **every** public POST: honeypot field + rate-limit + optional reCAPTCHA hook.
+- All inputs zod-validated.
 
 > **Done when:** every public form stores data, sends correct emails, and is rate-limited.
 
@@ -331,61 +501,129 @@ Plus: HSTS · X-Content-Type-Options: nosniff · X-Frame-Options: DENY · Referr
 ## PHASE 10 — SEO, Logging, Backups & VPS Deployment  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-### SEO
-- [ ] `GET /sitemap.xml` (dynamic from products + categories + collections) OR delegate to Next.js
-- [ ] `GET /robots.txt`
-- [ ] JSON-LD helpers for Product, Breadcrumb, Organization
+### SEO (backend responsibilities)
+- [ ] `GET /sitemap.xml` — dynamic from products + categories + collections (OR delegated to Next.js if frontend handles it; pick one).
+- [ ] `GET /robots.txt` — disallow `/admin`, `/account`, `/cart`, `/checkout`, `/api`.
+- [ ] JSON-LD helpers: `Product`, `BreadcrumbList`, `Organization`, `WebSite+SearchAction` (consumed by frontend `generateMetadata`).
+- [ ] Canonical URL helper for product/category endpoints.
 
 ### Logging & Monitoring
-- [ ] Winston + daily-rotate-file: `app-*.log`, `error-*.log`, `http-*.log`, `security-*.log`, `payment-*.log` (retain 30d)
-- [ ] Morgan piped to http log; sensitive bodies redacted (password, signature)
-- [ ] Centralized error handler — safe responses, no stack to client in prod
-- [ ] Sentry on backend (`@sentry/node`) with release tags
-- [ ] `GET /api/health` + optional `GET /api/health/deep`
+- [ ] Winston + daily-rotate-file:
+  - `app-*.log` (info+)
+  - `error-*.log` (error)
+  - `http-*.log` (Morgan piped here)
+  - `security-*.log` (auth, lockout, suspicious)
+  - `payment-*.log` (RP order/verify/webhook)
+  - Retain 30 days · gzip rotated.
+- [ ] Sensitive bodies redacted (password, signature, token).
+- [ ] Centralized error handler — safe responses; **no stack to client in prod**.
+- [ ] Sentry on backend (`@sentry/node`) with release tags.
+- [ ] `GET /api/health` (shallow) + `GET /api/health/deep` (DB + Cloudinary + RP ping).
 
 ### Backups & DR
-- [ ] Daily `mysqldump --single-transaction --routines --triggers` → S3/B2/R2 (encrypted, AES-256), retain 14 days
-- [ ] Weekly full backup, retain 8 weeks
-- [ ] Binlog shipping (optional) for RPO ≤ 5 min
-- [ ] Quarterly restore drill on staging
-
-### Env vars (`.env.production`)
-```
-NODE_ENV, PORT=4000, APP_URL, API_URL, FRONTEND_ORIGINS
-DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
-JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_ACCESS_TTL=15m, JWT_REFRESH_TTL=7d, BCRYPT_ROUNDS=12
-COOKIE_DOMAIN, COOKIE_SECURE=true
-RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET
-CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
-EMAIL_PROVIDER, EMAIL_FROM, SMTP_* / SENDGRID_API_KEY / SES_*
-SENTRY_DSN, LOG_LEVEL=info
-```
+- [ ] Daily `mysqldump --single-transaction --routines --triggers` → encrypted S3/B2/R2, retain 14 days.
+- [ ] Weekly full, retain 8 weeks.
+- [ ] Optional binlog shipping (RPO ≤ 5 min).
+- [ ] Quarterly restore drill on staging — documented + signed off.
 
 ### Deployment (Ubuntu 22.04 VPS)
-- [ ] Node 20 LTS via nvm, MySQL 8.0, Nginx, PM2, certbot
-- [ ] PM2 ecosystem: `bhavita-api` (cluster, max instances, 600M restart) + `bhavita-web` (2 instances)
-- [ ] `pm2 startup` + `pm2 save`
-- [ ] Nginx reverse proxy: 80→443 redirect, HSTS, CSP, gzip+brotli, `/api/` → `127.0.0.1:4000`, `/` → `127.0.0.1:3000`
-- [ ] Let's Encrypt via certbot, auto-renew
-- [ ] UFW: allow 22/80/443 only; MySQL bound to 127.0.0.1
-- [ ] Fail2ban watching sshd + nginx 401/403
-- [ ] Backup cron `0 2 * * *` running `deploy/scripts/backup-db.sh`
+- [ ] Node 20 LTS via nvm · MySQL 8.0 · Nginx · PM2 · certbot.
+- [ ] PM2 ecosystem file: `bhavita-api` (cluster mode, `max_instances`, `max_memory_restart: 600M`) + `bhavita-web` (2 instances).
+- [ ] `pm2 startup` + `pm2 save`.
+- [ ] Nginx reverse proxy:
+  - 80 → 443 redirect
+  - HSTS, CSP, gzip + brotli
+  - `/api/` → `127.0.0.1:4000`
+  - `/`     → `127.0.0.1:3000`
+- [ ] Let's Encrypt via certbot, auto-renew (`systemctl status certbot.timer`).
+- [ ] UFW: allow 22 / 80 / 443 only; MySQL bound to `127.0.0.1`.
+- [ ] Fail2ban watching `sshd` + nginx 401/403.
+- [ ] Backup cron `0 2 * * *` running `deploy/scripts/backup-db.sh`.
+- [ ] Docker setup (optional) — `Dockerfile` + `docker-compose.yml` for local + staging parity.
 
 ### Go-Live Checklist (verify before flipping DNS)
-- [ ] SSL A+ on securityheaders.com
-- [ ] Razorpay LIVE keys + webhook configured & test ₹1 transaction successful
-- [ ] Cloudinary preset + folder allow-list correct
-- [ ] Email domain SPF/DKIM/DMARC verified
-- [ ] Sentry releases tagging; UptimeRobot pinging `/api/health`
-- [ ] Backup cron run + restore drill passed
-- [ ] Sitemap + robots reachable; Search Console verified
-- [ ] Lighthouse mobile ≥ 90
-- [ ] All static pages live and linked
-- [ ] Cancel + refund flow tested E2E
-- [ ] 100 concurrent reads / 20 concurrent checkouts on staging — no errors
-- [ ] Rollback runbook documented + on-call rotation live
+- [ ] SSL A+ on `securityheaders.com`.
+- [ ] Razorpay LIVE keys + webhook configured; test ₹1 transaction successful.
+- [ ] Cloudinary preset + folder allow-list correct.
+- [ ] Email domain SPF / DKIM / DMARC verified.
+- [ ] Sentry release tags; UptimeRobot pinging `/api/health`.
+- [ ] Backup cron ran + restore drill passed.
+- [ ] Sitemap + robots reachable; Search Console verified.
+- [ ] Lighthouse mobile ≥ 90 (handled by frontend).
+- [ ] All static pages live + linked in footer (frontend).
+- [ ] Cancel + refund flow tested E2E.
+- [ ] 100 concurrent reads / 20 concurrent checkouts on staging — no errors.
+- [ ] Rollback runbook documented + on-call rotation live.
 
-> **Done when:** app deployed on HTTPS, PM2 running, backups scheduled and verified by a restore, all checklist items ticked.
+> **Done when:** app deployed on HTTPS, PM2 running, backups verified by a restore, all checklist items ticked.
+
+---
+
+## 8. CUSTOMER FEATURES (reference; APIs above already cover these)
+
+**Auth:** Register · Login · Forgot Password · Reset Password · Email Verification.
+**Profile:** Edit Profile · Address Management · Order History.
+**Shopping:** Product Search · Category Filtering · Price Filtering · Add/Update/Remove Cart · Wishlist · Product Reviews · Ratings.
+**Checkout:** Address Selection · Razorpay Payment · Order Confirmation · Invoice Download.
+
+## 9. WHOLESALE / B2B FEATURES
+
+Public form `/api/wholesale-inquiry` fields: company_name, contact_person, email, phone, business_type, product_interest, quantity_requirement, message.
+Admin manages via `/api/admin/wholesale-inquiries` (list, update status, export CSV).
+Target customers: Hotels · Resorts · Hospitals · Hostels · Retail Stores · Interior Designers · Corporate Gifting.
+
+---
+
+## 10. CATALOG REFERENCE (for seed + admin pre-fill)
+
+Used by Phase 1 seed and admin category create UI.
+
+**Bedroom Collection**
+- Bedsheets: Cotton · Handloom · Printed · Premium Collection · King Size · Queen Size · Kids Collection
+- Blankets & Comforters: Cotton Blankets · Winter Blankets · AC Blankets · Quilts · Dohars
+- Pillows & Bedding Accessories: Pillow Covers · Cushion Covers · Bed Runners
+
+**Living Room Collection**
+- Soft Furnishings: Sofa Throws · Sofa Covers · Cushion Covers
+- Curtains: Sheer · Blackout · Cotton · Printed · Luxury
+- Rugs & Carpets: Handwoven Rugs · Cotton Rugs · Floor Rugs · Area Rugs · Carpets · Runner Carpets
+- Door Mats: Cotton · Anti-Slip · Decorative · Outdoor
+
+**Bath Collection**
+- Towels: Bath · Hand · Face · Luxury · Hotel
+- Bath Mats
+
+**Home Decor**
+Wall Decor · Table Linen · Decorative Textiles · Handmade Decor · Festive Decor · Cushion Styling Collection.
+
+**Handloom Heritage Collection**
+Jaipur Prints · Block Print Collection · Artisan Collection · Ethnic Weaves · Traditional Handloom.
+
+**Handicrafts Collection**
+Handmade Home Accessories · Decorative Items · Traditional Craft Collection · Gift Collection.
+
+**Special Collections**
+New Arrivals · Best Sellers · Summer · Winter · Festive · Wedding.
+
+---
+
+## 11. DELIVERABLES (sign-off list)
+
+1. Complete MySQL schema (`schema.sql`) — ✅ in repo
+2. Backend folder structure (Phase 1)
+3. Backend APIs (Phases 2–9)
+4. Authentication system (Phase 2)
+5. RBAC + security middleware (Phase 3)
+6. Razorpay integration (Phase 7)
+7. Cloudinary integration (Phase 5)
+8. Database migrations & seed (Phase 1)
+9. Deployment guide for Ubuntu VPS (Phase 10)
+10. Nginx configuration (Phase 10)
+11. PM2 configuration (Phase 10)
+12. Environment variable strategy (Section 6)
+13. Docker setup (Phase 10 — optional but recommended)
+14. Production checklist (Phase 10)
+15. Logging, monitoring, backups (Phase 10)
 
 ---
 
@@ -395,7 +633,8 @@ SENTRY_DSN, LOG_LEVEL=info
 ### Implementing LLM — Hard Rules
 - Never trust prices, stock, or totals from the client — always recompute server-side.
 - Verify every Razorpay signature on the server before creating an order.
-- Every protected endpoint passes through `authMiddleware` and, where needed, `roleMiddleware` + `ownershipMiddleware`.
+- Every protected endpoint passes `authMiddleware` → `roleMiddleware` (where needed) → `ownershipMiddleware` (where needed) → `zod-validate`.
 - Log every admin action to `audit_logs` and every auth/payment event to `security_logs` / `payment-*.log`.
-- Use parameterized queries / ORM everywhere — no string concatenation in SQL.
-- DB column names, types, and FKs MUST match `schema.sql` exactly. If you need a change, write a new migration; do not edit existing ones.
+- Use parameterized queries / ORM only — no string concatenation in SQL.
+- DB column names, types, and FKs **MUST** match `schema.sql` exactly. Need a change? Write a new migration; don't edit old ones.
+- One module = one folder (`routes / controller / service / repository / schema / types`). Do **not** sprinkle files outside this pattern.

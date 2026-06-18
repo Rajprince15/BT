@@ -1,12 +1,34 @@
 -- ============================================================
--- 04 — BHAVITA TEXTILES :: COMPLETE MySQL SCHEMA (DDL)
--- Engine: InnoDB · Charset: utf8mb4 · Collation: utf8mb4_unicode_ci
+-- BHAVITA TEXTILES :: COMPLETE MySQL 8.0 SCHEMA (DDL)
+-- Engine:    InnoDB
+-- Charset:   utf8mb4
+-- Collation: utf8mb4_unicode_ci
+-- Target:    MySQL 8.0+ (uses JSON, CHECK constraints, FULLTEXT on InnoDB)
+-- ============================================================
+--
+-- Usage:
+--   mysql -u root -p < schema.sql
+--
+-- The CREATE DATABASE block below is commented. Uncomment it if you
+-- want this script to create + select the database. Otherwise, run:
+--   CREATE DATABASE bhavita_textiles
+--     CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+--   USE bhavita_textiles;
 -- ============================================================
 
+-- CREATE DATABASE IF NOT EXISTS bhavita_textiles
+--   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE bhavita_textiles;
+
 SET NAMES utf8mb4;
+SET sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,ERROR_FOR_DIVISION_BY_ZERO,NO_ZERO_DATE,NO_ZERO_IN_DATE';
+SET time_zone = '+00:00';
 SET FOREIGN_KEY_CHECKS = 0;
 
--- ---------- USERS ----------
+-- ============================================================
+-- USERS
+-- ============================================================
+DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id              BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   name            VARCHAR(120)  NOT NULL,
@@ -18,6 +40,8 @@ CREATE TABLE users (
   email_verification_token VARCHAR(120) NULL,
   password_reset_token     VARCHAR(120) NULL,
   password_reset_expires   DATETIME      NULL,
+  failed_login_count       INT          NOT NULL DEFAULT 0,
+  lockout_until            DATETIME     NULL,
   last_login_at   DATETIME      NULL,
   status          ENUM('active','suspended','deleted') NOT NULL DEFAULT 'active',
   created_at      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -25,10 +49,13 @@ CREATE TABLE users (
   deleted_at      DATETIME      NULL,
   UNIQUE KEY uq_users_email (email),
   KEY ix_users_role (role),
-  KEY ix_users_status (status)
+  KEY ix_users_status (status),
+  KEY ix_users_reset_token (password_reset_token),
+  KEY ix_users_verify_token (email_verification_token)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Refresh tokens for rotation / revocation
+DROP TABLE IF EXISTS refresh_tokens;
 CREATE TABLE refresh_tokens (
   id            BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   user_id       BIGINT UNSIGNED NOT NULL,
@@ -37,13 +64,18 @@ CREATE TABLE refresh_tokens (
   ip_address    VARCHAR(64)     NULL,
   expires_at    DATETIME        NOT NULL,
   revoked_at    DATETIME        NULL,
+  replaced_by_id BIGINT UNSIGNED NULL,
   created_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_rt_token_hash (token_hash),
   KEY ix_rt_user (user_id),
   KEY ix_rt_expires (expires_at),
   CONSTRAINT fk_rt_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- ADDRESSES ----------
+-- ============================================================
+-- ADDRESSES
+-- ============================================================
+DROP TABLE IF EXISTS addresses;
 CREATE TABLE addresses (
   id             BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   user_id        BIGINT UNSIGNED NOT NULL,
@@ -59,10 +91,14 @@ CREATE TABLE addresses (
   created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY ix_addr_user (user_id),
+  KEY ix_addr_default (user_id, is_default),
   CONSTRAINT fk_addr_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- CATEGORIES (nested) ----------
+-- ============================================================
+-- CATEGORIES (nested)
+-- ============================================================
+DROP TABLE IF EXISTS categories;
 CREATE TABLE categories (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   parent_id   BIGINT UNSIGNED NULL,
@@ -79,9 +115,12 @@ CREATE TABLE categories (
   KEY ix_cat_parent (parent_id),
   KEY ix_cat_active (is_active),
   CONSTRAINT fk_cat_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- PRODUCTS ----------
+-- ============================================================
+-- PRODUCTS
+-- ============================================================
+DROP TABLE IF EXISTS products;
 CREATE TABLE products (
   id                  BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   category_id         BIGINT UNSIGNED NOT NULL,
@@ -111,10 +150,16 @@ CREATE TABLE products (
   KEY ix_prod_status (status),
   KEY ix_prod_flags (featured, best_seller, new_arrival),
   KEY ix_prod_price (price),
+  KEY ix_prod_created (created_at),
   FULLTEXT KEY ftx_prod_search (name, short_description, description),
-  CONSTRAINT fk_prod_category FOREIGN KEY (category_id) REFERENCES categories(id)
-) ENGINE=InnoDB;
+  CONSTRAINT fk_prod_category FOREIGN KEY (category_id) REFERENCES categories(id),
+  CONSTRAINT chk_prod_price        CHECK (price >= 0),
+  CONSTRAINT chk_prod_sale_price   CHECK (sale_price IS NULL OR sale_price >= 0),
+  CONSTRAINT chk_prod_stock        CHECK (stock >= 0),
+  CONSTRAINT chk_prod_rating_avg   CHECK (rating_avg BETWEEN 0 AND 5)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS product_images;
 CREATE TABLE product_images (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   product_id  BIGINT UNSIGNED NOT NULL,
@@ -125,8 +170,9 @@ CREATE TABLE product_images (
   created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY ix_pi_product (product_id, sort_order),
   CONSTRAINT fk_pi_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS product_variants;
 CREATE TABLE product_variants (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   product_id  BIGINT UNSIGNED NOT NULL,
@@ -140,10 +186,15 @@ CREATE TABLE product_variants (
   updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uq_pv_sku (sku),
   KEY ix_pv_product (product_id),
-  CONSTRAINT fk_pv_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+  CONSTRAINT fk_pv_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  CONSTRAINT chk_pv_stock  CHECK (stock >= 0),
+  CONSTRAINT chk_pv_price  CHECK (price IS NULL OR price >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- CART ----------
+-- ============================================================
+-- CART
+-- ============================================================
+DROP TABLE IF EXISTS carts;
 CREATE TABLE carts (
   id         BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   user_id    BIGINT UNSIGNED NOT NULL,
@@ -151,8 +202,9 @@ CREATE TABLE carts (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uq_cart_user (user_id),
   CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS cart_items;
 CREATE TABLE cart_items (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   cart_id     BIGINT UNSIGNED NOT NULL,
@@ -165,10 +217,18 @@ CREATE TABLE cart_items (
   KEY ix_ci_product (product_id),
   CONSTRAINT fk_ci_cart    FOREIGN KEY (cart_id)    REFERENCES carts(id) ON DELETE CASCADE,
   CONSTRAINT fk_ci_product FOREIGN KEY (product_id) REFERENCES products(id),
-  CONSTRAINT fk_ci_variant FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL
-) ENGINE=InnoDB;
+  CONSTRAINT fk_ci_variant FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL,
+  CONSTRAINT chk_ci_qty    CHECK (quantity > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- NOTE: In MySQL, NULL values are NOT considered equal in UNIQUE indexes,
+-- so two rows with the same (cart_id, product_id) and variant_id IS NULL
+-- can coexist. App layer MUST coalesce variant_id = NULL before insert OR
+-- enforce a single null-variant row per (cart, product) in service code.
 
--- ---------- WISHLIST ----------
+-- ============================================================
+-- WISHLIST
+-- ============================================================
+DROP TABLE IF EXISTS wishlists;
 CREATE TABLE wishlists (
   id         BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   user_id    BIGINT UNSIGNED NOT NULL,
@@ -177,9 +237,12 @@ CREATE TABLE wishlists (
   UNIQUE KEY uq_wl (user_id, product_id),
   CONSTRAINT fk_wl_user    FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE CASCADE,
   CONSTRAINT fk_wl_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- ORDERS ----------
+-- ============================================================
+-- ORDERS
+-- ============================================================
+DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
   id                 BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   user_id            BIGINT UNSIGNED NOT NULL,
@@ -206,9 +269,11 @@ CREATE TABLE orders (
   KEY ix_order_status (order_status),
   KEY ix_order_payment (payment_status),
   KEY ix_order_created (created_at),
-  CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(id)
-) ENGINE=InnoDB;
+  CONSTRAINT fk_order_user    FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT chk_order_amount CHECK (total_amount >= 0 AND subtotal >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS order_items;
 CREATE TABLE order_items (
   id            BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   order_id      BIGINT UNSIGNED NOT NULL,
@@ -223,10 +288,14 @@ CREATE TABLE order_items (
   KEY ix_oi_product (product_id),
   CONSTRAINT fk_oi_order   FOREIGN KEY (order_id)   REFERENCES orders(id) ON DELETE CASCADE,
   CONSTRAINT fk_oi_product FOREIGN KEY (product_id) REFERENCES products(id),
-  CONSTRAINT fk_oi_variant FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL
-) ENGINE=InnoDB;
+  CONSTRAINT fk_oi_variant FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL,
+  CONSTRAINT chk_oi_qty    CHECK (quantity > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- PAYMENTS ----------
+-- ============================================================
+-- PAYMENTS
+-- ============================================================
+DROP TABLE IF EXISTS payments;
 CREATE TABLE payments (
   id                   BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   order_id             BIGINT UNSIGNED NOT NULL,
@@ -240,12 +309,16 @@ CREATE TABLE payments (
   created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uq_pay_rp_payment (razorpay_payment_id),
+  KEY ix_pay_rp_order (razorpay_order_id),
   KEY ix_pay_order (order_id),
   KEY ix_pay_status (status),
   CONSTRAINT fk_pay_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- REVIEWS ----------
+-- ============================================================
+-- REVIEWS
+-- ============================================================
+DROP TABLE IF EXISTS reviews;
 CREATE TABLE reviews (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   user_id     BIGINT UNSIGNED NOT NULL,
@@ -262,10 +335,13 @@ CREATE TABLE reviews (
   CONSTRAINT fk_rev_user    FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE CASCADE,
   CONSTRAINT fk_rev_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
   CONSTRAINT fk_rev_order   FOREIGN KEY (order_id)   REFERENCES orders(id)   ON DELETE SET NULL,
-  CONSTRAINT chk_rating CHECK (rating BETWEEN 1 AND 5)
-) ENGINE=InnoDB;
+  CONSTRAINT chk_rating     CHECK (rating BETWEEN 1 AND 5)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- COUPONS ----------
+-- ============================================================
+-- COUPONS
+-- ============================================================
+DROP TABLE IF EXISTS coupons;
 CREATE TABLE coupons (
   id              BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   code            VARCHAR(40) NOT NULL,
@@ -283,9 +359,12 @@ CREATE TABLE coupons (
   created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uq_coupon_code (code),
-  KEY ix_coupon_active (is_active, end_date)
-) ENGINE=InnoDB;
+  KEY ix_coupon_active (is_active, end_date),
+  CONSTRAINT chk_coupon_value  CHECK (discount_value >= 0),
+  CONSTRAINT chk_coupon_window CHECK (end_date >= start_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS coupon_usages;
 CREATE TABLE coupon_usages (
   id         BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   coupon_id  BIGINT UNSIGNED NOT NULL,
@@ -297,9 +376,12 @@ CREATE TABLE coupon_usages (
   CONSTRAINT fk_cu_coupon FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
   CONSTRAINT fk_cu_user   FOREIGN KEY (user_id)   REFERENCES users(id)   ON DELETE CASCADE,
   CONSTRAINT fk_cu_order  FOREIGN KEY (order_id)  REFERENCES orders(id)  ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- BANNERS ----------
+-- ============================================================
+-- BANNERS
+-- ============================================================
+DROP TABLE IF EXISTS banners;
 CREATE TABLE banners (
   id           BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   title        VARCHAR(180) NOT NULL,
@@ -316,9 +398,12 @@ CREATE TABLE banners (
   updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY ix_banner_placement (placement, is_active),
   CONSTRAINT fk_banner_cat FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- WHOLESALE ----------
+-- ============================================================
+-- WHOLESALE
+-- ============================================================
+DROP TABLE IF EXISTS wholesale_inquiries;
 CREATE TABLE wholesale_inquiries (
   id                    BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   company_name          VARCHAR(180) NOT NULL,
@@ -334,17 +419,21 @@ CREATE TABLE wholesale_inquiries (
   created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY ix_wsi_status (status, created_at)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- NEWSLETTER & CONTACT ----------
+-- ============================================================
+-- NEWSLETTER & CONTACT
+-- ============================================================
+DROP TABLE IF EXISTS newsletter_subscribers;
 CREATE TABLE newsletter_subscribers (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   email       VARCHAR(190) NOT NULL,
   is_active   TINYINT(1) NOT NULL DEFAULT 1,
   created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uq_news_email (email)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS contact_messages;
 CREATE TABLE contact_messages (
   id         BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   name       VARCHAR(120) NOT NULL,
@@ -354,9 +443,12 @@ CREATE TABLE contact_messages (
   message    TEXT NOT NULL,
   status     ENUM('new','read','closed') NOT NULL DEFAULT 'new',
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ---------- LOGGING / AUDIT ----------
+-- ============================================================
+-- LOGGING / AUDIT
+-- ============================================================
+DROP TABLE IF EXISTS audit_logs;
 CREATE TABLE audit_logs (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   actor_id    BIGINT UNSIGNED NULL,
@@ -372,8 +464,9 @@ CREATE TABLE audit_logs (
   KEY ix_audit_actor (actor_id),
   KEY ix_audit_entity (entity, entity_id),
   KEY ix_audit_created (created_at)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS security_logs;
 CREATE TABLE security_logs (
   id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   user_id     BIGINT UNSIGNED NULL,
@@ -384,6 +477,10 @@ CREATE TABLE security_logs (
   created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY ix_sec_user (user_id),
   KEY ix_sec_event (event, created_at)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ============================================================
+-- END OF SCHEMA
+-- ============================================================
