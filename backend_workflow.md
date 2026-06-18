@@ -4,6 +4,55 @@
 
 ---
 
+## ⚠️ HARD RULE — FRONTEND SERVICE LAYER IS THE CONTRACT (READ FIRST)
+
+This project follows a **Frontend-First** workflow. By the time backend work begins, the entire frontend is already built and approved using **mock data** behind a typed **Service Layer** (`frontend/services/*.service.ts`). The backend's job is **not** to design APIs from scratch — it is to make the existing service functions stop hitting mocks and start hitting real endpoints, **without any UI, page, component, hook, or type changing**.
+
+### What this means in practice
+
+1. **Source of truth for response shapes** = `frontend/types/*.ts` + `frontend/services/__contract__.md`. Every backend response payload (the `data` field of the envelope) MUST match the corresponding TypeScript interface field-for-field. If a field name or type differs, **fix the backend**, never the frontend.
+2. **Source of truth for endpoints** = `frontend/services/__contract__.md`. It lists, for every service function, the exact HTTP method, path, query params, body shape, and response shape. Every endpoint in this workflow MUST appear there; every entry there MUST be implemented here.
+3. **No frontend file outside `services/`, `lib/api.ts`, `lib/env.ts`, and `.env` is allowed to change at backend-integration time.** If the backend forces a UI change, the contract was broken — fix the backend.
+4. **Field naming convention.** DB columns are `snake_case` (per `schema.sql`); TypeScript interfaces are `camelCase`. The backend response layer MUST convert `snake_case` ↔ `camelCase` (use a serializer / mapping function in every repository → controller boundary). The mapping is enumerated in `frontend/types/_mapping.md`.
+5. **Response envelope is mandatory** for every endpoint, success or error:
+   ```
+   Success: { \"success\": true, \"data\": <payload matching TS interface>, \"meta\": <pagination/optional> }
+   Error:   { \"success\": false, \"error\": { \"code\": \"STRING_CODE\", \"message\": \"human\", \"fields\": {fieldName: \"msg\"} } }
+   ```
+   The frontend's mock services already use this envelope verbatim, so any deviation breaks the swap.
+6. **Status codes & error codes are part of the contract.** The frontend's UI states (invalid coupon, expired, under-min, OOS, 401-refresh, 403 RBAC, etc.) are wired to specific error `code` strings. Reuse the catalog from `frontend/services/__contract__.md` and Section 5 of this file.
+7. **Backend acceptance criterion (per phase):** after deploying a phase's endpoints, set the frontend's `NEXT_PUBLIC_USE_MOCKS=false` (or per-service feature flag) and run the corresponding frontend flow. **Zero UI changes** must be required. If the UI breaks, the response shape is wrong — fix the backend.
+
+### Phase-to-Service map (every backend phase ships endpoints for these frontend services)
+
+| Backend Phase | Frontend service(s) it satisfies |
+|---|---|
+| 2A · 2B | `services/auth.service.ts` |
+| 3A · 3B | (cross-cutting middleware — no service-shape change, just real enforcement) |
+| 4A | `services/product.service.ts`, `services/category.service.ts`, `services/banner.service.ts` (read side) |
+| 4B | `services/admin/product.service.ts`, `services/admin/category.service.ts` |
+| 5  | `services/upload.service.ts`, image-persist endpoints under `services/admin/product.service.ts` & `services/admin/banner.service.ts` |
+| 6A | `services/cart.service.ts`, `services/coupon.service.ts` |
+| 6B | `services/wishlist.service.ts`, `services/user.service.ts` (addresses) |
+| 7A | `services/checkout.service.ts` |
+| 7B | `services/order.service.ts` (list/detail/cancel/invoice + webhooks) |
+| 8A | `services/admin/dashboard.service.ts`, `services/admin/order.service.ts`, `services/admin/customer.service.ts` |
+| 8B | `services/admin/coupon.service.ts`, `services/admin/banner.service.ts`, `services/admin/review.service.ts`, `services/admin/wholesale.service.ts`, `services/admin/audit.service.ts`, `services/admin/settings.service.ts` |
+| 9  | `services/review.service.ts`, `services/wholesale.service.ts`, `services/newsletter.service.ts`, `services/contact.service.ts` |
+| 10A · 10B | (ops only — no service-shape impact) |
+
+### Mandatory verification step at the end of every phase
+
+- [ ] Run the frontend against the new endpoints with `NEXT_PUBLIC_USE_MOCKS=false` (or the per-service flag for this phase) and confirm:
+  - Every page rendered by services in scope shows correct data.
+  - Zero changes were needed to any file outside `frontend/services/**`, `frontend/lib/api.ts`, `frontend/lib/env.ts`, or `frontend/.env`.
+  - If a field had to be renamed or remapped, do it in the backend response layer — **never** in the frontend.
+
+> If during implementation any phase requires a frontend interface change, **STOP**, raise it as a contract amendment, update `frontend/types/*.ts` + `services/__contract__.md` + the mock data in one PR, and only then continue. Do not silently diverge.
+
+---
+---
+
 ## 0. PROJECT CONTEXT (do not skip)
 
 **Brand:** BHAVITA TEXTILES — premium luxury textile & home-furnishing e-commerce.
@@ -781,6 +830,8 @@ New Arrivals · Best Sellers · Summer · Winter · Festive · Wedding.
 ⬜ Pending · 🟡 In Progress · ✅ Completed (YYYY-MM-DD)
 
 ### Implementing LLM — Hard Rules
+- **The frontend Service Layer is the contract.** Every response shape MUST match the TS interface in `frontend/types/*` field-for-field. Convert snake_case → camelCase in the response layer; never push DB column names to the client.
+- **No frontend file outside `services/`, `lib/api.ts`, `lib/env.ts`, `.env` may change** when this backend is wired in. If you cannot meet that, raise a contract amendment instead of silently breaking the UI.
 - Never trust prices, stock, or totals from the client — always recompute server-side.
 - Verify every Razorpay signature on the server before creating an order.
 - Every protected endpoint passes `authMiddleware` → `roleMiddleware` (where needed) → `ownershipMiddleware` (where needed) → `zod-validate`.

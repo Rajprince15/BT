@@ -4,6 +4,17 @@ This repo contains the **phased build plan** for the Bhavita Textiles luxury e-c
 
 Each phase is sized to **5–6 credits** of LLM work. Heavy phases were split into **A / B** sub-phases so every phase fits the budget — **no feature has been removed** from `BT_Project_plan.md`. The implementing LLM MUST mark a phase as `✅ COMPLETED (YYYY-MM-DD)` in the workflow file ONLY after every task in that phase has been implemented and verified.
 
+## ⚠️ Architecture rule (read before any code)
+
+**Frontend-First + Service Layer + Mock Data.** Built by a single developer, so:
+
+1. The entire **frontend** is built first against **mock data**, behind a typed **Service Layer** (`frontend/services/*.service.ts`).
+2. Pages and components **never** import mock data or call APIs directly — they only call service functions.
+3. When the **backend** lands, only the **internals of `services/*`** change. Every page, component, hook, layout, theme, cart UI, checkout UI, admin UI, and customer UI stays byte-identical.
+4. TypeScript interfaces in `frontend/types/` are the single source of truth shared by mock data, services, hooks, and (later) backend responses. Field names mirror `schema.sql` (camelCase ↔ snake_case mapping in `frontend/types/_mapping.md`).
+
+See the **HARD RULES** section at the top of [`frontend_workflow.md`](./frontend_workflow.md) and the **HARD RULE — FRONTEND SERVICE LAYER IS THE CONTRACT** section at the top of [`backend_workflow.md`](./backend_workflow.md).
+
 ## Files
 - [`backend_workflow.md`](./backend_workflow.md) — 19 phases for the Node.js + MySQL APIs, integrations, deployment
 - [`frontend_workflow.md`](./frontend_workflow.md) — 17 phases for the Next.js 15 storefront + admin UI
