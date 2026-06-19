@@ -1,7 +1,4 @@
 # KICKOFF_PROMPT.md
-
-> Paste this entire file into any LLM (Claude, GPT, Gemini, etc.) to start working on the Bhavita Textiles project. It is self-contained and tells the model exactly what to read, in what order, and how to behave.
-
 ---
 
 ## ROLE
