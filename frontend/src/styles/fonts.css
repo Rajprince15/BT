@@ -1,0 +1,27 @@
+/*
+ * BHAVITA TEXTILES — Font setup notes.
+ *
+ * Fonts are loaded via `next/font/google` inside `src/app/layout.tsx`:
+ *   - Cormorant Garamond -> --font-serif (luxury headings)
+ *   - Manrope            -> --font-sans  (modern body text)
+ *
+ * `next/font` self-hosts the font files and emits the CSS variables on
+ * <html>. This file intentionally contains no @import URLs to avoid a
+ * second network request and FOUT. Use Tailwind utilities `font-serif`
+ * and `font-sans` (configured in tailwind.config.ts / @theme).
+ */
+
+:root {
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-body: 'Manrope', 'DM Sans', system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-serif, var(--font-display));
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  letter-spacing: -0.01em;
+}
+
+.font-body {
+  font-family: var(--font-sans, var(--font-body));
+}

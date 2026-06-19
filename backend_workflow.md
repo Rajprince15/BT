@@ -16,8 +16,8 @@ This project follows a **Frontend-First** workflow. By the time backend work beg
 4. **Field naming convention.** DB columns are `snake_case` (per `schema.sql`); TypeScript interfaces are `camelCase`. The backend response layer MUST convert `snake_case` ↔ `camelCase` (use a serializer / mapping function in every repository → controller boundary). The mapping is enumerated in `frontend/types/_mapping.md`.
 5. **Response envelope is mandatory** for every endpoint, success or error:
    ```
-   Success: { \"success\": true, \"data\": <payload matching TS interface>, \"meta\": <pagination/optional> }
-   Error:   { \"success\": false, \"error\": { \"code\": \"STRING_CODE\", \"message\": \"human\", \"fields\": {fieldName: \"msg\"} } }
+   Success: { "success": true, "data": <payload matching TS interface>, "meta": <pagination/optional> }
+   Error:   { "success": false, "error": { "code": "STRING_CODE", "message": "human", "fields": {fieldName: "msg"} } }
    ```
    The frontend's mock services already use this envelope verbatim, so any deviation breaks the swap.
 6. **Status codes & error codes are part of the contract.** The frontend's UI states (invalid coupon, expired, under-min, OOS, 401-refresh, 403 RBAC, etc.) are wired to specific error `code` strings. Reuse the catalog from `frontend/services/__contract__.md` and Section 5 of this file.
@@ -57,7 +57,7 @@ This project follows a **Frontend-First** workflow. By the time backend work beg
 
 **Brand:** BHAVITA TEXTILES — premium luxury textile & home-furnishing e-commerce.
 **Positioning:** *Handcrafted Home Textiles & Decor for Elegant Living* (alt: *Premium Handloom, Home Furnishing & Handicrafts*).
-**This is NOT a college project.** Treat every line as production code: real customers, real payments, real inventory. When a choice exists between \"quick\" and \"secure/production-grade\", **always pick production-grade**.
+**This is NOT a college project.** Treat every line as production code: real customers, real payments, real inventory. When a choice exists between "quick" and "secure/production-grade", **always pick production-grade**.
 
 **Target users:** Retail Customers · Wholesale/Bulk Buyers · Interior Designers · Hotels & Resorts · Corporate Buyers · Administrators.
 
@@ -181,8 +181,8 @@ Log: login attempts, failed logins, password changes, admin actions, product upd
 
 ### Response envelope
 ```
-Success: { \"success\": true, \"data\": <payload>, \"meta\": <pagination/optional> }
-Error:   { \"success\": false, \"error\": { \"code\": \"STRING_CODE\", \"message\": \"human\", \"fields\": {fieldName: \"msg\"} } }
+Success: { "success": true, "data": <payload>, "meta": <pagination/optional> }
+Error:   { "success": false, "error": { "code": "STRING_CODE", "message": "human", "fields": {fieldName: "msg"} } }
 ```
 All routes are mounted under `/api`.
 
@@ -233,7 +233,7 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 
 EMAIL_PROVIDER=smtp        # smtp | sendgrid | ses
-EMAIL_FROM=\"Bhavita Textiles <no-reply@bhavitatextiles.com>\"
+EMAIL_FROM="Bhavita Textiles <no-reply@bhavitatextiles.com>"
 SMTP_HOST=
 SMTP_PORT=587
 SMTP_USER=
@@ -281,7 +281,7 @@ LOG_LEVEL=info
 - [ ] Confirm tech: Express + TS + Prisma (or Knex), MySQL 8, Cloudinary, Razorpay, SMTP/SendGrid/SES.
 - [ ] Lock the API surface (full table in Phases 2/4/6/7/8/9) — every route under `/api`.
 - [ ] Lock response envelope (Section 5) and error codes catalog.
-- [ ] Lock RBAC matrix (Section 2) and write it into the backend `README.md` as a \"contract\" section.
+- [ ] Lock RBAC matrix (Section 2) and write it into the backend `README.md` as a "contract" section.
 - [ ] Confirm env var list (Section 6) is complete in `.env.example`.
 
 > **Done when:** all decisions above are in `README.md` and shared with the frontend implementer.

@@ -66,7 +66,7 @@ export async function getProducts(params) {
 
 **Brand:** BHAVITA TEXTILES — premium luxury textile & home-furnishing e-commerce.
 **Positioning:** *Handcrafted Home Textiles & Decor for Elegant Living* (alt: *Premium Handloom, Home Furnishing & Handicrafts*).
-**This is NOT a college project.** Build it like a real client site that will take real orders, real payments, real customer data. When choosing between \"quick\" and \"production-grade\", **always pick production-grade**.
+**This is NOT a college project.** Build it like a real client site that will take real orders, real payments, real customer data. When choosing between "quick" and "production-grade", **always pick production-grade**.
 
 **Target users:** Retail Customers · Wholesale/Bulk Buyers · Interior Designers · Hotels & Resorts · Corporate Buyers · Administrators.
 
@@ -187,8 +187,8 @@ The site must **feel** like a premium luxury brand — not a generic store.
 
 ### Response envelope (mock services MUST mimic this verbatim)
 ```
-Success: { \"success\": true, \"data\": <payload>, \"meta\": <pagination/optional> }
-Error:   { \"success\": false, \"error\": { \"code\": \"STRING_CODE\", \"message\": \"human\", \"fields\": {fieldName: \"msg\"} } }
+Success: { "success": true, "data": <payload>, "meta": <pagination/optional> }
+Error:   { "success": false, "error": { "code": "STRING_CODE", "message": "human", "fields": {fieldName: "msg"} } }
 ```
 Base URL = `NEXT_PUBLIC_API_URL` (e.g. `https://bhavitatextiles.com/api`). Every backend route is under `/api`.
 
@@ -344,10 +344,10 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 - [ ] **Architectural lint rules (mandatory, fails CI):**
   ```jsonc
   // .eslintrc — no-restricted-imports for app/ and components/
-  // 1. app/** and components/** MUST NOT import from \"@/mocks/*\"
-  // 2. app/** and components/** MUST NOT import \"axios\" or use \"fetch\"
-  // 3. Only services/** may import from \"@/mocks/*\" or \"@/lib/api\"
-  // 4. hooks/** may only import from \"@/services/*\" (not mocks, not axios)
+  // 1. app/** and components/** MUST NOT import from "@/mocks/*"
+  // 2. app/** and components/** MUST NOT import "axios" or use "fetch"
+  // 3. Only services/** may import from "@/mocks/*" or "@/lib/api"
+  // 4. hooks/** may only import from "@/services/*" (not mocks, not axios)
   ```
 
 ### Folder structure
@@ -468,7 +468,7 @@ frontend/
 - [ ] Special Collections routes (`/collections/new-arrivals` etc.) → `productService.byCollection(key)`.
 - [ ] Filters reflect in URL search params (shareable links).
 - [ ] Canonical URL on filtered PLPs = base category.
-- [ ] Mobile filter drawer (Sheet) with sticky \"Apply\" bar.
+- [ ] Mobile filter drawer (Sheet) with sticky "Apply" bar.
 
 ### Service signature (mock + real share it)
 ```ts
@@ -552,7 +552,7 @@ productService.list(params: {
 - [ ] Wishlist page: grid view · move to cart · remove · empty state (calls `wishlistService.*`).
 - [ ] CouponBox component: apply / remove → refreshes cart query; shows applied coupon badge + savings.
 - [ ] Inline error messages for stock issues, invalid coupon, expired coupon, etc. — driven by mock error codes that match the real backend's codes (Section 4).
-- [ ] \"Proceed to Checkout\" CTA disabled when cart empty or any line OOS.
+- [ ] "Proceed to Checkout" CTA disabled when cart empty or any line OOS.
 - [ ] Mobile-friendly sticky cart total bar.
 
 > **Done when:** cart totals come from the service (never recomputed in UI); coupon flows tested (valid / expired / under-min / used-up); wishlist CRUD works.
@@ -605,7 +605,7 @@ productService.list(params: {
 - [ ] Cancel order button (visible only when status ∈ {pending, confirmed}) → `orderService.cancel(orderNumber)`.
 - [ ] Re-order button → `cartService.bulkAdd(items)` respecting current mock stock.
 - [ ] Download invoice button.
-- [ ] `/account/reviews` — \"Reviews to write\" tab listing delivered orders not yet reviewed (`reviewService.toWrite()`) + \"My reviews\" tab with edit/delete.
+- [ ] `/account/reviews` — "Reviews to write" tab listing delivered orders not yet reviewed (`reviewService.toWrite()`) + "My reviews" tab with edit/delete.
 - [ ] `/account/wishlist` page (reuses Phase 7A wishlist if needed).
 - [ ] Mobile-friendly screens.
 
@@ -718,7 +718,7 @@ This phase begins **only after** all of Phases 0 → 10B are ✅ Completed and t
 - [ ] Sentry receives a real error in production.
 
 ### Hard guarantee (success criterion)
-After this phase, a `git diff` between \"approved mock build\" and \"backend-integrated build\" should touch **only**:
+After this phase, a `git diff` between "approved mock build" and "backend-integrated build" should touch **only**:
 - `services/**`
 - `lib/api.ts`
 - `lib/env.ts`
