@@ -8,7 +8,7 @@ import type { Coupon } from '@/types/Coupon';
 import type { ApiResponse } from '@/types/api';
 import { mockDelay, useMockService } from '@/services/_mock-runtime';
 
-async function callApi<T>(path: string, payload?: unknown, method: 'post' | 'patch' | 'delete' = 'post') {
+async function callApi<T>(path: string, payload?: unknown, method: 'get' | 'post' | 'patch' | 'delete' = 'post') {
   const response = await api.request<ApiResponse<T>>({
     url: path,
     method,

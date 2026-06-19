@@ -15,3 +15,4 @@ export interface WholesaleInquiry {
   createdAt: string;
   updatedAt: string;
 }
+

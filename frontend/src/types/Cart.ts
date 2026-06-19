@@ -1,5 +1,7 @@
 import { CartItem } from './CartItem';
 
+export type { CartItem };
+
 export interface Cart {
   id: number;
   userId: number;

@@ -5,18 +5,20 @@ import cartService from '@/services/cart.service';
 
 export function useApplyCoupon() {
   const queryClient = useQueryClient();
-  return useMutation((code: string) => cartService.applyCoupon(code), {
+  return useMutation({
+    mutationFn: (code: string) => cartService.applyCoupon(code),
     onSuccess() {
-      queryClient.invalidateQueries(['cart']);
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 }
 
 export function useRemoveCoupon() {
   const queryClient = useQueryClient();
-  return useMutation(() => cartService.removeCoupon(), {
+  return useMutation({
+    mutationFn: () => cartService.removeCoupon(),
     onSuccess() {
-      queryClient.invalidateQueries(['cart']);
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 }

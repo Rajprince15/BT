@@ -21,7 +21,8 @@ function applyFilters(items: Product[], params: ProductListParams) {
   }
 
   if (params.flag) {
-    filtered = filtered.filter((item) => item[params.flag]);
+    const flagKey = params.flag === 'new_arrival' ? 'newArrival' : 'bestSeller';
+    filtered = filtered.filter((item) => Boolean(item[flagKey]));
   }
 
   if (params.search) {

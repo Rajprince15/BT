@@ -4,25 +4,29 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import notificationService from '@/services/notification.service';
 
 export function useNotifications() {
-  return useQuery(['notifications'], notificationService.list, {
+  return useQuery({
+    queryKey: ['notifications'],
+    queryFn: notificationService.list,
     staleTime: 15_000,
   });
 }
 
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient();
-  return useMutation((id: number) => notificationService.markRead(id), {
+  return useMutation({
+    mutationFn: (id: number) => notificationService.markRead(id),
     onSuccess() {
-      queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 }
 
 export function useMarkAllNotificationsRead() {
   const queryClient = useQueryClient();
-  return useMutation(notificationService.markAllRead, {
+  return useMutation({
+    mutationFn: () => notificationService.markAllRead(),
     onSuccess() {
-      queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 }

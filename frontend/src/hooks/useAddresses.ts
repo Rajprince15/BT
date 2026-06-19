@@ -5,34 +5,46 @@ import userService from '@/services/user.service';
 import type { Address } from '@/types/Address';
 
 export function useAddresses() {
-  return useQuery(['addresses'], userService.addresses.list, {
+  return useQuery({
+    queryKey: ['addresses'],
+    queryFn: userService.addresses.list,
     staleTime: 20_000,
   });
 }
 
 export function useAddAddress() {
   const queryClient = useQueryClient();
-  return useMutation((payload: Omit<Address, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => userService.addresses.add(payload), {
+  return useMutation({
+    mutationFn: (payload: Omit<Address, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) =>
+      userService.addresses.add(payload),
     onSuccess() {
-      queryClient.invalidateQueries(['addresses']);
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
     },
   });
 }
 
 export function useUpdateAddress() {
   const queryClient = useQueryClient();
-  return useMutation(({ id, payload }: { id: number; payload: Partial<Omit<Address, 'id' | 'userId' | 'createdAt' | 'updatedAt'>> }) => userService.addresses.update(id, payload), {
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: Partial<Omit<Address, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>;
+    }) => userService.addresses.update(id, payload),
     onSuccess() {
-      queryClient.invalidateQueries(['addresses']);
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
     },
   });
 }
 
 export function useRemoveAddress() {
   const queryClient = useQueryClient();
-  return useMutation((id: number) => userService.addresses.remove(id), {
+  return useMutation({
+    mutationFn: (id: number) => userService.addresses.remove(id),
     onSuccess() {
-      queryClient.invalidateQueries(['addresses']);
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
     },
   });
 }
