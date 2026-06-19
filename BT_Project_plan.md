@@ -1,12 +1,12 @@
-ROLE
+﻿ROLE
 You are a team consisting of:
-•	Senior Product Manager
-•	Senior UX/UI Designer
-•	Senior Full Stack Architect
-•	Senior Database Architect
-•	Senior Security Engineer
-•	Senior DevOps Engineer
-•	Senior E-commerce Consultant
+â€¢	Senior Product Manager
+â€¢	Senior UX/UI Designer
+â€¢	Senior Full Stack Architect
+â€¢	Senior Database Architect
+â€¢	Senior Security Engineer
+â€¢	Senior DevOps Engineer
+â€¢	Senior E-commerce Consultant
 Your task is to design and build a COMPLETE PRODUCTION-READY enterprise-grade e-commerce platform for a premium luxury textile and home furnishing brand called:
 BHAVITA TEXTILES
 IMPORTANT
@@ -22,61 +22,61 @@ Do NOT generate code as a college project or tutorial application.
 ENTERPRISE SECURITY REQUIREMENTS
 Implement enterprise-grade security throughout the application.
 Access Control:
-•	Role Based Access Control (RBAC)
-•	Super Admin
-•	Admin
-•	Customer
+â€¢	Role Based Access Control (RBAC)
+â€¢	Super Admin
+â€¢	Admin
+â€¢	Customer
 Requirements:
-•	Users must never be able to access admin pages by manually editing URLs.
-•	Users must never access another user's data.
-•	Users must never view another user's orders.
-•	Users must never modify order amounts.
-•	Users must never modify product prices from the frontend.
-•	Users must never modify stock quantities.
-•	Users must never access protected APIs without authentication.
-•	All permissions must be verified on the server.
+â€¢	Users must never be able to access admin pages by manually editing URLs.
+â€¢	Users must never access another user's data.
+â€¢	Users must never view another user's orders.
+â€¢	Users must never modify order amounts.
+â€¢	Users must never modify product prices from the frontend.
+â€¢	Users must never modify stock quantities.
+â€¢	Users must never access protected APIs without authentication.
+â€¢	All permissions must be verified on the server.
 Authentication:
-•	JWT Access Token
-•	Refresh Token Rotation
-•	Secure Logout
-•	Password Reset Flow
-•	Email Verification
-•	Session Expiration
+â€¢	JWT Access Token
+â€¢	Refresh Token Rotation
+â€¢	Secure Logout
+â€¢	Password Reset Flow
+â€¢	Email Verification
+â€¢	Session Expiration
 Password Security:
-•	bcrypt hashing
-•	Strong password policies
-•	Password reset token expiry
+â€¢	bcrypt hashing
+â€¢	Strong password policies
+â€¢	Password reset token expiry
 API Security:
-•	Rate Limiting
-•	Request Validation
-•	Input Sanitization
-•	Output Encoding
-•	API Authorization Middleware
-•	Protected Routes
+â€¢	Rate Limiting
+â€¢	Request Validation
+â€¢	Input Sanitization
+â€¢	Output Encoding
+â€¢	API Authorization Middleware
+â€¢	Protected Routes
 Protection Against:
-•	SQL Injection
-•	XSS
-•	CSRF
-•	SSRF
-•	Clickjacking
-•	Session Hijacking
-•	Broken Authentication
-•	Broken Access Control
-•	Directory Traversal
-•	File Upload Exploits
+â€¢	SQL Injection
+â€¢	XSS
+â€¢	CSRF
+â€¢	SSRF
+â€¢	Clickjacking
+â€¢	Session Hijacking
+â€¢	Broken Authentication
+â€¢	Broken Access Control
+â€¢	Directory Traversal
+â€¢	File Upload Exploits
 File Upload Security:
-•	Image MIME Validation
-•	File Size Limits
-•	Filename Sanitization
-•	Malware Scan Hook Support
-•	Cloudinary Upload Restrictions
+â€¢	Image MIME Validation
+â€¢	File Size Limits
+â€¢	Filename Sanitization
+â€¢	Malware Scan Hook Support
+â€¢	Cloudinary Upload Restrictions
 Security Logging:
-•	Login Attempts
-•	Failed Logins
-•	Password Changes
-•	Admin Actions
-•	Product Updates
-•	Order Status Changes
+â€¢	Login Attempts
+â€¢	Failed Logins
+â€¢	Password Changes
+â€¢	Admin Actions
+â€¢	Product Updates
+â€¢	Order Status Changes
 Brand Style:
 Luxury
 Royal
@@ -86,15 +86,15 @@ Elegant
 Timeless
 Design Inspiration:
 Luxury textile brands
-Luxury home décor brands
+Luxury home dÃ©cor brands
 Premium furniture brands
 Theme Requirements:
 Light Theme
 Dark Theme
 Theme Switching:
-•	User controlled
-•	Saved in local storage
-•	Persist across sessions
+â€¢	User controlled
+â€¢	Saved in local storage
+â€¢	Persist across sessions
 Color Palette:
 Primary:
 Royal Gold
@@ -121,71 +121,71 @@ Basic bootstrap look
 PAYMENT SECURITY REQUIREMENTS
 Never trust any payment information coming from the frontend.
 Requirements:
-•	Order amount calculated only on backend.
-•	Cart validation before payment.
-•	Razorpay signature verification on backend.
-•	Order creation only after successful verification.
-•	Stock deduction only after payment confirmation.
-•	Prevent duplicate payments.
-•	Prevent replay attacks.
-•	Secure invoice generation.
+â€¢	Order amount calculated only on backend.
+â€¢	Cart validation before payment.
+â€¢	Razorpay signature verification on backend.
+â€¢	Order creation only after successful verification.
+â€¢	Stock deduction only after payment confirmation.
+â€¢	Prevent duplicate payments.
+â€¢	Prevent replay attacks.
+â€¢	Secure invoice generation.
 ==================================================
 PRODUCTION DATABASE REQUIREMENTS
 Design for future scaling.
 Requirements:
-•	Proper Indexing
-•	Foreign Keys
-•	Database Constraints
-•	Soft Deletes
-•	Audit Tables
-•	Transaction Handling
-•	Rollback Strategy
+â€¢	Proper Indexing
+â€¢	Foreign Keys
+â€¢	Database Constraints
+â€¢	Soft Deletes
+â€¢	Audit Tables
+â€¢	Transaction Handling
+â€¢	Rollback Strategy
 Generate:
-•	Database Optimization Plan
-•	Query Optimization Plan
-•	Backup Strategy
+â€¢	Database Optimization Plan
+â€¢	Query Optimization Plan
+â€¢	Backup Strategy
 ==================================================
 SEO REQUIREMENTS
 Implement complete e-commerce SEO.
 Requirements:
-•	Dynamic Meta Tags
-•	Open Graph Tags
-•	Twitter Cards
-•	Structured Data
-•	Product Schema
-•	Breadcrumb Schema
-•	XML Sitemap
-•	robots.txt
-•	Canonical URLs
+â€¢	Dynamic Meta Tags
+â€¢	Open Graph Tags
+â€¢	Twitter Cards
+â€¢	Structured Data
+â€¢	Product Schema
+â€¢	Breadcrumb Schema
+â€¢	XML Sitemap
+â€¢	robots.txt
+â€¢	Canonical URLs
 Generate complete SEO architecture.
 ==================================================
 PERFORMANCE REQUIREMENTS
 Target:
-•	Lighthouse Score 90+
-•	Fast Mobile Experience
-•	Core Web Vitals Optimization
+â€¢	Lighthouse Score 90+
+â€¢	Fast Mobile Experience
+â€¢	Core Web Vitals Optimization
 Implement:
-•	Image Optimization
-•	Lazy Loading
-•	Code Splitting
-•	Dynamic Imports
-•	Caching Strategy
-•	Database Query Optimization
-•	CDN Ready Assets
+â€¢	Image Optimization
+â€¢	Lazy Loading
+â€¢	Code Splitting
+â€¢	Dynamic Imports
+â€¢	Caching Strategy
+â€¢	Database Query Optimization
+â€¢	CDN Ready Assets
 ==================================================
 LUXURY BRAND EXPERIENCE
 The website should feel like a premium luxury brand.
 Avoid:
-•	Generic ecommerce appearance
-•	Cheap templates
-•	Crowded layouts
-•	Excessive animations
+â€¢	Generic ecommerce appearance
+â€¢	Cheap templates
+â€¢	Crowded layouts
+â€¢	Excessive animations
 Focus On:
-•	Premium Typography
-•	Elegant Layouts
-•	Luxury Visual Hierarchy
-•	High-End Product Presentation
-•	Immersive Product Pages
+â€¢	Premium Typography
+â€¢	Elegant Layouts
+â€¢	Luxury Visual Hierarchy
+â€¢	High-End Product Presentation
+â€¢	Immersive Product Pages
 Design Inspiration:
 Luxury Home Decor Brands
 Luxury Textile Brands
@@ -194,31 +194,31 @@ Luxury Furniture Brands
 ADMIN EXPERIENCE
 Admin dashboard should be enterprise-grade.
 Features:
-•	Product Management
-•	Inventory Management
-•	Sales Analytics
-•	Revenue Reports
-•	Customer Insights
-•	Wholesale Inquiry Management
-•	Coupon Management
-•	Banner Management
-•	Review Moderation
+â€¢	Product Management
+â€¢	Inventory Management
+â€¢	Sales Analytics
+â€¢	Revenue Reports
+â€¢	Customer Insights
+â€¢	Wholesale Inquiry Management
+
+â€¢	Banner Management
+â€¢	Review Moderation
 Admin actions must be logged.
 ==================================================
 MONITORING AND LOGGING
 Generate:
-•	Error Logging Strategy
-•	Application Monitoring
-•	Audit Logging
-•	Payment Logs
-•	Security Logs
+â€¢	Error Logging Strategy
+â€¢	Application Monitoring
+â€¢	Audit Logging
+â€¢	Payment Logs
+â€¢	Security Logs
 ==================================================
 BACKUP AND RECOVERY
 Generate:
-•	Daily Database Backups
-•	Weekly Full Backups
-•	Media Backup Strategy
-•	Disaster Recovery Plan
+â€¢	Daily Database Backups
+â€¢	Weekly Full Backups
+â€¢	Media Backup Strategy
+â€¢	Disaster Recovery Plan
 ==================================================
 PRODUCTION DEPLOYMENT
 Target Environment:
@@ -227,23 +227,23 @@ Windows Laptop
 Production:
 Ubuntu VPS
 Generate:
-•	PM2 Setup
-•	Nginx Setup
-•	SSL Configuration
-•	Security Headers
-•	Firewall Rules
-•	Environment Variable Strategy
-•	Deployment Checklist
+â€¢	PM2 Setup
+â€¢	Nginx Setup
+â€¢	SSL Configuration
+â€¢	Security Headers
+â€¢	Firewall Rules
+â€¢	Environment Variable Strategy
+â€¢	Deployment Checklist
 ==================================================
 QUALITY STANDARDS
 Code must be:
-•	Production Ready
-•	Scalable
-•	Secure
-•	Modular
-•	Maintainable
-•	Well Documented
-•	Enterprise Grade
+â€¢	Production Ready
+â€¢	Scalable
+â€¢	Secure
+â€¢	Modular
+â€¢	Maintainable
+â€¢	Well Documented
+â€¢	Enterprise Grade
 Whenever there is a choice between a quick solution and a secure production-grade solution, always choose the production-grade solution.
 
 PROJECT OVERVIEW
@@ -261,372 +261,361 @@ TARGET USERS
 6.	Administrators
 TECH STACK
 Frontend:
-•	Next.js 15 (App Router)
-•	TypeScript
-•	Tailwind CSS
-•	ShadCN UI
-•	React Query
-•	Axios
+â€¢	Next.js 15 (App Router)
+â€¢	TypeScript
+â€¢	Tailwind CSS
+â€¢	ShadCN UI
+â€¢	React Query
+â€¢	Axios
 Backend:
-•	Next.js API Routes or Express.js
-•	Node.js
-•	JWT Authentication
-•	Role Based Access Control
+â€¢	Next.js API Routes or Express.js
+â€¢	Node.js
+â€¢	JWT Authentication
+â€¢	Role Based Access Control
 Database:
-•	MySQL
+â€¢	MySQL
 Storage:
-•	Cloudinary for product images
+â€¢	Cloudinary for product images
 Payment Gateway:
-•	Razorpay
+â€¢	Razorpay
 Deployment:
-•	Ubuntu VPS
-•	Nginx
-•	PM2
-•	SSL
+â€¢	Ubuntu VPS
+â€¢	Nginx
+â€¢	PM2
+â€¢	SSL
 WEBSITE STRUCTURE
 HOME
 Sections:
-•	Hero Banner
-•	Featured Categories
-•	New Arrivals
-•	Best Sellers
-•	Seasonal Collections
-•	Handloom Heritage Collection
-•	Testimonials
-•	Brand Story
-•	Wholesale CTA
-•	Newsletter Subscription
+â€¢	Hero Banner
+â€¢	Featured Categories
+â€¢	New Arrivals
+â€¢	Best Sellers
+â€¢	Seasonal Collections
+â€¢	Handloom Heritage Collection
+â€¢	Testimonials
+â€¢	Brand Story
+â€¢	Wholesale CTA
+â€¢	Newsletter Subscription
 SHOP
 Bedroom Collection
 Bedsheets
-•	Cotton Bedsheets
-•	Handloom Bedsheets
-•	Printed Bedsheets
-•	Premium Collection
-•	King Size
-•	Queen Size
-•	Kids Collection
+â€¢	Cotton Bedsheets
+â€¢	Handloom Bedsheets
+â€¢	Printed Bedsheets
+â€¢	Premium Collection
+â€¢	King Size
+â€¢	Queen Size
+â€¢	Kids Collection
 Blankets & Comforters
-•	Cotton Blankets
-•	Winter Blankets
-•	AC Blankets
-•	Quilts
-•	Dohars
+â€¢	Cotton Blankets
+â€¢	Winter Blankets
+â€¢	AC Blankets
+â€¢	Quilts
+â€¢	Dohars
 Pillows & Bedding Accessories
-•	Pillow Covers
-•	Cushion Covers
-•	Bed Runners
+â€¢	Pillow Covers
+â€¢	Cushion Covers
+â€¢	Bed Runners
 Living Room Collection
 Soft Furnishings
-•	Sofa Throws
-•	Sofa Covers
-•	Cushion Covers
+â€¢	Sofa Throws
+â€¢	Sofa Covers
+â€¢	Cushion Covers
 Curtains
-•	Sheer Curtains
-•	Blackout Curtains
-•	Cotton Curtains
-•	Printed Curtains
-•	Luxury Curtains
+â€¢	Sheer Curtains
+â€¢	Blackout Curtains
+â€¢	Cotton Curtains
+â€¢	Printed Curtains
+â€¢	Luxury Curtains
 Rugs & Carpets
-•	Handwoven Rugs
-•	Cotton Rugs
-•	Floor Rugs
-•	Area Rugs
-•	Carpets
-•	Runner Carpets
+â€¢	Handwoven Rugs
+â€¢	Cotton Rugs
+â€¢	Floor Rugs
+â€¢	Area Rugs
+â€¢	Carpets
+â€¢	Runner Carpets
 Door Mats
-•	Cotton Door Mats
-•	Anti Slip Mats
-•	Decorative Mats
-•	Outdoor Mats
+â€¢	Cotton Door Mats
+â€¢	Anti Slip Mats
+â€¢	Decorative Mats
+â€¢	Outdoor Mats
 Bath Collection
 Towels
-•	Bath Towels
-•	Hand Towels
-•	Face Towels
-•	Luxury Towels
-•	Hotel Towels
+â€¢	Bath Towels
+â€¢	Hand Towels
+â€¢	Face Towels
+â€¢	Luxury Towels
+â€¢	Hotel Towels
 Bath Mats
 Home Decor
-•	Wall Decor
-•	Table Linen
-•	Decorative Textiles
-•	Handmade Decor
-•	Festive Decor
-•	Cushion Styling Collection
+â€¢	Wall Decor
+â€¢	Table Linen
+â€¢	Decorative Textiles
+â€¢	Handmade Decor
+â€¢	Festive Decor
+â€¢	Cushion Styling Collection
 Handloom Heritage Collection
-•	Jaipur Prints
-•	Block Print Collection
-•	Artisan Collection
-•	Ethnic Weaves
-•	Traditional Handloom
+â€¢	Jaipur Prints
+â€¢	Block Print Collection
+â€¢	Artisan Collection
+â€¢	Ethnic Weaves
+â€¢	Traditional Handloom
 Handicrafts Collection
-•	Handmade Home Accessories
-•	Decorative Items
-•	Traditional Craft Collection
-•	Gift Collection
+â€¢	Handmade Home Accessories
+â€¢	Decorative Items
+â€¢	Traditional Craft Collection
+â€¢	Gift Collection
 Special Collections
-•	New Arrivals
-•	Best Sellers
-•	Summer Collection
-•	Winter Collection
-•	Festive Collection
-•	Wedding Collection
+â€¢	New Arrivals
+â€¢	Best Sellers
+â€¢	Summer Collection
+â€¢	Winter Collection
+â€¢	Festive Collection
+â€¢	Wedding Collection
 Bulk / Wholesale Orders
 Target Customers:
-•	Hotels
-•	Resorts
-•	Hospitals
-•	Hostels
-•	Retail Stores
-•	Interior Designers
-•	Corporate Gifting
+â€¢	Hotels
+â€¢	Resorts
+â€¢	Hospitals
+â€¢	Hostels
+â€¢	Retail Stores
+â€¢	Interior Designers
+â€¢	Corporate Gifting
 STATIC PAGES
-•	About Us
-•	Contact Us
-•	Privacy Policy
-•	Terms and Conditions
-•	Return Policy
-•	Shipping Policy
+â€¢	About Us
+â€¢	Contact Us
+â€¢	Privacy Policy
+â€¢	Terms and Conditions
+â€¢	Return Policy
+â€¢	Shipping Policy
 CUSTOMER FEATURES
 Authentication
-•	Register
-•	Login
-•	Forgot Password
-•	Reset Password
-•	Email Verification
+â€¢	Register
+â€¢	Login
+â€¢	Forgot Password
+â€¢	Reset Password
+â€¢	Email Verification
 Profile
-•	Edit Profile
-•	Address Management
-•	Order History
+â€¢	Edit Profile
+â€¢	Address Management
+â€¢	Order History
 Shopping
-•	Product Search
-•	Category Filtering
-•	Price Filtering
-•	Add to Cart
-•	Update Cart
-•	Remove From Cart
-•	Wishlist
-•	Product Reviews
-•	Product Ratings
+â€¢	Product Search
+â€¢	Category Filtering
+â€¢	Price Filtering
+â€¢	Add to Cart
+â€¢	Update Cart
+â€¢	Remove From Cart
+â€¢	Wishlist
+â€¢	Product Reviews
+â€¢	Product Ratings
 Checkout
-•	Address Selection
-•	Razorpay Payment
-•	Order Confirmation
-•	Invoice Download
+â€¢	Address Selection
+â€¢	Razorpay Payment
+â€¢	Order Confirmation
+â€¢	Invoice Download
 WHOLESALE FEATURES
 Wholesale Inquiry Form
 Fields:
-•	Company Name
-•	Contact Person
-•	Email
-•	Phone
-•	Business Type
-•	Product Interest
-•	Quantity Requirement
-•	Message
+â€¢	Company Name
+â€¢	Contact Person
+â€¢	Email
+â€¢	Phone
+â€¢	Business Type
+â€¢	Product Interest
+â€¢	Quantity Requirement
+â€¢	Message
 ADMIN PANEL REQUIREMENTS
 Dashboard
 Show:
-•	Total Sales
-•	Total Orders
-•	Total Customers
-•	Total Products
-•	Revenue Analytics
+â€¢	Total Sales
+â€¢	Total Orders
+â€¢	Total Customers
+â€¢	Total Products
+â€¢	Revenue Analytics
 Category Management
-•	Create Category
-•	Update Category
-•	Delete Category
-•	Nested Categories
+â€¢	Create Category
+â€¢	Update Category
+â€¢	Delete Category
+â€¢	Nested Categories
 Product Management
-•	Add Product
-•	Edit Product
-•	Delete Product
-•	Product Variants
-•	Product Images
-•	Stock Management
+â€¢	Add Product
+â€¢	Edit Product
+â€¢	Delete Product
+â€¢	Product Variants
+â€¢	Product Images
+â€¢	Stock Management
 Order Management
-•	View Orders
-•	Update Status
+â€¢	View Orders
+â€¢	Update Status
 Statuses:
-•	Pending
-•	Confirmed
-•	Processing
-•	Shipped
-•	Delivered
-•	Cancelled
+â€¢	Pending
+â€¢	Confirmed
+â€¢	Processing
+â€¢	Shipped
+â€¢	Delivered
+â€¢	Cancelled
 Customer Management
-•	View Customers
-•	View Order History
+â€¢	View Customers
+â€¢	View Order History
 Wholesale Management
-•	View Inquiries
-•	Export Inquiries
-Coupon Management
-•	Create Coupon
-•	Expiry Date
-•	Discount Rules
+â€¢	View Inquiries
+â€¢	Export Inquiries
 Banner Management
-•	Homepage Banner
-•	Category Banner
-•	Promotional Banner
+â€¢	Homepage Banner
+â€¢	Category Banner
+â€¢	Promotional Banner
 DATABASE SCHEMA
 users
-•	id
-•	name
-•	email
-•	phone
-•	password_hash
-•	role
-•	created_at
+â€¢	id
+â€¢	name
+â€¢	email
+â€¢	phone
+â€¢	password_hash
+â€¢	role
+â€¢	created_at
 addresses
-•	id
-•	user_id
-•	full_name
-•	phone
-•	address_line1
-•	address_line2
-•	city
-•	state
-•	pincode
-•	country
+â€¢	id
+â€¢	user_id
+â€¢	full_name
+â€¢	phone
+â€¢	address_line1
+â€¢	address_line2
+â€¢	city
+â€¢	state
+â€¢	pincode
+â€¢	country
 categories
-•	id
-•	name
-•	slug
-•	parent_id
-•	image
-•	created_at
+â€¢	id
+â€¢	name
+â€¢	slug
+â€¢	parent_id
+â€¢	image
+â€¢	created_at
 products
-•	id
-•	category_id
-•	name
-•	slug
-•	short_description
-•	description
-•	sku
-•	price
-•	sale_price
-•	stock
-•	featured
-•	best_seller
-•	new_arrival
-•	status
-•	created_at
+â€¢	id
+â€¢	category_id
+â€¢	name
+â€¢	slug
+â€¢	short_description
+â€¢	description
+â€¢	sku
+â€¢	price
+â€¢	sale_price
+â€¢	stock
+â€¢	featured
+â€¢	best_seller
+â€¢	new_arrival
+â€¢	status
+â€¢	created_at
 product_images
-•	id
-•	product_id
-•	image_url
-•	sort_order
+â€¢	id
+â€¢	product_id
+â€¢	image_url
+â€¢	sort_order
 product_variants
-•	id
-•	product_id
-•	size
-•	color
-•	stock
-•	price
+â€¢	id
+â€¢	product_id
+â€¢	size
+â€¢	color
+â€¢	stock
+â€¢	price
 carts
-•	id
-•	user_id
+â€¢	id
+â€¢	user_id
 cart_items
-•	id
-•	cart_id
-•	product_id
-•	quantity
+â€¢	id
+â€¢	cart_id
+â€¢	product_id
+â€¢	quantity
 orders
-•	id
-•	user_id
-•	order_number
-•	total_amount
-•	payment_status
-•	order_status
-•	created_at
+â€¢	id
+â€¢	user_id
+â€¢	order_number
+â€¢	total_amount
+â€¢	payment_status
+â€¢	order_status
+â€¢	created_at
 order_items
-•	id
-•	order_id
-•	product_id
-•	variant_id
-•	quantity
-•	price
+â€¢	id
+â€¢	order_id
+â€¢	product_id
+â€¢	variant_id
+â€¢	quantity
+â€¢	price
 payments
-•	id
-•	order_id
-•	razorpay_order_id
-•	razorpay_payment_id
-•	amount
-•	status
+â€¢	id
+â€¢	order_id
+â€¢	razorpay_order_id
+â€¢	razorpay_payment_id
+â€¢	amount
+â€¢	status
 wishlists
-•	id
-•	user_id
-•	product_id
+â€¢	id
+â€¢	user_id
+â€¢	product_id
 reviews
-•	id
-•	user_id
-•	product_id
-•	rating
-•	review
-coupons
-•	id
-•	code
-•	discount_type
-•	discount_value
-•	start_date
-•	end_date
+â€¢	id
+â€¢	user_id
+â€¢	product_id
+â€¢	rating
+â€¢	review
 wholesale_inquiries
-•	id
-•	company_name
-•	contact_person
-•	email
-•	phone
-•	business_type
-•	product_interest
-•	quantity_requirement
-•	message
+â€¢	id
+â€¢	company_name
+â€¢	contact_person
+â€¢	email
+â€¢	phone
+â€¢	business_type
+â€¢	product_interest
+â€¢	quantity_requirement
+â€¢	message
 PRODUCT UPLOAD WORKFLOW
 Admin Uploads Product
 Step 1:
 Enter Product Information
-•	Product Name
-•	Description
-•	Category
-•	SKU
-•	Price
-•	Sale Price
-•	Stock
+â€¢	Product Name
+â€¢	Description
+â€¢	Category
+â€¢	SKU
+â€¢	Price
+â€¢	Sale Price
+â€¢	Stock
 Step 2:
 Upload Images
-•	Upload to Cloudinary
-•	Save URLs in product_images table
+â€¢	Upload to Cloudinary
+â€¢	Save URLs in product_images table
 Step 3:
 Create Variants
-•	Size
-•	Color
-•	Stock
+â€¢	Size
+â€¢	Color
+â€¢	Stock
 Step 4:
 Publish Product
 PAYMENT WORKFLOW
 Customer
 Add To Cart
-→ Checkout
-→ Address Selection
-→ Create Razorpay Order
-→ Complete Payment
-→ Verify Signature
-→ Create Order
-→ Reduce Stock
-→ Send Confirmation Email
-→ Show Success Page
+â†’ Checkout
+â†’ Address Selection
+â†’ Create Razorpay Order
+â†’ Complete Payment
+â†’ Verify Signature
+â†’ Create Order
+â†’ Reduce Stock
+â†’ Send Confirmation Email
+â†’ Show Success Page
 NON-FUNCTIONAL REQUIREMENTS
-•	Mobile First
-•	SEO Optimized
-•	Fast Loading
-•	Responsive Design
-•	Accessibility Support
-•	Image Optimization
-•	Secure Authentication
-•	SQL Injection Protection
-•	Rate Limiting
-•	Server Side Validation
-•	Production Ready Code
+â€¢	Mobile First
+â€¢	SEO Optimized
+â€¢	Fast Loading
+â€¢	Responsive Design
+â€¢	Accessibility Support
+â€¢	Image Optimization
+â€¢	Secure Authentication
+â€¢	SQL Injection Protection
+â€¢	Rate Limiting
+â€¢	Server Side Validation
+â€¢	Production Ready Code
 DELIVERABLES
 Generate:
 1.	Complete MySQL schema
@@ -660,372 +649,361 @@ TARGET USERS
 6.	Administrators
 TECH STACK
 Frontend:
-•	Next.js 15 (App Router)
-•	TypeScript
-•	Tailwind CSS
-•	ShadCN UI
-•	React Query
-•	Axios
+â€¢	Next.js 15 (App Router)
+â€¢	TypeScript
+â€¢	Tailwind CSS
+â€¢	ShadCN UI
+â€¢	React Query
+â€¢	Axios
 Backend:
-•	Next.js API Routes or Express.js
-•	Node.js
-•	JWT Authentication
-•	Role Based Access Control
+â€¢	Next.js API Routes or Express.js
+â€¢	Node.js
+â€¢	JWT Authentication
+â€¢	Role Based Access Control
 Database:
-•	MySQL
+â€¢	MySQL
 Storage:
-•	Cloudinary for product images
+â€¢	Cloudinary for product images
 Payment Gateway:
-•	Razorpay
+â€¢	Razorpay
 Deployment:
-•	Ubuntu VPS
-•	Nginx
-•	PM2
-•	SSL
+â€¢	Ubuntu VPS
+â€¢	Nginx
+â€¢	PM2
+â€¢	SSL
 WEBSITE STRUCTURE
 HOME
 Sections:
-•	Hero Banner
-•	Featured Categories
-•	New Arrivals
-•	Best Sellers
-•	Seasonal Collections
-•	Handloom Heritage Collection
-•	Testimonials
-•	Brand Story
-•	Wholesale CTA
-•	Newsletter Subscription
+â€¢	Hero Banner
+â€¢	Featured Categories
+â€¢	New Arrivals
+â€¢	Best Sellers
+â€¢	Seasonal Collections
+â€¢	Handloom Heritage Collection
+â€¢	Testimonials
+â€¢	Brand Story
+â€¢	Wholesale CTA
+â€¢	Newsletter Subscription
 SHOP
 Bedroom Collection
 Bedsheets
-•	Cotton Bedsheets
-•	Handloom Bedsheets
-•	Printed Bedsheets
-•	Premium Collection
-•	King Size
-•	Queen Size
-•	Kids Collection
+â€¢	Cotton Bedsheets
+â€¢	Handloom Bedsheets
+â€¢	Printed Bedsheets
+â€¢	Premium Collection
+â€¢	King Size
+â€¢	Queen Size
+â€¢	Kids Collection
 Blankets & Comforters
-•	Cotton Blankets
-•	Winter Blankets
-•	AC Blankets
-•	Quilts
-•	Dohars
+â€¢	Cotton Blankets
+â€¢	Winter Blankets
+â€¢	AC Blankets
+â€¢	Quilts
+â€¢	Dohars
 Pillows & Bedding Accessories
-•	Pillow Covers
-•	Cushion Covers
-•	Bed Runners
+â€¢	Pillow Covers
+â€¢	Cushion Covers
+â€¢	Bed Runners
 Living Room Collection
 Soft Furnishings
-•	Sofa Throws
-•	Sofa Covers
-•	Cushion Covers
+â€¢	Sofa Throws
+â€¢	Sofa Covers
+â€¢	Cushion Covers
 Curtains
-•	Sheer Curtains
-•	Blackout Curtains
-•	Cotton Curtains
-•	Printed Curtains
-•	Luxury Curtains
+â€¢	Sheer Curtains
+â€¢	Blackout Curtains
+â€¢	Cotton Curtains
+â€¢	Printed Curtains
+â€¢	Luxury Curtains
 Rugs & Carpets
-•	Handwoven Rugs
-•	Cotton Rugs
-•	Floor Rugs
-•	Area Rugs
-•	Carpets
-•	Runner Carpets
+â€¢	Handwoven Rugs
+â€¢	Cotton Rugs
+â€¢	Floor Rugs
+â€¢	Area Rugs
+â€¢	Carpets
+â€¢	Runner Carpets
 Door Mats
-•	Cotton Door Mats
-•	Anti Slip Mats
-•	Decorative Mats
-•	Outdoor Mats
+â€¢	Cotton Door Mats
+â€¢	Anti Slip Mats
+â€¢	Decorative Mats
+â€¢	Outdoor Mats
 Bath Collection
 Towels
-•	Bath Towels
-•	Hand Towels
-•	Face Towels
-•	Luxury Towels
-•	Hotel Towels
+â€¢	Bath Towels
+â€¢	Hand Towels
+â€¢	Face Towels
+â€¢	Luxury Towels
+â€¢	Hotel Towels
 Bath Mats
 Home Decor
-•	Wall Decor
-•	Table Linen
-•	Decorative Textiles
-•	Handmade Decor
-•	Festive Decor
-•	Cushion Styling Collection
+â€¢	Wall Decor
+â€¢	Table Linen
+â€¢	Decorative Textiles
+â€¢	Handmade Decor
+â€¢	Festive Decor
+â€¢	Cushion Styling Collection
 Handloom Heritage Collection
-•	Jaipur Prints
-•	Block Print Collection
-•	Artisan Collection
-•	Ethnic Weaves
-•	Traditional Handloom
+â€¢	Jaipur Prints
+â€¢	Block Print Collection
+â€¢	Artisan Collection
+â€¢	Ethnic Weaves
+â€¢	Traditional Handloom
 Handicrafts Collection
-•	Handmade Home Accessories
-•	Decorative Items
-•	Traditional Craft Collection
-•	Gift Collection
+â€¢	Handmade Home Accessories
+â€¢	Decorative Items
+â€¢	Traditional Craft Collection
+â€¢	Gift Collection
 Special Collections
-•	New Arrivals
-•	Best Sellers
-•	Summer Collection
-•	Winter Collection
-•	Festive Collection
-•	Wedding Collection
+â€¢	New Arrivals
+â€¢	Best Sellers
+â€¢	Summer Collection
+â€¢	Winter Collection
+â€¢	Festive Collection
+â€¢	Wedding Collection
 Bulk / Wholesale Orders
 Target Customers:
-•	Hotels
-•	Resorts
-•	Hospitals
-•	Hostels
-•	Retail Stores
-•	Interior Designers
-•	Corporate Gifting
+â€¢	Hotels
+â€¢	Resorts
+â€¢	Hospitals
+â€¢	Hostels
+â€¢	Retail Stores
+â€¢	Interior Designers
+â€¢	Corporate Gifting
 STATIC PAGES
-•	About Us
-•	Contact Us
-•	Privacy Policy
-•	Terms and Conditions
-•	Return Policy
-•	Shipping Policy
+â€¢	About Us
+â€¢	Contact Us
+â€¢	Privacy Policy
+â€¢	Terms and Conditions
+â€¢	Return Policy
+â€¢	Shipping Policy
 CUSTOMER FEATURES
 Authentication
-•	Register
-•	Login
-•	Forgot Password
-•	Reset Password
-•	Email Verification
+â€¢	Register
+â€¢	Login
+â€¢	Forgot Password
+â€¢	Reset Password
+â€¢	Email Verification
 Profile
-•	Edit Profile
-•	Address Management
-•	Order History
+â€¢	Edit Profile
+â€¢	Address Management
+â€¢	Order History
 Shopping
-•	Product Search
-•	Category Filtering
-•	Price Filtering
-•	Add to Cart
-•	Update Cart
-•	Remove From Cart
-•	Wishlist
-•	Product Reviews
-•	Product Ratings
+â€¢	Product Search
+â€¢	Category Filtering
+â€¢	Price Filtering
+â€¢	Add to Cart
+â€¢	Update Cart
+â€¢	Remove From Cart
+â€¢	Wishlist
+â€¢	Product Reviews
+â€¢	Product Ratings
 Checkout
-•	Address Selection
-•	Razorpay Payment
-•	Order Confirmation
-•	Invoice Download
+â€¢	Address Selection
+â€¢	Razorpay Payment
+â€¢	Order Confirmation
+â€¢	Invoice Download
 WHOLESALE FEATURES
 Wholesale Inquiry Form
 Fields:
-•	Company Name
-•	Contact Person
-•	Email
-•	Phone
-•	Business Type
-•	Product Interest
-•	Quantity Requirement
-•	Message
+â€¢	Company Name
+â€¢	Contact Person
+â€¢	Email
+â€¢	Phone
+â€¢	Business Type
+â€¢	Product Interest
+â€¢	Quantity Requirement
+â€¢	Message
 ADMIN PANEL REQUIREMENTS
 Dashboard
 Show:
-•	Total Sales
-•	Total Orders
-•	Total Customers
-•	Total Products
-•	Revenue Analytics
+â€¢	Total Sales
+â€¢	Total Orders
+â€¢	Total Customers
+â€¢	Total Products
+â€¢	Revenue Analytics
 Category Management
-•	Create Category
-•	Update Category
-•	Delete Category
-•	Nested Categories
+â€¢	Create Category
+â€¢	Update Category
+â€¢	Delete Category
+â€¢	Nested Categories
 Product Management
-•	Add Product
-•	Edit Product
-•	Delete Product
-•	Product Variants
-•	Product Images
-•	Stock Management
+â€¢	Add Product
+â€¢	Edit Product
+â€¢	Delete Product
+â€¢	Product Variants
+â€¢	Product Images
+â€¢	Stock Management
 Order Management
-•	View Orders
-•	Update Status
+â€¢	View Orders
+â€¢	Update Status
 Statuses:
-•	Pending
-•	Confirmed
-•	Processing
-•	Shipped
-•	Delivered
-•	Cancelled
+â€¢	Pending
+â€¢	Confirmed
+â€¢	Processing
+â€¢	Shipped
+â€¢	Delivered
+â€¢	Cancelled
 Customer Management
-•	View Customers
-•	View Order History
+â€¢	View Customers
+â€¢	View Order History
 Wholesale Management
-•	View Inquiries
-•	Export Inquiries
-Coupon Management
-•	Create Coupon
-•	Expiry Date
-•	Discount Rules
+â€¢	View Inquiries
+â€¢	Export Inquiries
 Banner Management
-•	Homepage Banner
-•	Category Banner
-•	Promotional Banner
+â€¢	Homepage Banner
+â€¢	Category Banner
+â€¢	Promotional Banner
 DATABASE SCHEMA
 users
-•	id
-•	name
-•	email
-•	phone
-•	password_hash
-•	role
-•	created_at
+â€¢	id
+â€¢	name
+â€¢	email
+â€¢	phone
+â€¢	password_hash
+â€¢	role
+â€¢	created_at
 addresses
-•	id
-•	user_id
-•	full_name
-•	phone
-•	address_line1
-•	address_line2
-•	city
-•	state
-•	pincode
-•	country
+â€¢	id
+â€¢	user_id
+â€¢	full_name
+â€¢	phone
+â€¢	address_line1
+â€¢	address_line2
+â€¢	city
+â€¢	state
+â€¢	pincode
+â€¢	country
 categories
-•	id
-•	name
-•	slug
-•	parent_id
-•	image
-•	created_at
+â€¢	id
+â€¢	name
+â€¢	slug
+â€¢	parent_id
+â€¢	image
+â€¢	created_at
 products
-•	id
-•	category_id
-•	name
-•	slug
-•	short_description
-•	description
-•	sku
-•	price
-•	sale_price
-•	stock
-•	featured
-•	best_seller
-•	new_arrival
-•	status
-•	created_at
+â€¢	id
+â€¢	category_id
+â€¢	name
+â€¢	slug
+â€¢	short_description
+â€¢	description
+â€¢	sku
+â€¢	price
+â€¢	sale_price
+â€¢	stock
+â€¢	featured
+â€¢	best_seller
+â€¢	new_arrival
+â€¢	status
+â€¢	created_at
 product_images
-•	id
-•	product_id
-•	image_url
-•	sort_order
+â€¢	id
+â€¢	product_id
+â€¢	image_url
+â€¢	sort_order
 product_variants
-•	id
-•	product_id
-•	size
-•	color
-•	stock
-•	price
+â€¢	id
+â€¢	product_id
+â€¢	size
+â€¢	color
+â€¢	stock
+â€¢	price
 carts
-•	id
-•	user_id
+â€¢	id
+â€¢	user_id
 cart_items
-•	id
-•	cart_id
-•	product_id
-•	quantity
+â€¢	id
+â€¢	cart_id
+â€¢	product_id
+â€¢	quantity
 orders
-•	id
-•	user_id
-•	order_number
-•	total_amount
-•	payment_status
-•	order_status
-•	created_at
+â€¢	id
+â€¢	user_id
+â€¢	order_number
+â€¢	total_amount
+â€¢	payment_status
+â€¢	order_status
+â€¢	created_at
 order_items
-•	id
-•	order_id
-•	product_id
-•	variant_id
-•	quantity
-•	price
+â€¢	id
+â€¢	order_id
+â€¢	product_id
+â€¢	variant_id
+â€¢	quantity
+â€¢	price
 payments
-•	id
-•	order_id
-•	razorpay_order_id
-•	razorpay_payment_id
-•	amount
-•	status
+â€¢	id
+â€¢	order_id
+â€¢	razorpay_order_id
+â€¢	razorpay_payment_id
+â€¢	amount
+â€¢	status
 wishlists
-•	id
-•	user_id
-•	product_id
+â€¢	id
+â€¢	user_id
+â€¢	product_id
 reviews
-•	id
-•	user_id
-•	product_id
-•	rating
-•	review
-coupons
-•	id
-•	code
-•	discount_type
-•	discount_value
-•	start_date
-•	end_date
+â€¢	id
+â€¢	user_id
+â€¢	product_id
+â€¢	rating
+â€¢	review
 wholesale_inquiries
-•	id
-•	company_name
-•	contact_person
-•	email
-•	phone
-•	business_type
-•	product_interest
-•	quantity_requirement
-•	message
+â€¢	id
+â€¢	company_name
+â€¢	contact_person
+â€¢	email
+â€¢	phone
+â€¢	business_type
+â€¢	product_interest
+â€¢	quantity_requirement
+â€¢	message
 PRODUCT UPLOAD WORKFLOW
 Admin Uploads Product
 Step 1:
 Enter Product Information
-•	Product Name
-•	Description
-•	Category
-•	SKU
-•	Price
-•	Sale Price
-•	Stock
+â€¢	Product Name
+â€¢	Description
+â€¢	Category
+â€¢	SKU
+â€¢	Price
+â€¢	Sale Price
+â€¢	Stock
 Step 2:
 Upload Images
-•	Upload to Cloudinary
-•	Save URLs in product_images table
+â€¢	Upload to Cloudinary
+â€¢	Save URLs in product_images table
 Step 3:
 Create Variants
-•	Size
-•	Color
-•	Stock
+â€¢	Size
+â€¢	Color
+â€¢	Stock
 Step 4:
 Publish Product
 PAYMENT WORKFLOW
 Customer
 Add To Cart
-→ Checkout
-→ Address Selection
-→ Create Razorpay Order
-→ Complete Payment
-→ Verify Signature
-→ Create Order
-→ Reduce Stock
-→ Send Confirmation Email
-→ Show Success Page
+â†’ Checkout
+â†’ Address Selection
+â†’ Create Razorpay Order
+â†’ Complete Payment
+â†’ Verify Signature
+â†’ Create Order
+â†’ Reduce Stock
+â†’ Send Confirmation Email
+â†’ Show Success Page
 NON-FUNCTIONAL REQUIREMENTS
-•	Mobile First
-•	SEO Optimized
-•	Fast Loading
-•	Responsive Design
-•	Accessibility Support
-•	Image Optimization
-•	Secure Authentication
-•	SQL Injection Protection
-•	Rate Limiting
-•	Server Side Validation
-•	Production Ready Code
+â€¢	Mobile First
+â€¢	SEO Optimized
+â€¢	Fast Loading
+â€¢	Responsive Design
+â€¢	Accessibility Support
+â€¢	Image Optimization
+â€¢	Secure Authentication
+â€¢	SQL Injection Protection
+â€¢	Rate Limiting
+â€¢	Server Side Validation
+â€¢	Production Ready Code
 DELIVERABLES
 Generate:
 1.	Complete MySQL schema
@@ -1044,4 +1022,6 @@ Generate:
 14.	Docker setup
 15.	Production checklist
 Follow enterprise-level coding standards, TypeScript best practices, modular architecture, reusable components, and scalable database design.
+
+
 

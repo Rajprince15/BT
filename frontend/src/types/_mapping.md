@@ -49,11 +49,9 @@ This file documents camelCase TypeScript entity names and corresponding snake_ca
 
 - `orders` + `order_items` → `Order`, `OrderItem`
   - `order_number` → `orderNumber`
-  - `discount_amount` → `discountAmount`
   - `shipping_amount` → `shippingAmount`
   - `tax_amount` → `taxAmount`
   - `total_amount` → `totalAmount`
-  - `coupon_code` → `couponCode`
   - `shipping_address_json` → `shippingAddressJson`
   - `billing_address_json` → `billingAddressJson`
   - `payment_status` → `paymentStatus`
@@ -69,15 +67,6 @@ This file documents camelCase TypeScript entity names and corresponding snake_ca
   - `raw_payload_json` → `rawPayloadJson`
 
 - `reviews` → `Review`
-
-- `coupons` → `Coupon`
-  - `discount_type` → `discountType`
-  - `discount_value` → `discountValue`
-  - `min_cart_value` → `minCartValue`
-  - `max_discount` → `maxDiscount`
-  - `usage_limit` → `usageLimit`
-  - `used_count` → `usedCount`
-  - `per_user_limit` → `perUserLimit`
 
 - `banners` → `Banner`
   - `link_url` → `linkUrl`

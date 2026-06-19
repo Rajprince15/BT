@@ -7,7 +7,6 @@ export interface Cart {
   userId: number;
   items: CartItem[];
   subtotal: number;
-  discount: number;
   shipping: number;
   tax: number;
   total: number;

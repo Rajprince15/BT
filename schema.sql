@@ -248,12 +248,12 @@ CREATE TABLE orders (
   user_id            BIGINT UNSIGNED NOT NULL,
   order_number       VARCHAR(32)  NOT NULL,
   subtotal           DECIMAL(12,2) NOT NULL,
-  discount_amount    DECIMAL(12,2) NOT NULL DEFAULT 0,
+  
   shipping_amount    DECIMAL(12,2) NOT NULL DEFAULT 0,
   tax_amount         DECIMAL(12,2) NOT NULL DEFAULT 0,
   total_amount       DECIMAL(12,2) NOT NULL,
   currency           CHAR(3) NOT NULL DEFAULT 'INR',
-  coupon_code        VARCHAR(40) NULL,
+  
   shipping_address_json JSON NOT NULL,
   billing_address_json  JSON NULL,
   payment_status     ENUM('pending','paid','failed','refunded') NOT NULL DEFAULT 'pending',
@@ -338,45 +338,6 @@ CREATE TABLE reviews (
   CONSTRAINT chk_rating     CHECK (rating BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ============================================================
--- COUPONS
--- ============================================================
-DROP TABLE IF EXISTS coupons;
-CREATE TABLE coupons (
-  id              BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  code            VARCHAR(40) NOT NULL,
-  description     VARCHAR(255) NULL,
-  discount_type   ENUM('flat','percent') NOT NULL,
-  discount_value  DECIMAL(10,2) NOT NULL,
-  min_cart_value  DECIMAL(12,2) NOT NULL DEFAULT 0,
-  max_discount    DECIMAL(12,2) NULL,
-  usage_limit     INT NULL,
-  used_count      INT NOT NULL DEFAULT 0,
-  per_user_limit  INT NULL,
-  start_date      DATETIME NOT NULL,
-  end_date        DATETIME NOT NULL,
-  is_active       TINYINT(1) NOT NULL DEFAULT 1,
-  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY uq_coupon_code (code),
-  KEY ix_coupon_active (is_active, end_date),
-  CONSTRAINT chk_coupon_value  CHECK (discount_value >= 0),
-  CONSTRAINT chk_coupon_window CHECK (end_date >= start_date)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-DROP TABLE IF EXISTS coupon_usages;
-CREATE TABLE coupon_usages (
-  id         BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  coupon_id  BIGINT UNSIGNED NOT NULL,
-  user_id    BIGINT UNSIGNED NOT NULL,
-  order_id   BIGINT UNSIGNED NOT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  KEY ix_cu_coupon (coupon_id),
-  KEY ix_cu_user (user_id),
-  CONSTRAINT fk_cu_coupon FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
-  CONSTRAINT fk_cu_user   FOREIGN KEY (user_id)   REFERENCES users(id)   ON DELETE CASCADE,
-  CONSTRAINT fk_cu_order  FOREIGN KEY (order_id)  REFERENCES orders(id)  ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
 -- BANNERS

@@ -20,7 +20,7 @@ This project follows a **Frontend-First** workflow. By the time backend work beg
    Error:   { "success": false, "error": { "code": "STRING_CODE", "message": "human", "fields": {fieldName: "msg"} } }
    ```
    The frontend's mock services already use this envelope verbatim, so any deviation breaks the swap.
-6. **Status codes & error codes are part of the contract.** The frontend's UI states (invalid coupon, expired, under-min, OOS, 401-refresh, 403 RBAC, etc.) are wired to specific error `code` strings. Reuse the catalog from `frontend/services/__contract__.md` and Section 5 of this file.
+6. **Status codes & error codes are part of the contract.** The frontend's UI states (OOS, 401-refresh, 403 RBAC, etc.) are wired to specific error `code` strings. Reuse the catalog from `frontend/services/__contract__.md` and Section 5 of this file.
 7. **Backend acceptance criterion (per phase):** after deploying a phase's endpoints, set the frontend's `NEXT_PUBLIC_USE_MOCKS=false` (or per-service feature flag) and run the corresponding frontend flow. **Zero UI changes** must be required. If the UI breaks, the response shape is wrong — fix the backend.
 
 ### Phase-to-Service map (every backend phase ships endpoints for these frontend services)
@@ -32,12 +32,12 @@ This project follows a **Frontend-First** workflow. By the time backend work beg
 | 4A | `services/product.service.ts`, `services/category.service.ts`, `services/banner.service.ts` (read side) |
 | 4B | `services/admin/product.service.ts`, `services/admin/category.service.ts` |
 | 5  | `services/upload.service.ts`, image-persist endpoints under `services/admin/product.service.ts` & `services/admin/banner.service.ts` |
-| 6A | `services/cart.service.ts`, `services/coupon.service.ts` |
+| 6A | `services/cart.service.ts` |
 | 6B | `services/wishlist.service.ts`, `services/user.service.ts` (addresses) |
 | 7A | `services/checkout.service.ts` |
 | 7B | `services/order.service.ts` (list/detail/cancel/invoice + webhooks) |
 | 8A | `services/admin/dashboard.service.ts`, `services/admin/order.service.ts`, `services/admin/customer.service.ts` |
-| 8B | `services/admin/coupon.service.ts`, `services/admin/banner.service.ts`, `services/admin/review.service.ts`, `services/admin/wholesale.service.ts`, `services/admin/audit.service.ts`, `services/admin/settings.service.ts` |
+| 8B | `services/admin/banner.service.ts`, `services/admin/review.service.ts`, `services/admin/wholesale.service.ts`, `services/admin/audit.service.ts`, `services/admin/settings.service.ts` |
 | 9  | `services/review.service.ts`, `services/wholesale.service.ts`, `services/newsletter.service.ts`, `services/contact.service.ts` |
 | 10A · 10B | (ops only — no service-shape impact) |
 
@@ -98,7 +98,7 @@ Roles: **Super Admin · Admin · Customer**. Enforce on every server route — n
 | Catalog (categories/products) | R | RW | RW |
 | Stock/prices | ✗ | RW | RW |
 | All orders | ✗ | RW | RW |
-| Coupons/banners/wholesale | ✗ | RW | RW |
+| Banners/wholesale | ✗ | RW | RW |
 | Manage admins / roles / settings / audit | ✗ | R (limited) | RW |
 
 **Hard rules:**
@@ -157,10 +157,10 @@ Log: login attempts, failed logins, password changes, admin actions, product upd
 
 - Proper indexing on every FK and high-read column (see `schema.sql`).
 - Foreign keys + ON DELETE rules as in `schema.sql`.
-- DB CHECK constraints (price ≥ 0, qty > 0, rating 1–5, coupon window valid).
+- DB CHECK constraints (price ≥ 0, qty > 0, rating 1–5).
 - Soft deletes via `deleted_at` (users, categories, products).
 - Audit tables (`audit_logs`, `security_logs`).
-- Transactions for: order creation, stock decrement, refund, coupon usage.
+- Transactions for: order creation, stock decrement, refund.
 - Rollback strategy: any failure inside the checkout transaction reverts stock + payment row state.
 
 ### Query Optimization Plan
@@ -262,12 +262,12 @@ LOG_LEVEL=info
 | 4A   | Public Categories & Products APIs (filters, FULLTEXT, collections) | 5–6     | ⬜ Pending |
 | 4B   | Admin Categories & Products CRUD, Variants, Stock & Publish        | 5–6     | ⬜ Pending |
 | 5    | Cloudinary Integration & Media APIs                                | 5–6     | ⬜ Pending |
-| 6A   | Cart APIs (server-computed totals) & Coupon Validation             | 5–6     | ⬜ Pending |
+| 6A   | Cart APIs (server-computed totals)                                 | 5–6     | ⬜ Pending |
 | 6B   | Wishlist & Address Book APIs                                       | 5–6     | ⬜ Pending |
 | 7A   | Checkout Quote, Razorpay Order Create, Verify & Stock Transaction  | 5–6     | ⬜ Pending |
 | 7B   | Orders (list/detail/cancel), RP Webhooks & PDF Invoice             | 5–6     | ⬜ Pending |
 | 8A   | Admin Dashboard KPIs, Orders & Customers APIs                      | 5–6     | ⬜ Pending |
-| 8B   | Admin Coupons, Banners, Reviews, Wholesale Mgmt & Audit Logs       | 5–6     | ⬜ Pending |
+| 8B   | Admin Banners, Reviews, Wholesale Mgmt & Audit Logs                | 5–6     | ⬜ Pending |
 | 9    | Reviews, Wholesale Inquiry, Newsletter & Contact APIs              | 5–6     | ⬜ Pending |
 | 10A  | SEO Endpoints, Logging & Monitoring (Winston/Sentry/Healthchecks)  | 5–6     | ⬜ Pending |
 | 10B  | Backups, Docker, VPS Deployment (Nginx/PM2/SSL) & Go-Live          | 5–6     | ⬜ Pending |
@@ -295,7 +295,7 @@ LOG_LEVEL=info
 - [ ] Install: `express mysql2 prisma (or knex) zod dotenv helmet cors express-rate-limit morgan winston winston-daily-rotate-file bcrypt jsonwebtoken cookie-parser multer cloudinary razorpay pdfkit nodemailer @sentry/node uuid`.
 - [ ] Configure MySQL connection pool from env (size 10, queueLimit 0).
 - [ ] Create migrations from `schema.sql` (one migration per logical group OR import via Prisma `db pull`/`db push` + hand-written migration).
-- [ ] Tables MUST exist exactly as `schema.sql`: `users`, `refresh_tokens`, `addresses`, `categories`, `products`, `product_images`, `product_variants`, `carts`, `cart_items`, `wishlists`, `orders`, `order_items`, `payments`, `reviews`, `coupons`, `coupon_usages`, `banners`, `wholesale_inquiries`, `newsletter_subscribers`, `contact_messages`, `audit_logs`, `security_logs`.
+-[ ] Tables MUST exist exactly as `schema.sql`: `users`, `refresh_tokens`, `addresses`, `categories`, `products`, `product_images`, `product_variants`, `carts`, `cart_items`, `wishlists`, `orders`, `order_items`, `payments`, `reviews`, `banners`, `wholesale_inquiries`, `newsletter_subscribers`, `contact_messages`, `audit_logs`, `security_logs`.
 - [ ] Verify all indexes, FKs, FULLTEXT, JSON columns, CHECK constraints.
 - [ ] Configure ESLint + Prettier + strict `tsconfig`.
 - [ ] `.env.example` mirrors Section 6 exactly.
@@ -310,9 +310,8 @@ LOG_LEVEL=info
 - [ ] Seed script: 1 super_admin, 1 admin, 1 customer (bcrypt-hashed passwords).
 - [ ] Seed **full category tree** (Section 10): Bedroom (Bedsheets, Blankets & Comforters, Pillows & Bedding Accessories) · Living Room (Soft Furnishings, Curtains, Rugs & Carpets, Door Mats) · Bath (Towels, Bath Mats) · Home Decor · Handloom Heritage · Handicrafts · Special Collections — including every sub-category listed.
 - [ ] Seed 6 sample products with images + variants + price + sale_price + stock + flags (featured/best_seller/new_arrival).
-- [ ] Seed 1 active home_hero banner + 1 active coupon.
-- [ ] Module skeleton for every backend module (Section 5): `auth · users · categories · products · media · cart · wishlist · addresses · coupons · checkout · orders · payments · reviews · wholesale · newsletter · contact · admin · banners · audit`.
-- [ ] `GET /api/health` → `{status:'ok', db:'up', uptime, version}`.
+- [ ] Seed 1 active home_hero banner.
+ [ ] Module skeleton for every backend module (Section 5): `auth · users · categories · products · media · cart · wishlist · addresses · checkout · orders · payments · reviews · wholesale · newsletter · contact · admin · banners · audit`.
 - [ ] Bootstrap Express app: body-parser, cookie-parser, request-id, base error handler, response envelope util (Section 5).
 
 > **Done when:** seed populates idempotently, `/api/health` returns 200, sample queries against seeded data succeed in a Postman smoke run.
@@ -504,27 +503,23 @@ Plus: HSTS · `X-Content-Type-Options: nosniff` · `X-Frame-Options: DENY` · `R
 
 ---
 
-## PHASE 6A — Cart APIs & Coupon Validation  `(5–6 credits)`
+## PHASE 6A — Cart APIs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 ### Endpoints
 | Method | Path | Purpose |
 |--|--|--|
-| GET    | `/api/cart` | Server-computed totals: subtotal, shipping, tax, discount, total |
+| GET    | `/api/cart` | Server-computed totals: subtotal, shipping, tax, total |
 | POST   | `/api/cart/items` | Add item (stock checked; variant supported) |
 | PATCH  | `/api/cart/items/:id` | Update qty (stock re-checked) |
 | DELETE | `/api/cart/items/:id` | Remove |
-| POST   | `/api/cart/coupon` | Apply coupon code |
-| DELETE | `/api/cart/coupon` | Remove coupon |
-| POST   | `/api/coupons/validate` | Validate code against current cart (dry-run) |
 
 ### Rules
-- Totals are **server-computed only** (subtotal · shipping policy · GST/tax · discount · total).
+- Totals are **server-computed only** (subtotal · shipping policy · GST/tax · total).
 - Cart bound to `user_id`; ownership enforced.
-- Coupon validation: code valid · within `start_date/end_date` · `is_active=1` · `min_cart_value` met · `usage_limit > used_count` · `per_user_limit` checked via `coupon_usages` · discount type `percentage`/`fixed`.
 - Cart item snapshot keeps unit price for stable totals between adds and checkout quote.
 
-> **Done when:** cross-user access returns 403; totals always recomputed; expired/exhausted/per-user-limit coupon cases handled with specific error codes.
+> **Done when:** cross-user access returns 403; totals always recomputed.
 
 ---
 
@@ -571,7 +566,7 @@ Plus: HSTS · `X-Content-Type-Options: nosniff` · `X-Frame-Options: DENY` · `R
    - `SELECT ... FOR UPDATE` on each product/variant; abort + refund + email if any OOS.
    - Insert `orders` + `order_items` (immutable snapshot of product name/SKU/price).
    - Update `payments` row (`payment_id`, `signature`, `status='captured'`). UNIQUE on `razorpay_payment_id` blocks replay.
-   - Insert `coupon_usages`; increment `coupons.used_count`.
+
    - Clear cart.
 7. Enqueue `order-placed` email with invoice PDF (Phase 7B builds PDF).
 8. Return `{order_number}`.
@@ -635,14 +630,14 @@ All routes behind `roleMiddleware(['admin','super_admin'])`.
 
 ---
 
-## PHASE 8B — Admin Coupons, Banners, Reviews, Wholesale Mgmt, Users & Audit Logs  `(5–6 credits)`
+## PHASE 8B — Admin Banners, Reviews, Wholesale Mgmt, Users & Audit Logs  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 All routes behind `roleMiddleware(['admin','super_admin'])`.
 
 | Group | Routes |
 |--|--|
-| Coupons | `GET/POST/PATCH/DELETE /api/admin/coupons[/:id]` — code, discount_type, discount_value, min_cart_value, usage_limit, per_user_limit, start_date, end_date, is_active |
+
 | Banners | `GET/POST/PATCH/DELETE /api/admin/banners[/:id]` — placement (`home_hero`, `category`, `promotional`), image, link, schedule (`start_at`, `end_at`), sort_order |
 | Reviews | `GET /api/admin/reviews`, `PATCH /api/admin/reviews/:id` (approve/reject) — triggers avg-rating recompute |
 | Wholesale | `GET /api/admin/wholesale-inquiries`, `PATCH /api/admin/wholesale-inquiries/:id` (status: new → contacted → converted/closed), `GET /api/admin/wholesale-inquiries/export.csv` |

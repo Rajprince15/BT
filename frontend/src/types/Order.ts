@@ -8,12 +8,10 @@ export interface Order {
   userId: number;
   orderNumber: string;
   subtotal: number;
-  discountAmount: number;
   shippingAmount: number;
   taxAmount: number;
   totalAmount: number;
   currency: 'INR';
-  couponCode?: string;
   shippingAddressJson: Record<string, unknown>;
   billingAddressJson?: Record<string, unknown>;
   paymentStatus: PaymentStatus;

@@ -1,10 +1,8 @@
 import api from '@/lib/api';
 import { carts } from '@/mocks/cart.mock';
-import { coupons } from '@/mocks/coupons.mock';
 import { products } from '@/mocks/products.mock';
 import { session } from '@/mocks/_session';
 import type { Cart, CartItem } from '@/types/Cart';
-import type { Coupon } from '@/types/Coupon';
 import type { ApiResponse } from '@/types/api';
 import { mockDelay, useMockService } from '@/services/_mock-runtime';
 
@@ -22,10 +20,9 @@ async function callApi<T>(path: string, payload?: unknown, method: 'get' | 'post
 
 function computeTotals(cart: Cart) {
   const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discount = cart.discount;
   const shipping = 150;
-  const tax = Math.round((subtotal - discount) * 0.05 * 100) / 100;
-  const total = subtotal - discount + shipping + tax;
+  const tax = Math.round(subtotal * 0.05 * 100) / 100;
+  const total = subtotal + shipping + tax;
 
   cart.subtotal = subtotal;
   cart.shipping = shipping;
@@ -46,7 +43,6 @@ function findCart() {
       userId,
       items: [],
       subtotal: 0,
-      discount: 0,
       shipping: 150,
       tax: 0,
       total: 0,
@@ -126,43 +122,6 @@ export const cartService = {
     }
 
     return callApi<Cart>(`/cart/items/${id}`, undefined, 'delete');
-  },
-
-  async applyCoupon(code: string) {
-    if (useMockService) {
-      await mockDelay();
-      const cart = findCart();
-      const coupon = coupons.find((item) => item.code.toLowerCase() === code.toLowerCase());
-      if (!coupon) {
-        throw new Error('Invalid coupon code');
-      }
-      if (!coupon.isActive || new Date() > new Date(coupon.endDate)) {
-        throw new Error('Coupon is not available');
-      }
-      let discount = 0;
-      if (coupon.discountType === 'flat') {
-        discount = coupon.discountValue;
-      } else {
-        discount = Math.min((cart.subtotal * coupon.discountValue) / 100, coupon.maxDiscount ?? Number.POSITIVE_INFINITY);
-      }
-      cart.discount = Math.round(discount * 100) / 100;
-      cart.updatedAt = new Date().toISOString();
-      return computeTotals({ ...cart });
-    }
-
-    return callApi<Cart>('/cart/coupon', { code }, 'post');
-  },
-
-  async removeCoupon() {
-    if (useMockService) {
-      await mockDelay();
-      const cart = findCart();
-      cart.discount = 0;
-      cart.updatedAt = new Date().toISOString();
-      return computeTotals({ ...cart });
-    }
-
-    return callApi<Cart>('/cart/coupon', undefined, 'delete');
   },
 
   async bulkAdd(items: Array<{ productId: number; variantId?: number; quantity: number }>) {

@@ -37,12 +37,12 @@ See the **HARD RULES** section at the top of [`frontend_workflow.md`](./frontend
 | 4A | Public Categories & Products APIs |
 | 4B | Admin Categories & Products CRUD, Variants, Stock & Publish |
 | 5 | Cloudinary Integration & Media APIs |
-| 6A | Cart APIs & Coupon Validation |
+| 6A | Cart APIs |
 | 6B | Wishlist & Address Book APIs |
 | 7A | Checkout Quote, Razorpay Order, Verify & Stock Transaction |
 | 7B | Orders (list/detail/cancel), Webhooks & PDF Invoice |
 | 8A | Admin Dashboard KPIs, Orders & Customers |
-| 8B | Admin Coupons, Banners, Reviews, Wholesale, Users & Audit Logs |
+| 8B | Admin Banners, Reviews, Wholesale, Users & Audit Logs |
 | 9 | Reviews, Wholesale, Newsletter & Contact APIs |
 | 10A | SEO Endpoints, Logging & Monitoring |
 | 10B | Backups, Docker, VPS Deployment & Go-Live |
@@ -59,12 +59,12 @@ See the **HARD RULES** section at the top of [`frontend_workflow.md`](./frontend
 | 5A | PDP: Gallery, Info, Variants, Add to Cart/Wishlist, Tabs |
 | 5B | PDP: Reviews, Write-Review, Related, JSON-LD, Share, Breadcrumbs |
 | 6 | Authentication Pages & Auth Flow |
-| 7A | Cart, Wishlist Pages & Coupon UI |
+| 7A | Cart & Wishlist Pages |
 | 7B | Checkout Multi-step, Razorpay UI, Success & Invoice DL |
 | 8A | Account: Layout, Profile, Addresses, Change Password |
 | 8B | Account: Orders, Cancel, Re-order, Reviews-to-write, Wishlist |
 | 9A | Admin: Layout, Dashboard, Categories, Products CRUD |
-| 9B | Admin: Orders, Customers, Wholesale, Coupons, Banners, Reviews, Audit, Settings |
+| 9B | Admin: Orders, Customers, Wholesale, Banners, Reviews, Audit, Settings |
 | 10A | Static Pages & Public Forms |
 | 10B | SEO, Performance, Accessibility & Polish |
 
@@ -79,4 +79,3 @@ See the **HARD RULES** section at the top of [`frontend_workflow.md`](./frontend
 - ⬜ Pending
 - 🟡 In Progress
 - ✅ Completed (YYYY-MM-DD)
-"

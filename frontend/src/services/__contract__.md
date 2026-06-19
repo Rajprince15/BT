@@ -23,8 +23,6 @@ This file lists the frontend service functions and the backend endpoints they wi
 - `cartService.addItem(payload)` → `POST /api/cart/items`
 - `cartService.updateItem(id, payload)` → `PATCH /api/cart/items/:id`
 - `cartService.removeItem(id)` → `DELETE /api/cart/items/:id`
-- `cartService.applyCoupon(code)` → `POST /api/cart/coupon`
-- `cartService.removeCoupon()` → `DELETE /api/cart/coupon`
 
 ## Checkout
 - `checkoutService.quote(payload)` → `POST /api/checkout/quote`

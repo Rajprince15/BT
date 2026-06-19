@@ -43,26 +43,6 @@ export function useRemoveCartItem() {
   });
 }
 
-export function useApplyCoupon() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (code: string) => cartService.applyCoupon(code),
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-    },
-  });
-}
-
-export function useRemoveCoupon() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => cartService.removeCoupon(),
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-    },
-  });
-}
-
 export function useBulkAddToCart() {
   const queryClient = useQueryClient();
   return useMutation({

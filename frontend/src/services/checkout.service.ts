@@ -45,7 +45,6 @@ export const checkoutService = {
       const quote = {
         quoteId: `quote-${Date.now()}`,
         subtotal: cart.subtotal,
-        discount: cart.discount,
         shipping: cart.shipping,
         tax: cart.tax,
         total: cart.total,

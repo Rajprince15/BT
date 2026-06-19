@@ -176,7 +176,7 @@ The site must **feel** like a premium luxury brand — not a generic store.
   /admin/dashboard · /admin/products · /admin/products/new · /admin/products/[id]
   /admin/categories · /admin/orders · /admin/orders/[id]
   /admin/customers · /admin/wholesale-inquiries
-  /admin/coupons · /admin/banners · /admin/reviews
+  /admin/banners · /admin/reviews
   /admin/audit-logs (super_admin) · /admin/settings
 /sitemap.xml · /robots.txt
 ```
@@ -208,9 +208,9 @@ services/review.service.ts
 services/banner.service.ts
 services/user.service.ts          // profile, addresses, change-password
 services/wholesale.service.ts
-services/coupon.service.ts
+
 services/notification.service.ts  // in-app notifications (client-derived in frontend phase)
-services/admin/*.service.ts       // admin variants for products, orders, customers, coupons, banners, reviews, audit, settings, wholesale
+services/admin/*.service.ts       // admin variants for products, orders, customers, banners, reviews, audit, settings, wholesale
 services/upload.service.ts        // signed-upload flow (mocked in frontend phase)
 services/checkout.service.ts      // quote, razorpay-order, verify (mocked in frontend phase)
 services/newsletter.service.ts
@@ -252,7 +252,7 @@ Required entities (with the schema table they mirror):
 | `OrderItem` | `order_items` | immutable name/SKU/price snapshot |
 | `Payment` | `payments` | Razorpay ids |
 | `Review` | `reviews` | status: pending / approved / rejected |
-| `Coupon` | `coupons` | discountType: percentage / fixed |
+
 | `Banner` | `banners` | placement: home_hero / category / promotional |
 | `WholesaleInquiry` | `wholesale_inquiries` | businessType enum |
 | `NewsletterSubscriber` | `newsletter_subscribers` | |
@@ -300,12 +300,12 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 | 5A   | PDP — Gallery, Info, Variants, Add to Cart/Wishlist, Tabs      | 5–6     | ⬜ Pending |
 | 5B   | PDP — Reviews UI, Write-Review Form, Related, JSON-LD, Share, Breadcrumbs | 5–6 | ⬜ Pending |
 | 6    | Authentication Pages & Mock Auth Flow                          | 5–6     | ⬜ Pending |
-| 7A   | Cart, Wishlist Pages & Coupon UI                               | 5–6     | ⬜ Pending |
+| 7A   | Cart & Wishlist Pages                                          | 5–6     | ⬜ Pending |
 | 7B   | Checkout Multi-step Flow, Mock Razorpay UI, Success & Invoice  | 5–6     | ⬜ Pending |
 | 8A   | Account — Layout, Profile, Addresses, Change Password, Notifications | 5–6 | ⬜ Pending |
 | 8B   | Account — Orders List/Detail, Cancel, Re-order, Reviews-to-write, Wishlist Page | 5–6 | ⬜ Pending |
 | 9A   | Admin — Layout, Dashboard KPIs, Categories, Products CRUD (Mock Upload) | 5–6 | ⬜ Pending |
-| 9B   | Admin — Orders, Customers, Wholesale, Coupons, Banners, Reviews, Audit, Settings | 5–6 | ⬜ Pending |
+| 9B   | Admin — Orders, Customers, Wholesale, Banners, Reviews, Audit, Settings | 5–6 | ⬜ Pending |
 | 10A  | Static Pages & Public Forms                                    | 5–6     | ⬜ Pending |
 | 10B  | SEO, Performance, Accessibility & Polish                       | 5–6     | ⬜ Pending |
 | 11   | **Backend Integration Swap (Service Internals Only)**          | 5–6     | ⬜ Pending |
@@ -389,7 +389,7 @@ frontend/
   - Cart: empty + a seeded cart for the demo customer.
   - Orders: 6 orders spanning every status (pending / confirmed / processing / shipped / delivered / cancelled).
   - Reviews: ~20 across products (mix of statuses).
-  - Coupons: 3 (percentage 10 %, fixed ₹500, expired).
+
   - Banners: 2 home_hero, 1 category, 1 promotional.
   - WholesaleInquiry: 4 (various statuses).
   - Addresses: 2 per user.
@@ -544,18 +544,17 @@ productService.list(params: {
 
 ---
 
-## PHASE 7A — Cart, Wishlist Pages & Coupon UI  `(5–6 credits)`
+## PHASE 7A — Cart & Wishlist Pages  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Cart page: line items (image, name, variant, qty stepper, line subtotal, remove) · subtotal · shipping · tax · discount · total — **all amounts come from `cartService.get()`** (the mock service computes them server-side-style; UI never recomputes).
+- [ ] Cart page: line items (image, name, variant, qty stepper, line subtotal, remove) · subtotal · shipping · tax · total — **all amounts come from `cartService.get()`** (the mock service computes them server-side-style; UI never recomputes).
 - [ ] Empty cart state with CTA to /shop.
 - [ ] Wishlist page: grid view · move to cart · remove · empty state (calls `wishlistService.*`).
-- [ ] CouponBox component: apply / remove → refreshes cart query; shows applied coupon badge + savings.
-- [ ] Inline error messages for stock issues, invalid coupon, expired coupon, etc. — driven by mock error codes that match the real backend's codes (Section 4).
+- [ ] Inline error messages for stock issues, out-of-stock, etc. — driven by mock error codes that match the real backend's codes (Section 4).
 - [ ] "Proceed to Checkout" CTA disabled when cart empty or any line OOS.
 - [ ] Mobile-friendly sticky cart total bar.
 
-> **Done when:** cart totals come from the service (never recomputed in UI); coupon flows tested (valid / expired / under-min / used-up); wishlist CRUD works.
+> **Done when:** cart totals come from the service (never recomputed in UI); wishlist CRUD works.
 
 ---
 
@@ -616,7 +615,7 @@ productService.list(params: {
 ## PHASE 9A — Admin: Layout, Dashboard KPIs, Categories, Products CRUD (Mock Upload)  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
-- [ ] Admin layout sidebar: Dashboard · Products · Categories · Orders · Customers · Wholesale Inquiries · Coupons · Banners · Reviews · Audit Log (super_admin) · Settings.
+- [ ] Admin layout sidebar: Dashboard · Products · Categories · Orders · Customers · Wholesale Inquiries · Banners · Reviews · Audit Log (super_admin) · Settings.
 - [ ] `/admin/dashboard`: KPIs (Total Sales · Total Orders · Total Customers · Total Products) + revenue chart (Recharts) + recent orders table + top-selling products — data from `adminService.dashboard()`.
 - [ ] `/admin/categories`: tree CRUD + image upload (nested categories supported).
 - [ ] `/admin/products`: data table (search/sort/filter/paginate) + bulk soft-delete.
@@ -632,13 +631,12 @@ productService.list(params: {
 
 ---
 
-## PHASE 9B — Admin: Orders, Customers, Wholesale, Coupons, Banners, Reviews, Audit Log, Settings  `(5–6 credits)`
+## PHASE 9B — Admin: Orders, Customers, Wholesale, Banners, Reviews, Audit Log, Settings  `(5–6 credits)`
 **Status:** ⬜ Pending · **Completed on:** —
 
 - [ ] `/admin/orders`: table + detail + status update + refund button — `adminService.orders.*`.
 - [ ] `/admin/customers`: list + detail with order history + lifetime value.
 - [ ] `/admin/wholesale-inquiries`: table + status update + CSV export (mock CSV generated client-side from the service result).
-- [ ] `/admin/coupons`: CRUD (discount type, value, min cart, usage limit, per-user limit, start/end dates).
 - [ ] `/admin/banners`: CRUD (placement, schedule, image upload via mock uploadService, link, sort order).
 - [ ] `/admin/reviews`: moderation queue (approve / reject).
 - [ ] `/admin/audit-logs` (super_admin only): paginated filterable viewer (actor, entity, action, date).
