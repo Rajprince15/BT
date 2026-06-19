@@ -313,7 +313,7 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 ---
 
 ## PHASE 0 — Foundation Brief & Contract Lock-in  `(2–3 credits)`
-**Status:** ⬜ Pending · **Completed on:** —
+**Status:** ✅ COMPLETED (2026-06-19)
 
 - [ ] Read this file + `schema.sql` + `backend_workflow.md` end-to-end.
 - [ ] Confirm the **5 Hard Rules** at the top of this file are understood and will be enforced by the file-linter (see Phase 1A).
@@ -328,7 +328,7 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 ---
 
 ## PHASE 1A — Project Setup, Luxury Design System & Service-Layer Scaffold  `(5–6 credits)`
-**Status:** ⬜ Pending · **Completed on:** —
+**Status:** ✅ COMPLETED (2026-06-19)
 
 - [ ] Init Next.js 15 + TypeScript (strict) + App Router.
 - [ ] Install: `tailwindcss postcss autoprefixer @shadcn/ui @tanstack/react-query axios zustand framer-motion lucide-react zod react-hook-form sonner @sentry/nextjs`.

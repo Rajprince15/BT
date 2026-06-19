@@ -1,0 +1,41 @@
+/* Brand tokens for Bhavita Textiles
+	 Light theme (default) and Dark theme variables
+	 Consumed by ThemeProvider via data-theme attribute on <html>
+*/
+:root {
+	--bg: #FBF8F2;
+	--surface: #FFFFFF;
+	--surface-2: #F3EEE3;
+	--ink: #1B1F2A;
+	--ink-2: #4A5161;
+	--gold: #B8893A;
+	--gold-2: #8C661F;
+	--gold-soft: #E9D7AE;
+	--navy: #0E1A33;
+	--border: #E5DDC9;
+	--success: #3F7D58;
+	--danger: #9A2A2A;
+}
+
+[data-theme="dark"] {
+	--bg: #0B0C0F;
+	--surface: #15171C;
+	--surface-2: #1D2027;
+	--ink: #F4ECD9;
+	--ink-2: #A7A294;
+	--gold: #D4A857;
+	--gold-2: #F2C97A;
+	--gold-soft: #3A2E16;
+	--border: #2A2D34;
+}
+
+/* Utility defaults using tokens */
+html, body {
+	background-color: var(--bg);
+	color: var(--ink);
+}
+
+.surface {
+	background: var(--surface);
+	border-color: var(--border);
+}
