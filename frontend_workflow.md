@@ -293,7 +293,7 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 | 0    | Foundation Brief & Contract Lock-in                            | 2–3     | ✅ COMPLETED (2026-06-19) |
 | 1A   | Project Setup, Luxury Design System & Service-Layer Scaffold   | 5–6     | ✅ COMPLETED (2026-06-19) |
 | 1B   | TypeScript Entities, Mock Data Factory & Service Wiring        | 5–6     | ✅ COMPLETED (2026-06-19) |
-| 2    | Global Layout, Header, Mega-menu, Footer & Theming             | 5–6     | ⬜ Pending |
+| 2    | Global Layout, Header, Mega-menu, Footer & Theming             | 5–6     | ✅ COMPLETED  (2025-06-21)
 | 3A   | Home — Hero, Featured Categories, New Arrivals, Best Sellers   | 5–6     | ⬜ Pending |
 | 3B   | Home — Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter | 5–6 | ⬜ Pending |
 | 4    | Shop / Category PLP, Filters, Sort, Pagination, Search, Collections | 5–6 | ⬜ Pending |
@@ -405,19 +405,18 @@ frontend/
 ---
 
 ## PHASE 2 — Global Layout, Header, Mega-menu, Footer & Theming  `(5–6 credits)`
-**Status:** ⬜ Pending · **Completed on:** —
+**Status:** ✅ COMPLETED · **Completed on:** 2025-06-21
 
-- [ ] Root layout with `QueryClientProvider` + `ThemeProvider` + `Toaster`.
-- [ ] Header (sticky): serif wordmark · mega-menu · search · wishlist count · cart count · account · theme toggle · notification bell.
-- [ ] Mega-menu nav items: **Shop** (nested via `categoryService.getTree()`) · **Wholesale** · **About** · **Contact**. Pin top-level: Bedroom · Living Room · Rugs & Carpets · Door Mats · Bath · Home Decor · Handloom Heritage · Gift Collection · Special Collections · Wholesale.
-- [ ] Mobile drawer (Sheet) with nested collapsibles.
-- [ ] Footer: brand snippet + social · shop links · customer service · policies · wholesale CTA · newsletter signup · payment + security badges.
-- [ ] Breadcrumbs component (also emits JSON-LD `BreadcrumbList`).
-- [ ] Global search bar — debounced (250 ms) — suggestion dropdown (calls `productService.search`).
-- [ ] Theme toggle persists across reload.
-- [ ] Skeletons + error boundary + Sonner toasts.
-- [ ] Cart/wishlist/notification counts via React Query hooks (`useCart`, `useWishlist`, `useNotifications`) which call services.
-
+- [x] Root layout with `QueryClientProvider` + `ThemeProvider` + `Toaster`.
+- [x] Header (sticky): serif wordmark · mega-menu · search · wishlist count · cart count · account · theme toggle · notification bell.
+- [x] Mega-menu nav items: **Shop** (nested via `categoryService.getTree()`) · **Wholesale** · **About** · **Contact**. Pin top-level: Bedroom · Living Room · Rugs & Carpets · Door Mats · Bath · Home Decor · Handloom Heritage · Gift Collection · Special Collections · Wholesale.
+- [x] Mobile drawer (Sheet) with nested collapsibles.
+- [x] Footer: brand snippet + social · shop links · customer service · policies · wholesale CTA · newsletter signup · payment + security badges.
+- [x] Breadcrumbs component (also emits JSON-LD `BreadcrumbList`).
+- [x] Global search bar — debounced (250 ms) — suggestion dropdown (calls `productService.search`).
+- [x] Theme toggle persists across reload.
+- [x] Skeletons + error boundary + Sonner toasts.
+- [x] Cart/wishlist/notification counts via React Query hooks (`useCart`, `useWishlist`, `useNotifications`) which call services.
 > **Done when:** layout works on all routes, mega menu is keyboard-accessible, theme persists, header counters reflect mock data updates live.
 
 ---

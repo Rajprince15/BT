@@ -96,7 +96,7 @@ export default function MegaMenu() {
                   <Link
                     key={ed.label}
                     href="/shop"
-                    data-testid={`mega-menu-editorial-${ed.label.toLowerCase().replace(/s+/g, '-')}`}
+                    data-testid={`mega-menu-editorial-${ed.label.toLowerCase().replace(/\s+/g, '-')}`}
                     className="group relative block aspect-[3/4] overflow-hidden border border-[var(--gold-soft)]"
                   >
                     <Image

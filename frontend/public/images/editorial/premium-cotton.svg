@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Premium Cotton placeholder">
+  <defs>
+    <linearGradient id="pc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBF8F2"/>
+      <stop offset="100%" stop-color="#E9D7AE"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#pc)"/>
+  <g stroke="#B8893A" stroke-opacity="0.25" stroke-width="0.6">
+    <path d="M0 100Q150 60 300 100T600 100" fill="none"/>
+    <path d="M0 200Q150 160 300 200T600 200" fill="none"/>
+    <path d="M0 600Q150 560 300 600T600 600" fill="none"/>
+    <path d="M0 700Q150 660 300 700T600 700" fill="none"/>
+  </g>
+  <rect x="40" y="40" width="520" height="720" fill="none" stroke="#B8893A" stroke-opacity="0.6" stroke-width="2"/>
+  <g font-family="Georgia, 'Cormorant Garamond', serif" fill="#0E1A33" text-anchor="middle">
+    <text x="300" y="380" font-size="30" letter-spacing="6">PREMIUM</text>
+    <text x="300" y="430" font-size="36" font-style="italic">Cotton</text>
+    <text x="300" y="470" font-size="10" letter-spacing="4" fill="#8C661F">PURE · CRAFTED · LASTING</text>
+  </g>
+</svg>
