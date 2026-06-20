@@ -290,9 +290,9 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 
 | #    | Phase                                                          | Credits | Status     |
 |------|----------------------------------------------------------------|---------|------------|
-| 0    | Foundation Brief & Contract Lock-in                            | 2–3     | ⬜ Pending |
-| 1A   | Project Setup, Luxury Design System & Service-Layer Scaffold   | 5–6     | ⬜ Pending |
-| 1B   | TypeScript Entities, Mock Data Factory & Service Wiring        | 5–6     | ⬜ Pending |
+| 0    | Foundation Brief & Contract Lock-in                            | 2–3     | ✅ COMPLETED (2026-06-19) |
+| 1A   | Project Setup, Luxury Design System & Service-Layer Scaffold   | 5–6     | ✅ COMPLETED (2026-06-19) |
+| 1B   | TypeScript Entities, Mock Data Factory & Service Wiring        | 5–6     | ✅ COMPLETED (2026-06-19) |
 | 2    | Global Layout, Header, Mega-menu, Footer & Theming             | 5–6     | ⬜ Pending |
 | 3A   | Home — Hero, Featured Categories, New Arrivals, Best Sellers   | 5–6     | ⬜ Pending |
 | 3B   | Home — Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter | 5–6 | ⬜ Pending |
@@ -379,10 +379,10 @@ frontend/
 ---
 
 ## PHASE 1B — TypeScript Entities, Mock Data Factory & Service Wiring  `(5–6 credits)`
-**Status:** ⬜ Pending · **Completed on:** —
+**Status:** ✅ COMPLETED (2026-06-19)
 
-- [ ] Create every TS entity from Section 5 with strict typing.
-- [ ] Generate **production-quality mock data** for each entity in `mocks/`:
+- [x] Create every TS entity from Section 5 with strict typing.
+- [x] Generate **production-quality mock data** for each entity in `mocks/`:
   - Categories: full tree from Section 9 (Bedroom / Living Room / Bath / Home Decor / Handloom Heritage / Handicrafts / Special Collections) with all sub-categories.
   - Products: 40+ items spanning every leaf category, with 2–4 images each, 2–3 variants (size/color), realistic INR prices, sale prices on ~30 %, flags (`featured`, `bestSeller`, `newArrival`).
   - Users: 1 customer (`customer@bhavita.test`), 1 admin (`admin@bhavita.test`), 1 super_admin (`super@bhavita.test`) — mock passwords accepted by mock auth service.
@@ -395,10 +395,10 @@ frontend/
   - Addresses: 2 per user.
   - Wishlist: 5 items for demo customer.
   - Notifications: derived from orders + 2 admin broadcasts.
-- [ ] Implement **every service function** to return mocks via small helpers (`paginate`, `filterByCategory`, `simulateLatency` 200–400 ms, `simulateErrorRate` toggleable for testing error states).
-- [ ] Every service function returns the same shape its real backend counterpart will return (envelope unwrapped → typed payload).
-- [ ] Add `services/__contract__.md` listing every function, its signature, the mock source, and the backend endpoint it will swap to.
-- [ ] Smoke-test: a throwaway `app/_diag/page.tsx` (dev only, removed before launch) calls every service and prints counts — proves all services wire up before any UI consumes them.
+- [x] Implement **every service function** to return mocks via small helpers (`paginate`, `filterByCategory`, `simulateLatency` 200–400 ms, `simulateErrorRate` toggleable for testing error states).
+- [x] Every service function returns the same shape its real backend counterpart will return (envelope unwrapped → typed payload).
+- [x] Add `services/__contract__.md` listing every function, its signature, the mock source, and the backend endpoint it will swap to.
+- [x] Smoke-test: a throwaway `app/_diag/page.tsx` (dev only, removed before launch) calls every service and prints counts — proves all services wire up before any UI consumes them.
 
 > **Done when:** Every Section-5 entity has an interface, a mock dataset, and a service. Calling any service returns typed data that matches the future API. ESLint still fails any non-service file that touches mocks or axios.
 

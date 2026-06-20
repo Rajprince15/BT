@@ -28,7 +28,7 @@ export const wishlistService = {
       return refreshUserWishlist();
     }
 
-    return callApi<Wishlist>('/wishlist', undefined, 'get');
+    return callApi<Wishlist[]>('/wishlist', undefined, 'get');
   },
 
   async add(productId: number) {
