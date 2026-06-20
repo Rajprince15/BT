@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Cormorant_Garamond, Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from '@/providers/Providers';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 const serif = Cormorant_Garamond({
   subsets: ['latin'],
@@ -53,24 +55,32 @@ export const metadata: Metadata = {
     description:
       'Royal · Classic · Timeless. Premium luxury textiles & home furnishings.',
   },
-  icons: {
-    icon: '/favicon.ico',
-  },
+  icons: { icon: '/favicon.ico' },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang='en'
+      lang="en"
       suppressHydrationWarning
       className={`${serif.variable} ${sans.variable}`}
     >
-      <body className='font-sans antialiased bg-bg text-ink'>
-        <Providers>{children}</Providers>
+      <body className="font-sans antialiased bg-bg text-ink">
+        <Providers>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-ink focus:px-3 focus:py-1.5 focus:text-bg"
+          >
+            Skip to content
+          </a>
+          <Header />
+          <main id="main-content" className="min-h-[60vh]">
+            {children}
+          </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
