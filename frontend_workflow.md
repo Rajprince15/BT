@@ -294,7 +294,7 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 | 1A   | Project Setup, Luxury Design System & Service-Layer Scaffold   | 5–6     | ✅ COMPLETED (2026-06-19) |
 | 1B   | TypeScript Entities, Mock Data Factory & Service Wiring        | 5–6     | ✅ COMPLETED (2026-06-19) |
 | 2    | Global Layout, Header, Mega-menu, Footer & Theming             | 5–6     | ✅ COMPLETED  (2025-06-21)
-| 3A   | Home — Hero, Featured Categories, New Arrivals, Best Sellers   | 5–6     | ⬜ Pending |
+| 3A   | Home — Hero, Featured Categories, New Arrivals, Best Sellers   | 5–6     | ✅ COMPLETED (2026-06-21) |
 | 3B   | Home — Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter | 5–6 | ⬜ Pending |
 | 4    | Shop / Category PLP, Filters, Sort, Pagination, Search, Collections | 5–6 | ⬜ Pending |
 | 5A   | PDP — Gallery, Info, Variants, Add to Cart/Wishlist, Tabs      | 5–6     | ⬜ Pending |
@@ -422,16 +422,17 @@ frontend/
 ---
 
 ## PHASE 3A — Home: Hero, Featured Categories, New Arrivals, Best Sellers  `(5–6 credits)`
-**Status:** ⬜ Pending · **Completed on:** —
+**Status:** ✅ COMPLETED (2026-01-15) · **Completed on:** 2026-06-21
 
-- [ ] Hero Banner section (data from `bannerService.list({ placement: 'home_hero' })`) — full-bleed, cinematic, slide carousel with autoplay + manual controls + reduced-motion respect.
-- [ ] Featured Categories grid (6–8 cards via `categoryService.getFeatured()`) — serif labels, gold underline hover, lazy-loaded images.
-- [ ] New Arrivals carousel (`productService.list({ flag: 'new_arrival' })`) — uses shared `ProductCard`.
-- [ ] Best Sellers section (`productService.list({ flag: 'best_seller' })`) — alternate editorial layout.
-- [ ] Reusable `ProductCard` component: image with hover swap, name (serif), price + sale price, badges (New / Best Seller / Sale).
-- [ ] Section-level skeletons + error states (toggle the mock error flag to verify).
-- [ ] Subtle staggered entrance animations (40–80 ms steps).
-- [ ] Mobile-first responsive (1 → 2 → 3 → 4 cols).
+
+- [x] Hero Banner section (data from `bannerService.list({ placement: 'home_hero' })`) — full-bleed, cinematic, slide carousel with autoplay + manual controls + reduced-motion respect.
+- [x] Featured Categories grid (6–8 cards via `categoryService.getFeatured()`) — serif labels, gold underline hover, lazy-loaded images.
+- [x] New Arrivals carousel (`productService.list({ flag: 'new_arrival' })`) — uses shared `ProductCard`.
+- [x] Best Sellers section (`productService.list({ flag: 'best_seller' })`) — alternate editorial layout.
+- [x] Reusable `ProductCard` component: image with hover swap, name (serif), price + sale price, badges (New / Best Seller / Sale).
+- [x] Section-level skeletons + error states (toggle the mock error flag to verify).
+- [x] Subtle staggered entrance animations (40–80 ms steps).
+- [x] Mobile-first responsive (1 → 2 → 3 → 4 cols).
 
 > **Done when:** four sections render with mock data via services only, animations restrained, no AI-slop gradients, ESLint clean (zero mock/axios imports outside services).
 

@@ -3,12 +3,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+
 import { cn } from '@/lib/utils';
 import Container from '@/components/common/Container';
 import SectionHeading from '@/components/common/SectionHeading';
 import EmptyState from '@/components/common/EmptyState';
-import categoryService from '@/services/category.service';
+import { useFeaturedCategories } from '@/hooks/useCategories';
 import type { Category } from '@/types/Category';
 
 const FALLBACK_IMAGES = [
@@ -73,11 +73,7 @@ function CategorySkeleton({ index }: { index: number }) {
 }
 
 export default function FeaturedCategories() {
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['categories', 'featured'],
-    queryFn: () => categoryService.getFeatured(8),
-    staleTime: 60_000,
-  });
+  const { data, isLoading, isError, refetch } = useFeaturedCategories(8);
 
   return (
     <section data-testid="featured-categories" className="py-20 md:py-28">

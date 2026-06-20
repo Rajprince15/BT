@@ -197,3 +197,10 @@ html {
         animation: none;
     }
 }
+
+/* Letter-spacing utility used across luxury eyebrows / pills / CTAs.
+   Declared here because Tailwind v4 reads tokens from the @theme block
+   in this file rather than the tailwind.config.ts utilities map. */
+.tracking-wider2 {
+    letter-spacing: 0.18em;
+}

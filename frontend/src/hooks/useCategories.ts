@@ -10,3 +10,10 @@ export function useCategories() {
     staleTime: 60_000,
   });
 }
+export function useFeaturedCategories(limit = 8) {
+  return useQuery({
+    queryKey: ['categories', 'featured', limit],
+    queryFn: () => categoryService.getFeatured(limit),
+    staleTime: 60_000,
+  });
+}

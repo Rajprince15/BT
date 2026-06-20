@@ -22,7 +22,7 @@ export default function PriceTag({
   price,
   salePrice,
   size = 'md',
-  currency = 'u20B9',
+  currency = '\u20B9',
   className,
 }: PriceTagProps) {
   const hasSale = typeof salePrice === 'number' && salePrice > 0 && salePrice < price;
