@@ -2,7 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import reviewService from '@/services/review.service';
-
+export function useTestimonials(limit = 8) {
+  return useQuery({
+    queryKey: ['reviews', 'testimonials', limit],
+    queryFn: () => reviewService.getTestimonials(limit),
+    staleTime: 60_000,
+  });
+}
 export function useProductReviews(productId: number) {
   return useQuery({
     queryKey: ['reviews', productId],

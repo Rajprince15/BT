@@ -295,7 +295,7 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 | 1B   | TypeScript Entities, Mock Data Factory & Service Wiring        | 5–6     | ✅ COMPLETED (2026-06-19) |
 | 2    | Global Layout, Header, Mega-menu, Footer & Theming             | 5–6     | ✅ COMPLETED  (2025-06-21)
 | 3A   | Home — Hero, Featured Categories, New Arrivals, Best Sellers   | 5–6     | ✅ COMPLETED (2026-06-21) |
-| 3B   | Home — Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter | 5–6 | ⬜ Pending |
+| 3B   | Home — Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter | 5–6 | ✅ COMPLETED (2026-06-21) |
 | 4    | Shop / Category PLP, Filters, Sort, Pagination, Search, Collections | 5–6 | ⬜ Pending |
 | 5A   | PDP — Gallery, Info, Variants, Add to Cart/Wishlist, Tabs      | 5–6     | ⬜ Pending |
 | 5B   | PDP — Reviews UI, Write-Review Form, Related, JSON-LD, Share, Breadcrumbs | 5–6 | ⬜ Pending |
@@ -439,16 +439,17 @@ frontend/
 ---
 
 ## PHASE 3B — Home: Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter  `(5–6 credits)`
-**Status:** ⬜ Pending · **Completed on:** —
+**Status:** ✅ COMPLETED (2026-06-21) · **Completed on:** 2026-06-21
 
-- [ ] Seasonal Collections block (Summer / Winter / Festive / Wedding) — links to `/collections/<key>`.
-- [ ] Handloom Heritage Collection — editorial storytelling layout (asymmetric grid, ivory background, gold dividers).
-- [ ] Testimonials carousel via `reviewService.getTestimonials()` with rating stars and customer name.
-- [ ] Brand Story — asymmetric editorial layout: heritage tagline, signature craft image, founder quote.
-- [ ] Wholesale CTA → `/wholesale` (full-width dark band, gold CTA button, supporting copy for hotels / resorts / designers).
-- [ ] Newsletter signup → `newsletterService.subscribe()` (with honeypot, success/error toasts, double opt-in copy).
-- [ ] Section spacing tuned for premium whitespace.
-- [ ] Reduced-motion respected throughout.
+
+- [x] Seasonal Collections block (Summer / Winter / Festive / Wedding) — links to `/collections/<key>`.
+- [x] Handloom Heritage Collection — editorial storytelling layout (asymmetric grid, ivory background, gold dividers).
+- [x] Testimonials carousel via `reviewService.getTestimonials()` with rating stars and customer name.
+- [x] Brand Story — asymmetric editorial layout: heritage tagline, signature craft image, founder quote.
+- [x] Wholesale CTA → `/wholesale` (full-width dark band, gold CTA button, supporting copy for hotels / resorts / designers).
+- [x] Newsletter signup → `newsletterService.subscribe()` (with honeypot, success/error toasts, double opt-in copy).
+- [x] Section spacing tuned for premium whitespace.
+- [x] Reduced-motion respected throughout.
 
 > **Done when:** complete home page (3A + 3B) renders smoothly on mobile + desktop.
 

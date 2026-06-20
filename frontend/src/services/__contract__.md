@@ -43,7 +43,7 @@ the same signature — toggle controlled by `NEXT_PUBLIC_USE_MOCKS`.
 | `reviewService.listForProduct(productId, { page?, pageSize? })` | `ListResponse<Review>` | `reviews.mock` | `GET /api/reviews/product/:id` |
 | `reviewService.canReview(productId)` | `boolean` | `reviews.mock` + `orders.mock` | `GET /api/reviews/product/:id/can-review` |
 | `reviewService.toWrite()` | `OrderItem[]` | `orders.mock` + `reviews.mock` | `GET /api/reviews/to-write` |
-| `reviewService.submit(payload)` | `Review` | `reviews.mock` | `POST /api/reviews` |
+| `reviewService.getTestimonials(limit?)` | `Testimonial[]` | `reviews.mock` + `users.mock` + `products.mock` | `GET /api/reviews/testimonials` |
 | **Checkout** | | | |
 | `checkoutService.quote(payload)` | `Quote` | `cartService.get` | `POST /api/checkout/quote` |
 | `checkoutService.createRazorpayOrder(payload)` | `RazorpayOrderResponse` | — | `POST /api/checkout/razorpay/order` |
