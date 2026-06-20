@@ -38,7 +38,7 @@ export default function Footer() {
 
   const handleSubscribe = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email || !/^S+@S+.S+$/.test(email)) {
+      if (!email || !/^S+@S+.S+$/.test(email)) {
       toast.error('Please enter a valid email');
       return;
     }
