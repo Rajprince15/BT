@@ -13,22 +13,28 @@ async function callApi<T>(path: string) {
 }
 
 export const categoryService = {
-  async tree() {
+  async tree(): Promise<Category[]> {
     if (useMockService) {
       await mockDelay();
       return [...categories].sort((a, b) => a.sortOrder - b.sortOrder);
     }
-
     return callApi<Category[]>('/categories');
   },
 
-  async getFeatured(limit = 8) {
+  async getFeatured(limit = 8): Promise<Category[]> {
     if (useMockService) {
       await mockDelay();
-      return [...categories].filter((category) => category.isActive).slice(0, limit);
+      return [...categories].filter((c) => c.isActive).slice(0, limit);
     }
-
     return callApi<Category[]>('/categories/featured');
+  },
+
+  async bySlug(slug: string): Promise<Category | null> {
+    if (useMockService) {
+      await mockDelay();
+      return categories.find((c) => c.slug === slug) ?? null;
+    }
+    return callApi<Category | null>(`/categories/${encodeURIComponent(slug)}`);
   },
 };
 
