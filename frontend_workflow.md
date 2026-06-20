@@ -296,7 +296,7 @@ At backend integration time, set `NEXT_PUBLIC_USE_MOCKS=false` and populate the 
 | 2    | Global Layout, Header, Mega-menu, Footer & Theming             | 5–6     | ✅ COMPLETED  (2025-06-21)
 | 3A   | Home — Hero, Featured Categories, New Arrivals, Best Sellers   | 5–6     | ✅ COMPLETED (2026-06-21) |
 | 3B   | Home — Seasonal, Handloom Heritage, Testimonials, Brand Story, Wholesale CTA, Newsletter | 5–6 | ✅ COMPLETED (2026-06-21) |
-| 4    | Shop / Category PLP, Filters, Sort, Pagination, Search, Collections | 5–6 | ⬜ Pending |
+| 4    | Shop / Category PLP, Filters, Sort, Pagination, Search, Collections | 5–6 | ✅ COMPLETED (2026-06-21) |
 | 5A   | PDP — Gallery, Info, Variants, Add to Cart/Wishlist, Tabs      | 5–6     | ⬜ Pending |
 | 5B   | PDP — Reviews UI, Write-Review Form, Related, JSON-LD, Share, Breadcrumbs | 5–6 | ⬜ Pending |
 | 6    | Authentication Pages & Mock Auth Flow                          | 5–6     | ⬜ Pending |
@@ -456,20 +456,20 @@ frontend/
 ---
 
 ## PHASE 4 — Shop / Category PLP, Filters, Sort, Pagination, Search & Collections  `(5–6 credits)`
-**Status:** ⬜ Pending · **Completed on:** —
+**Status:** ✅ COMPLETED · **Completed on:** 2025-06-21
 
-- [ ] Dynamic route `app/(shop)/shop/[[...slug]]/page.tsx` (1+ level nested categories).
-- [ ] `ProductCard` (re-used from Phase 3A) — image, name, price, sale price, badges.
-- [ ] Product grid responsive (1 / 2 / 3 / 4 cols).
-- [ ] `FilterSidebar`: category tree · price range slider · color · size · availability · flag toggles (New / Best Seller / Sale).
-- [ ] Sort dropdown: new · price ↑↓ · best sellers · rating.
-- [ ] Pagination + infinite scroll fallback (React Query infinite calling `productService.list`).
-- [ ] Search results page (`/search?q=`) with same grid + filter behaviour (calls `productService.search`).
-- [ ] Empty + skeleton states.
-- [ ] Special Collections routes (`/collections/new-arrivals` etc.) → `productService.byCollection(key)`.
-- [ ] Filters reflect in URL search params (shareable links).
-- [ ] Canonical URL on filtered PLPs = base category.
-- [ ] Mobile filter drawer (Sheet) with sticky "Apply" bar.
+- [x] Dynamic route `app/(shop)/shop/[[...slug]]/page.tsx` (1+ level nested categories).
+- [x] `ProductCard` (re-used from Phase 3A) — image, name, price, sale price, badges.
+- [x] Product grid responsive (1 / 2 / 3 / 4 cols).
+- [x] `FilterSidebar`: category tree · price range slider · color · size · availability · flag toggles (New / Best Seller / Sale).
+- [x] Sort dropdown: new · price ↑↓ · best sellers · rating.
+- [x] Pagination + infinite scroll fallback (React Query infinite calling `productService.list`).
+- [x] Search results page (`/search?q=`) with same grid + filter behaviour (calls `productService.search`).
+- [x] Empty + skeleton states.
+- [x] Special Collections routes (`/collections/new-arrivals` etc.) → `productService.byCollection(key)`.
+- [x] Filters reflect in URL search params (shareable links).
+- [x] Canonical URL on filtered PLPs = base category.
+- [x] Mobile filter drawer (Sheet) with sticky "Apply" bar.
 
 ### Service signature (mock + real share it)
 ```ts

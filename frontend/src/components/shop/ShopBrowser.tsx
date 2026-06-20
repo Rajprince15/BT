@@ -13,6 +13,7 @@ import ProductGrid from '@/components/shop/ProductGrid';
 import { useCategories } from '@/hooks/useCategories';
 import { useProductFacets, useProducts } from '@/hooks/useProducts';
 import type { ProductFlag, ProductSort } from '@/services/product.service';
+import type { Category } from '@/types/Category';
 import { cn } from '@/lib/utils';
 
 const SORTS: ProductSort[] = ['new', 'price_asc', 'price_desc', 'best_sellers', 'rating'];
@@ -98,7 +99,7 @@ export default function ShopBrowser({
   // Apply initial flag default if user has not set any (e.g. /shop?flag=…).
   useEffect(() => {
     if (initialFlag && !filters.flag) {
-      setFilters((f) => ({ ...f, flag: initialFlag }));
+      setFilters((f: ShopFilters) => ({ ...f, flag: initialFlag }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFlag]);
@@ -146,7 +147,7 @@ export default function ShopBrowser({
     [effectiveCategory, effectiveQuery, lockedFlag],
   );
   const { data: facets } = useProductFacets(facetsParams);
-  const { data: cats = [] } = useCategories();
+  const { data: cats = [] as Category[] } = useCategories();
 
   const safeFacets = {
     colors: facets?.colors ?? [],
@@ -186,7 +187,7 @@ export default function ShopBrowser({
   ]);
 
   const onChangeFilters = useCallback((next: Partial<ShopFilters>) => {
-    setFilters((cur) => ({ ...cur, ...next }));
+    setFilters((cur: ShopFilters) => ({ ...cur, ...next }));
   }, []);
 
   const onReset = useCallback(() => {
@@ -202,7 +203,7 @@ export default function ShopBrowser({
   const activeChips = useMemo(() => {
     const chips: { key: string; label: string; clear: () => void }[] = [];
     if (filters.category && !lockedCategorySlug) {
-      const c = cats.find((cc) => cc.slug === filters.category);
+      const c = cats.find((cc: Category) => cc.slug === filters.category);
       chips.push({
         key: 'cat',
         label: c?.name ?? filters.category,
