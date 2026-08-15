@@ -167,4 +167,8 @@ export const categoryIds = {
   decorativeItems: decorativeItems.id,
   bedRunners: bedRunners.id,
   dohars: dohars.id,
+  summerCollection: summerCollection.id,
+  winterCollection: winterCollection.id,
+  festiveCollection: festiveCollection.id,
+  weddingCollection: weddingCollection.id,
 };
