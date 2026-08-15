@@ -1,3 +1,2 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+import type { Cart } from '@/types/Cart';
+export default function OrderSummary({ cart }: { cart: Cart }) { return <aside data-testid="checkout-order-summary" className="rounded-xl border border-border bg-surface p-6"><h2 className="font-serif text-2xl text-ink">Order summary</h2><div className="mt-5 space-y-3 text-sm text-ink-2">{cart.items.map((item) => <div key={item.id} className="flex justify-between gap-4"><span>{item.productName} × {item.quantity}</span><span>₹{(item.price * item.quantity).toLocaleString('en-IN')}</span></div>)}<div className="flex justify-between border-t border-border pt-4 text-base font-semibold text-ink"><span>Total</span><span data-testid="checkout-total">₹{cart.total.toLocaleString('en-IN')}</span></div></div></aside>; }

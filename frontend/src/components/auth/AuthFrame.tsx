@@ -1,0 +1,5 @@
+import Link from 'next/link';
+
+export default function AuthFrame({ title, eyebrow, children }: { title: string; eyebrow: string; children: React.ReactNode }) {
+  return <main data-testid="auth-page" className="min-h-[calc(100vh-5rem)] bg-bg px-6 py-16"><div className="mx-auto grid max-w-5xl overflow-hidden rounded-2xl border border-border bg-surface shadow-luxe lg:grid-cols-[.85fr_1.15fr]"><aside className="hidden bg-navy p-12 text-bg lg:block"><p className="text-xs uppercase tracking-[.25em] text-gold-soft">Bhavita Textiles</p><h2 className="mt-20 max-w-xs font-serif text-5xl leading-none">A more considered home.</h2><p className="mt-6 max-w-xs text-sm leading-7 text-bg/70">Sign in to keep your saved pieces, orders, and private atelier notes together.</p></aside><section className="p-7 sm:p-12"><Link href="/" data-testid="auth-brand-link" className="font-serif text-xl text-ink">Bhavita Textiles</Link><p className="mt-12 text-xs font-semibold uppercase tracking-wider2 text-gold">{eyebrow}</p><h1 data-testid="auth-title" className="mt-3 font-serif text-4xl text-ink">{title}</h1>{children}</section></div></main>;
+}

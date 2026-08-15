@@ -147,8 +147,6 @@ export default async function CollectionPage({
         lockedCategorySlug={props.category}
         disableCategoryTree={meta.filter.kind !== 'category'}
         initialFlag={props.flag}
-        mode="collection"
-        collectionKey={meta.key}
       />
     </Suspense>
   );

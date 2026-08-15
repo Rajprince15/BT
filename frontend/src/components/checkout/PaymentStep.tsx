@@ -1,3 +1,2 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+'use client';
+export default function PaymentStep({ onPay, busy }: { onPay: () => void; busy?: boolean }) { return <section data-testid="checkout-payment-step"><h2 className="font-serif text-2xl text-ink">Payment</h2><div className="mt-5 rounded border border-gold bg-gold-soft/20 p-5 text-sm leading-7 text-ink-2"><strong className="block text-ink">Razorpay Checkout</strong>Secure payment options will open in the next step. This demo uses the same service response shape as the future payment flow.</div><button type="button" data-testid="checkout-pay-button" disabled={busy} onClick={onPay} className="mt-6 h-12 w-full rounded-full bg-ink text-xs font-semibold uppercase tracking-wider2 text-bg hover:bg-gold disabled:opacity-50">{busy ? 'Preparing payment…' : 'Continue to payment'}</button></section>; }

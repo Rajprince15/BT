@@ -1,3 +1,2 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+import AccountShell from '@/components/account/AccountShell';
+export default function AccountLayout({ children }: { children: React.ReactNode }) { return <AccountShell>{children}</AccountShell>; }

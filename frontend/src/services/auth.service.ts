@@ -22,6 +22,12 @@ export interface AuthChangePasswordPayload {
   newPassword: string;
 }
 
+export interface PasswordResetPayload {
+  email?: string;
+  token?: string;
+  password?: string;
+}
+
 export interface AuthResponse {
   accessToken: string;
   user: User;
@@ -145,6 +151,38 @@ export const authService = {
     }
 
     return callApi<{ success: boolean }>('/auth/change-password', payload, 'post');
+  },
+
+  async forgotPassword(email: string) {
+    if (useMockService) {
+      await mockDelay();
+      return { success: true, message: `If ${email} is registered, a reset link is on its way.` };
+    }
+    return callApi<{ success: boolean; message: string }>('/auth/forgot-password', { email }, 'post');
+  },
+
+  async resetPassword(payload: { token: string; password: string }) {
+    if (useMockService) {
+      await mockDelay();
+      return { success: Boolean(payload.token && payload.password) };
+    }
+    return callApi<{ success: boolean }>('/auth/reset-password', payload, 'post');
+  },
+
+  async verifyEmail(token: string) {
+    if (useMockService) {
+      await mockDelay();
+      return { success: Boolean(token) };
+    }
+    return callApi<{ success: boolean }>(`/auth/verify-email?token=${encodeURIComponent(token)}`, undefined, 'get');
+  },
+
+  async resendVerification() {
+    if (useMockService) {
+      await mockDelay();
+      return { success: true };
+    }
+    return callApi<{ success: boolean }>('/auth/resend-verification', undefined, 'post');
   },
 };
 

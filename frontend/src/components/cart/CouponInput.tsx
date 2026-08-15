@@ -1,3 +1,3 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+'use client';
+import { useState } from 'react'; import { toast } from 'sonner';
+export default function CouponInput() { const [code, setCode] = useState(''); return <form data-testid="coupon-form" className="mt-6 flex gap-2" onSubmit={(event) => { event.preventDefault(); toast.info(code ? 'Coupons will be applied at checkout.' : 'Enter a code to apply it.'); }}><input data-testid="coupon-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder="Atelier code" className="h-11 min-w-0 flex-1 rounded-full border border-border bg-bg px-4 text-sm" /><button data-testid="coupon-submit" className="rounded-full border border-border px-4 text-xs font-semibold uppercase tracking-wider2 text-ink hover:border-gold">Apply</button></form>; }

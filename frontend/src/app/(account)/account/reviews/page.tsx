@@ -1,3 +1,2 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+'use client'; import { useQuery } from '@tanstack/react-query'; import reviewService from '@/services/review.service';
+export default function ReviewsPage(){const {data=[]}=useQuery({queryKey:['reviews-to-write'],queryFn:reviewService.toWrite});return <div data-testid="account-reviews-page"><p className="text-xs uppercase tracking-wider2 text-gold">Your voice</p><h2 className="mt-2 font-serif text-4xl text-ink">Reviews</h2><p className="mt-4 text-ink-2">Share how your delivered pieces live in your home.</p><div className="mt-8 space-y-3">{data.map((item)=><div key={`${item.orderId}-${item.productId}`} data-testid="review-to-write" className="rounded-xl border border-border bg-surface p-5"><p className="font-serif text-xl text-ink">{item.productName}</p><button data-testid={`write-review-${item.productId}`} className="mt-3 rounded-full border border-border px-4 py-2 text-xs uppercase tracking-wider2 hover:border-gold">Write review</button></div>)}</div></div>}

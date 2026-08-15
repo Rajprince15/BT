@@ -1,3 +1,9 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
+'use client';
+
+import { Star } from 'lucide-react';
+import { useProductReviews } from '@/hooks/useReviews';
+
+export default function ReviewList({ productId, rating, count }: { productId: number; rating: number; count: number }) {
+  const { data, isLoading } = useProductReviews(productId);
+  return <section data-testid="product-reviews" className="mt-12 border-t border-border pt-10"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wider2 text-gold">The atelier journal</p><h2 className="mt-2 font-serif text-3xl text-ink">Customer notes</h2></div><div data-testid="product-rating-summary" className="flex items-center gap-2 text-sm text-ink-2"><Star className="size-4 fill-gold text-gold" /> {rating.toFixed(1)} · {count} reviews</div></div><div className="mt-7 divide-y divide-border">{isLoading ? <p className="py-6 text-sm text-ink-2">Gathering notes…</p> : data?.items.length ? data.items.map((review) => <article key={review.id} data-testid="review-item" className="py-6"><div className="flex gap-1 text-gold">{Array.from({ length: 5 }).map((_, index) => <Star key={index} className="size-3" fill={index < review.rating ? 'currentColor' : 'none'} />)}</div>{review.title ? <h3 className="mt-2 font-serif text-lg text-ink">{review.title}</h3> : null}<p className="mt-1 text-sm leading-7 text-ink-2">{review.review}</p><p className="mt-3 text-[11px] uppercase tracking-wider2 text-ink-2">Verified buyer</p></article>) : <p data-testid="reviews-empty" className="py-6 text-sm text-ink-2">Be the first to share how this piece lives in your home.</p>}</div></section>;
 }

@@ -1,3 +1,3 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+'use client';
+import type { Address } from '@/types/Address';
+export default function AddressStep({ addresses, selected, onSelect }: { addresses: Address[]; selected?: number; onSelect: (id: number) => void }) { return <section data-testid="checkout-address-step"><h2 className="font-serif text-2xl text-ink">Where should we deliver?</h2><div className="mt-5 grid gap-3">{addresses.map((address) => <button type="button" key={address.id} data-testid={`checkout-address-${address.id}`} onClick={() => onSelect(address.id)} className={`rounded border p-4 text-left text-sm leading-6 ${selected === address.id ? 'border-gold bg-gold-soft/20' : 'border-border bg-surface'}`}><strong className="text-ink">{address.fullName}</strong><span className="block text-ink-2">{address.addressLine1}, {address.city}, {address.state} · {address.pincode}</span></button>)}</div></section>; }

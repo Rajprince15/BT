@@ -1,3 +1,2 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+'use client'; import { useQuery } from '@tanstack/react-query'; import wishlistService from '@/services/wishlist.service'; import { products } from '@/mocks/products.mock'; import ProductCard from '@/components/product/ProductCard';
+export default function WishlistPage(){const {data=[]}=useQuery({queryKey:['wishlist'],queryFn:wishlistService.get});const items=data.map((item)=>products.find((p)=>p.id===item.productId)).filter(Boolean);return <div data-testid="account-wishlist-page"><p className="text-xs uppercase tracking-wider2 text-gold">Saved pieces</p><h2 className="mt-2 font-serif text-4xl text-ink">Wishlist</h2><div className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-3">{items.map((product)=>product?<ProductCard key={product.id} product={product}/>:null)}</div></div>}

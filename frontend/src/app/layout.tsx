@@ -4,6 +4,8 @@ import './globals.css';
 import Providers from '@/providers/Providers';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import JsonLd from '@/components/common/JsonLd';
+import { organizationJsonLd, websiteJsonLd } from '@/lib/seo';
 
 const serif = Cormorant_Garamond({
   subsets: ['latin'],
@@ -68,6 +70,8 @@ export default function RootLayout({
       className={`${serif.variable} ${sans.variable}`}
     >
       <body className="font-sans antialiased bg-bg text-ink">
+        <JsonLd id="ld-organization" data={organizationJsonLd()} />
+        <JsonLd id="ld-website" data={websiteJsonLd()} />
         <Providers>
           <a
             href="#main-content"

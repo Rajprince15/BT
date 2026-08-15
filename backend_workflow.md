@@ -1,5 +1,11 @@
 # BHAVITA TEXTILES — BACKEND WORKFLOW (SINGLE SOURCE OF TRUTH)
 
+> **Read `Prompt.md` first.** As of 2026-01-15 the repository is in the
+> frontend-only phase (see `Prompt.md` §0 and §2). Do **not** implement any
+> backend code from this file until the user explicitly opens the backend
+> phase. The endpoint contracts, envelope, RBAC, and phase plan below stay
+> unchanged and remain the target once the backend phase begins.
+>
 > **Read me first.** This file is **self-sufficient**. Everything from `BT_Project_plan.md` that is backend-relevant is inlined here. The companion `schema.sql` defines the database; the companion `frontend_workflow.md` mirrors this contract on the UI side. **Do not split logic into more files.**
 
 ---
@@ -49,6 +55,30 @@ This project follows a **Frontend-First** workflow. By the time backend work beg
   - If a field had to be renamed or remapped, do it in the backend response layer — **never** in the frontend.
 
 > If during implementation any phase requires a frontend interface change, **STOP**, raise it as a contract amendment, update `frontend/types/*.ts` + `services/__contract__.md` + the mock data in one PR, and only then continue. Do not silently diverge.
+
+### Contract reconciliation required before backend implementation
+
+The initial frontend scaffold contains several historical service-path notes that do
+not exactly match this backend workflow. Do not implement those historical paths as
+new backend routes. Before Phase 2A, create and approve one canonical contract table
+from the current `frontend/src/services/__contract__.md`, this file, and `schema.sql`.
+At minimum reconcile these known differences:
+
+| Area | Backend workflow canonical route | Required action |
+|---|---|---|
+| Product search | `GET /api/products` with `q` | Frontend service may keep `search(q)` but must call the list route during swap |
+| Product related | No dedicated route | Derive related products from the product/category list service or explicitly add an approved route |
+| Cart bulk | Only item add/update/remove are defined | Implement bulk add as repeated service calls or add an approved backend endpoint |
+| Wishlist toggle | `POST/DELETE /api/wishlist/:productId` | Do not create an undocumented `/toggle` route |
+| Addresses | `/api/me/addresses[/:id]` | Align frontend service internals to this route family |
+| Order cancel | `POST /api/orders/:orderNumber/cancel` | Do not implement the older PATCH path |
+| Reviews | `/api/products/:id/reviews` and `/api/reviews/:id` | Align list/create/edit/delete to the Phase 9 routes |
+| Wholesale | `POST /api/wholesale-inquiry` | Do not use the older `/api/wholesale` path |
+| Admin upload | `/api/admin/upload/signature` and admin image persistence routes | Keep Cloudinary upload handling behind `upload.service.ts` |
+
+The approved table becomes the only backend endpoint source of truth. Backend work
+must not require changes to pages, components, hooks, or types after the frontend
+mock build is approved.
 
 ---
 ---

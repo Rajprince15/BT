@@ -52,7 +52,6 @@ export default async function SearchPage({
           { label: 'Search', href: '/search' },
         ]}
         lockedQuery={query || undefined}
-        mode="search"
       />
     </Suspense>
   );

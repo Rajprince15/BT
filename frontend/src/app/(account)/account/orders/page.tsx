@@ -1,3 +1,3 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+'use client';
+import Link from 'next/link'; import { useQuery } from '@tanstack/react-query'; import orderService from '@/services/order.service';
+export default function OrdersPage() { const { data = [], isLoading } = useQuery({ queryKey: ['orders'], queryFn: orderService.listMine }); if (isLoading) return <div data-testid="orders-loading" className="h-64 rounded-xl bg-surface-2" />; return <div data-testid="account-orders-page"><p className="text-xs uppercase tracking-wider2 text-gold">Your journey</p><h2 className="mt-2 font-serif text-4xl text-ink">Orders</h2><div className="mt-8 space-y-3">{data.map((order) => <Link key={order.orderNumber} data-testid={`order-card-${order.orderNumber}`} href={`/account/orders/${order.orderNumber}`} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface p-5 hover:border-gold"><div><p className="font-mono text-xs text-gold">{order.orderNumber}</p><p className="mt-2 font-serif text-xl text-ink">{order.items?.length ?? 0} pieces</p></div><div className="text-right"><p className="text-sm text-ink">₹{order.totalAmount.toLocaleString('en-IN')}</p><p className="mt-1 text-xs uppercase tracking-wider2 text-ink-2">{order.orderStatus}</p></div></Link>)}</div></div>; }

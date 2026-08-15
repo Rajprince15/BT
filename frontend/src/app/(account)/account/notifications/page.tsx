@@ -1,3 +1,2 @@
-export default function Page() {
-  return <div>Coming Soon</div>;
-}
+'use client'; import { useQuery } from '@tanstack/react-query'; import notificationService from '@/services/notification.service';
+export default function NotificationsPage(){const {data=[]}=useQuery({queryKey:['notifications'],queryFn:notificationService.list});return <div data-testid="notifications-page"><p className="text-xs uppercase tracking-wider2 text-gold">Updates</p><h2 className="mt-2 font-serif text-4xl text-ink">Notifications</h2><div className="mt-8 divide-y divide-border rounded-xl border border-border bg-surface">{data.map((n)=><article data-testid={`notification-${n.id}`} key={n.id} className={`p-5 ${n.read?'opacity-60':''}`}><h3 className="font-serif text-xl text-ink">{n.title}</h3><p className="mt-1 text-sm leading-6 text-ink-2">{n.message}</p></article>)}</div></div>}
