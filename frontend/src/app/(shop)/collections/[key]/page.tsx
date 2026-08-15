@@ -15,7 +15,6 @@ interface CollectionMeta {
   title: string;
   eyebrow: string;
   description: string;
-  /** Filter that powers the listing. */
   filter:
     | { kind: 'flag'; flag: ProductFlag }
     | { kind: 'category'; categorySlug: string }
@@ -85,30 +84,50 @@ function getMeta(key: string): CollectionMeta | null {
   return (COLLECTIONS as Record<string, CollectionMeta>)[key] ?? null;
 }
 
-export async function generateMetadata({ params }: CollectionsPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: CollectionsPageProps): Promise<Metadata> {
   const { key } = await params;
   const meta = getMeta(key);
   const baseUrl = env.NEXT_PUBLIC_APP_URL;
+
   if (!meta) {
-    return { title: 'Collection · Bhavita Textiles', robots: { index: false } };
+    return {
+      title: 'Collection · Bhavita Textiles',
+      robots: { index: false },
+    };
   }
+
   return {
     title: `${meta.title} · Bhavita Textiles`,
     description: meta.description,
-    alternates: { canonical: `${baseUrl}/collections/${meta.key}` },
+    alternates: {
+      canonical: `${baseUrl}/collections/${meta.key}`,
+    },
   };
 }
 
-export default async function CollectionPage({ params }: CollectionsPageProps) {
+export default async function CollectionPage({
+  params,
+}: CollectionsPageProps) {
   const { key } = await params;
   const meta = getMeta(key);
-  if (!meta) notFound();
+
+  if (!meta) {
+    notFound();
+  }
 
   const props: Pick<ProductListParams, 'flag' | 'category'> & {
     sale?: boolean;
   } = {};
-  if (meta.filter.kind === 'flag') props.flag = meta.filter.flag;
-  if (meta.filter.kind === 'category') props.category = meta.filter.categorySlug;
+
+  if (meta.filter.kind === 'flag') {
+    props.flag = meta.filter.flag;
+  }
+
+  if (meta.filter.kind === 'category') {
+    props.category = meta.filter.categorySlug;
+  }
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-bg" />}>
@@ -119,12 +138,17 @@ export default async function CollectionPage({ params }: CollectionsPageProps) {
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Collections', href: '/shop' },
-          { label: meta.title, href: `/collections/${meta.key}` },
+          {
+            label: meta.title,
+            href: `/collections/${meta.key}`,
+          },
         ]}
         lockedFlag={props.flag}
         lockedCategorySlug={props.category}
         disableCategoryTree={meta.filter.kind !== 'category'}
         initialFlag={props.flag}
+        mode="collection"
+        collectionKey={meta.key}
       />
     </Suspense>
   );

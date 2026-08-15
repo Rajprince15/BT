@@ -2,10 +2,10 @@ import type { Product } from '@/types/Product';
 import type { ProductImage } from '@/types/ProductImage';
 import type { ProductVariant } from '@/types/ProductVariant';
 import { categoryIds } from '@/mocks/categories.mock';
+import { mockImage } from '@/mocks/_images';
 
 const NOW = '2025-12-15T10:00:00.000Z';
-const IMG = (slug: string, idx: number) =>
-  `https://res.cloudinary.com/demo/image/upload/c_fill,w_900,h_900,q_auto,f_auto/v1/bhavita/products/${slug}-${idx}.jpg`;
+const IMG = (slug: string, idx: number) => mockImage(slug, idx - 1);
 
 // ---- helpers (mock-only — never leak outside this file) ----
 let _pid = 0;

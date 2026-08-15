@@ -1,8 +1,8 @@
 import type { Banner } from '@/types/Banner';
+import { mockImage } from '@/mocks/_images';
 
 const NOW = '2025-12-15T10:00:00.000Z';
-const IMG = (slug: string) =>
-  `https://res.cloudinary.com/demo/image/upload/c_fill,w_1920,h_900,q_auto,f_auto/v1/bhavita/banners/${slug}.jpg`;
+const IMG = (slug: string) => mockImage(slug);
 
 export const banners: Banner[] = [
   // 2 home_hero

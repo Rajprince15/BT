@@ -1,4 +1,5 @@
 import type { Cart } from '@/types/Cart';
+import { mockImage } from '@/mocks/_images';
 
 const NOW = '2025-12-15T10:00:00.000Z';
 
@@ -23,8 +24,7 @@ export const carts: Cart[] = [
         price: 9499,
         productName: 'Imperial Gold Jacquard Bedsheet Set',
         productSku: 'BT-PB-001',
-        imageUrl:
-          'https://res.cloudinary.com/demo/image/upload/c_fill,w_900,h_900,q_auto,f_auto/v1/bhavita/products/imperial-gold-jacquard-bedsheet-1.jpg',
+        imageUrl: mockImage('imperial-gold-jacquard-bedsheet'),
       },
       {
         id: 2,
@@ -35,8 +35,7 @@ export const carts: Cart[] = [
         price: 999,
         productName: 'Velvet Royal Cushion Cover (Set of 2)',
         productSku: 'BT-CC-001',
-        imageUrl:
-          'https://res.cloudinary.com/demo/image/upload/c_fill,w_900,h_900,q_auto,f_auto/v1/bhavita/products/velvet-royal-cushion-cover-set-1.jpg',
+        imageUrl: mockImage('velvet-royal-cushion-cover-set'),
       },
     ],
     // 9499 + 2*999 = 11497 subtotal, +150 shipping, +5% tax = 574.85 → rounded to 574.85

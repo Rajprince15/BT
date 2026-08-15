@@ -205,10 +205,13 @@ export const productService = {
     return callApi<Product[]>(`/products/${productId}/related`);
   },
 
-  async search(query: string): Promise<ListResponse<Product>> {
-    return this.list({ q: query, page: 1, limit: 24, sort: 'new' });
+  async search(
+    query: string,
+    params: Omit<ProductListParams, 'q' | 'search'> = {},
+  ): Promise<ListResponse<Product>> {
+    return this.list({ ...params, q: query, sort: params.sort ?? 'new' });
   },
-
+  
   async allSlugs(): Promise<string[]> {
     if (useMockService) {
       await mockDelay();

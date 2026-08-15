@@ -7,21 +7,33 @@ interface SearchPageProps {
   searchParams: Promise<{ q?: string }>;
 }
 
-export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: SearchPageProps): Promise<Metadata> {
   const { q } = await searchParams;
   const baseUrl = env.NEXT_PUBLIC_APP_URL;
-  const title = q ? `Search “${q}” · Bhavita Textiles` : 'Search · Bhavita Textiles';
+  const title = q
+    ? `Search “${q}” · Bhavita Textiles`
+    : 'Search · Bhavita Textiles';
+
   return {
     title,
     description: q
       ? `Search results for “${q}” at Bhavita Textiles.`
       : 'Search our atelier — bedsheets, curtains, rugs, bath linen, decor.',
-    robots: { index: false, follow: true },
-    alternates: { canonical: `${baseUrl}/search` },
+    robots: {
+      index: false,
+      follow: true,
+    },
+    alternates: {
+      canonical: `${baseUrl}/search`,
+    },
   };
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
+export default async function SearchPage({
+  searchParams,
+}: SearchPageProps) {
   const { q = '' } = await searchParams;
   const query = q.trim();
 
@@ -40,6 +52,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           { label: 'Search', href: '/search' },
         ]}
         lockedQuery={query || undefined}
+        mode="search"
       />
     </Suspense>
   );

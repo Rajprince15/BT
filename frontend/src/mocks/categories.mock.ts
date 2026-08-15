@@ -1,4 +1,5 @@
 import type { Category } from '@/types/Category';
+import { mockImage } from '@/mocks/_images';
 
 const now = '2025-11-01T10:00:00.000Z';
 
@@ -16,7 +17,7 @@ const mk = (
   name,
   slug,
   description: `${name} collection — handcrafted, premium textiles.`,
-  imageUrl: imageUrl ?? `https://res.cloudinary.com/demo/image/upload/v1/bhavita/categories/${slug}.jpg`,
+  imageUrl: imageUrl ?? mockImage(slug),
   sortOrder,
   isActive: true,
   createdAt: now,
