@@ -27,7 +27,8 @@ export const wholesaleService = {
       await mockDelay();
       return { success: true, inquiryId: `wholesale_${Date.now()}` };
     }
-    return callApi('/wholesale', payload);
+    await callApi<{ received: boolean }>('/wholesale-inquiry', payload);
+    return { success: true, inquiryId: `wholesale_${Date.now()}` };
   },
 };
 

@@ -90,8 +90,14 @@ export const wishlistService = {
       wishlist.push(item);
       return { removed: false, item };
     }
-
-    return callApi<{ removed: boolean; item?: Wishlist }>('/wishlist/toggle', { productId }, 'post');
+    const current = await this.get();
+    const existing = current.find((entry) => entry.productId === productId);
+    if (existing) {
+      await this.remove(productId);
+      return { removed: true };
+    }
+    const item = await this.add(productId);
+    return { removed: false, item };
   },
 };
 

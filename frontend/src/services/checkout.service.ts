@@ -11,6 +11,17 @@ export interface CheckoutQuotePayload {
   paymentMethod: 'razorpay' | 'cod';
 }
 
+export interface CheckoutQuote {
+  quoteId: string;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  currency: 'INR';
+  addressId: number;
+  paymentMethod: 'razorpay' | 'cod';
+}
+
 export interface RazorpayOrderResponse {
   orderId: string;
   amount: number;
@@ -38,11 +49,11 @@ async function callApi<T>(path: string, payload?: unknown, method: 'post' | 'get
 }
 
 export const checkoutService = {
-  async quote(payload: CheckoutQuotePayload) {
+  async quote(payload: CheckoutQuotePayload): Promise<CheckoutQuote> {
     if (useMockService) {
       await mockDelay();
       const cart = await cartService.get();
-      const quote = {
+      const quote: CheckoutQuote = {
         quoteId: `quote-${Date.now()}`,
         subtotal: cart.subtotal,
         shipping: cart.shipping,
@@ -54,7 +65,7 @@ export const checkoutService = {
       };
       return quote;
     }
-    return callApi('/checkout/quote', payload, 'post');
+    return callApi<CheckoutQuote>('/checkout/quote', payload, 'post');
   },
 
   async createRazorpayOrder(payload: { quoteId: string; amount: number; currency: 'INR' }) {

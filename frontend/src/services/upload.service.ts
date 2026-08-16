@@ -8,7 +8,9 @@ export interface UploadSignature {
   signature: string;
   timestamp: number;
   apiKey: string;
+  cloudName: string;
   folder: string;
+  transformation?: string;
 }
 
 export interface UploadResult {
@@ -19,7 +21,11 @@ export interface UploadResult {
 }
 
 async function callApi<T>(path: string, payload?: unknown) {
-  const response = await api.post<ApiResponse<T>>(path, payload);
+  const response = await api.request<ApiResponse<T>>({
+    url: path,
+    method: payload ? 'post' : 'get',
+    data: payload,
+  });
   if (!response.data.success) {
     throw new Error(response.data.error.message);
   }
@@ -34,7 +40,9 @@ export const uploadService = {
         signature: `mock-signature-${folder}`,
         timestamp: Math.floor(Date.now() / 1000),
         apiKey: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'mock_cloud',
+        cloudName: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'mock_cloud',
         folder,
+        transformation: 'f_auto,q_auto:good',
       };
     }
     return callApi<UploadSignature>(`/upload/signature?folder=${encodeURIComponent(folder)}`);
@@ -55,7 +63,17 @@ export const uploadService = {
         originalFilename: file.name,
       };
     }
-    return callApi<UploadResult>('/upload', file);
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Unable to read file'));
+      reader.readAsDataURL(file);
+    });
+    return {
+      secureUrl: dataUrl,
+      publicId: `pending/${file.name}`,
+      originalFilename: file.name,
+    };
   },
 
   async persist(payload: { secureUrl: string; publicId: string; alt?: string; sortOrder?: number }) {

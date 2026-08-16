@@ -151,8 +151,11 @@ export const cartService = {
       cart.updatedAt = new Date().toISOString();
       return computeTotals({ ...cart });
     }
-
-    return callApi<Cart>('/cart/bulk', { items }, 'post');
+    let lastCart: Cart | null = null;
+    for (const item of items) {
+      lastCart = await this.addItem(item);
+    }
+    return lastCart ?? this.get();
   },
 };
 

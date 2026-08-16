@@ -155,7 +155,7 @@ export default function CheckoutPage() {
               <div className="grid gap-6">
                 <ShippingStep
                   selected={shipping?.id}
-                  onSelect={(id, method) => setShipping({ id, ...method })}
+                  onSelect={(_id, method) => setShipping(method)}
                 />
                 <div className="flex flex-wrap gap-3">
                   <button

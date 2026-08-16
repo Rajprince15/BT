@@ -4,7 +4,9 @@ import { orders } from '@/mocks/orders.mock';
 import { users } from '@/mocks/users.mock';
 import { products } from '@/mocks/products.mock';
 import { session } from '@/mocks/_session';
+import { orderService } from '@/services/order.service';
 import type { Review } from '@/types/Review';
+import type { OrderItem } from '@/types/OrderItem';
 import type { ApiResponse, ListResponse } from '@/types/api';
 import { mockDelay, useMockService } from '@/services/_mock-runtime';
 
@@ -24,6 +26,8 @@ export interface Testimonial {
   productSlug?: string;
   createdAt: string;
 }
+
+const submittedReviewProductIds = new Set<number>();
 
 async function callApi<T>(path: string, payload?: unknown, method: 'get' | 'post' = 'get') {
   const response = await api.request<ApiResponse<T>>({
@@ -58,7 +62,7 @@ export const reviewService = {
       };
     }
     return callApi<ListResponse<Review>>(
-      `/reviews/product/${productId}?page=${params.page ?? 1}&pageSize=${params.pageSize ?? 10}`,
+      `/reviews/product/${productId}?page=${params.page ?? 1}&limit=${params.pageSize ?? 10}`,
     );
   },
 
@@ -79,7 +83,19 @@ export const reviewService = {
       );
       return hasPurchased && !alreadyReviewed;
     }
-    return callApi<boolean>(`/reviews/product/${productId}/can-review`, undefined, 'get');
+    const [myOrders, currentReviews] = await Promise.all([
+      orderService.listMine(),
+      this.listForProduct(productId, { page: 1, pageSize: 50 }),
+    ]);
+    const purchased = myOrders.some(
+      (order) =>
+        order.orderStatus === 'delivered' &&
+        order.items?.some((item) => item.productId === productId),
+    );
+    const reviewed =
+      submittedReviewProductIds.has(productId) ||
+      currentReviews.items.some((review) => review.userId === session.userId);
+    return purchased && !reviewed;
   },
 
   async toWrite() {
@@ -98,7 +114,18 @@ export const reviewService = {
           ),
       );
     }
-    return callApi<unknown[]>('/reviews/to-write', undefined, 'get');
+    const myOrders = await orderService.listMine();
+    const deliveredItems = myOrders
+      .filter((order) => order.orderStatus === 'delivered')
+      .flatMap((order) => (order.items ?? []).map((item) => ({ ...item, orderId: order.id })));
+    const result: OrderItem[] = [];
+    for (const item of deliveredItems) {
+      const canWrite = await this.canReview(item.productId);
+      if (canWrite) {
+        result.push(item);
+      }
+    }
+    return result;
   },
 
   async submit(payload: { productId: number; rating: number; title?: string; review?: string }) {
@@ -120,9 +147,11 @@ export const reviewService = {
         updatedAt: new Date().toISOString(),
       };
       reviews.push(review);
+      submittedReviewProductIds.add(payload.productId);
       return review;
     }
-    return callApi<Review>('/reviews', payload, 'post');
+    submittedReviewProductIds.add(payload.productId);
+    return callApi<Review>(`/reviews/product/${payload.productId}`, payload, 'post');
   },
 
   /**
@@ -154,7 +183,7 @@ export const reviewService = {
         };
       });
     }
-    return callApi<Testimonial[]>(`/reviews/testimonials?limit=${limit}`, undefined, 'get');
+    return (await callApi<Testimonial[]>(`/reviews/testimonials`, undefined, 'get')).slice(0, limit);
   },
 };
 

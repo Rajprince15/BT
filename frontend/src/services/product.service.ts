@@ -202,7 +202,12 @@ export const productService = {
         .filter((item) => item.categoryId === product.categoryId && item.id !== product.id)
         .slice(0, 6);
     }
-    return callApi<Product[]>(`/products/${productId}/related`);
+    const { items } = await this.list({ limit: 200 });
+    const product = items.find((item) => item.id === productId);
+    if (!product) return [];
+    return items
+      .filter((item) => item.categoryId === product.categoryId && item.id !== product.id)
+      .slice(0, 6);
   },
 
   async search(
@@ -217,8 +222,8 @@ export const productService = {
       await mockDelay();
       return products.map((item) => item.slug);
     }
-    const result = await callApi<{ slugs: string[] }>('/products/slugs');
-    return result.slugs;
+    const result = await this.list({ limit: 1000 });
+    return result.items.map((item) => item.slug);
   },
 
   /** Special Collections route helper. */
@@ -248,7 +253,12 @@ export const productService = {
           const filtered = applyFilters(onSale, params);
           return paginate(filtered, extra.page ?? 1, limit);
         }
-        break;
+        return this.list({ ...extra, limit: extra.limit ?? extra.pageSize ?? 1000, page: 1 }).then((result) => ({
+          ...result,
+          items: result.items.filter(
+            (p) => typeof p.salePrice === 'number' && p.salePrice < p.price,
+          ),
+        }));
       case 'summer-collection':
       case 'winter-collection':
       case 'festive-collection':
@@ -289,9 +299,26 @@ export const productService = {
         priceMax: hi > 0 ? Math.ceil(hi) : 0,
       };
     }
-    return callApi<{ colors: string[]; sizes: string[]; priceMin: number; priceMax: number }>(
-      `/products/facets?${buildQuery(params)}`,
-    );
+    const result = await this.list({ ...params, limit: 1000, page: 1 });
+    const colors = new Set<string>();
+    const sizes = new Set<string>();
+    let lo = Number.POSITIVE_INFINITY;
+    let hi = 0;
+    for (const p of result.items) {
+      for (const v of p.variants) {
+        if (v.color) colors.add(v.color);
+        if (v.size) sizes.add(v.size);
+      }
+      const fp = finalPrice(p);
+      if (fp < lo) lo = fp;
+      if (fp > hi) hi = fp;
+    }
+    return {
+      colors: [...colors].sort(),
+      sizes: [...sizes].sort(),
+      priceMin: Number.isFinite(lo) ? Math.floor(lo) : 0,
+      priceMax: hi > 0 ? Math.ceil(hi) : 0,
+    };
   },
 };
 

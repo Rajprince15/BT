@@ -17,9 +17,9 @@ the same signature — toggle controlled by `NEXT_PUBLIC_USE_MOCKS`.
 | **Catalog** | | | |
 | `productService.list(params)` | `ListResponse<Product>` | `products.mock` | `GET /api/products` |
 | `productService.bySlug(slug)` | `Product` | `products.mock` | `GET /api/products/:slug` |
-| `productService.related(id)` | `Product[]` | `products.mock` | `GET /api/products/:id/related` |
-| `productService.search(q)` | `ListResponse<Product>` | `products.mock` | `GET /api/products/search?q=` |
-| `productService.allSlugs()` | `string[]` | `products.mock` | `GET /api/products/slugs` |
+| `productService.related(id)` | `Product[]` | `products.mock` + `productService.list()` | derived from `GET /api/products` |
+| `productService.search(q)` | `ListResponse<Product>` | `products.mock` | `GET /api/products?q=` |
+| `productService.allSlugs()` | `string[]` | `products.mock` + `productService.list()` | derived from `GET /api/products` |
 | `categoryService.tree()` | `Category[]` | `categories.mock` | `GET /api/categories` |
 | `categoryService.getFeatured(limit?)` | `Category[]` | `categories.mock` | `GET /api/categories/featured` |
 | `bannerService.list({ placement? })` | `Banner[]` | `banners.mock` | `GET /api/banners` |
@@ -28,12 +28,12 @@ the same signature — toggle controlled by `NEXT_PUBLIC_USE_MOCKS`.
 | `cartService.addItem(payload)` | `Cart` | `cart.mock` | `POST /api/cart/items` |
 | `cartService.updateItem(id, payload)` | `Cart` | `cart.mock` | `PATCH /api/cart/items/:id` |
 | `cartService.removeItem(id)` | `Cart` | `cart.mock` | `DELETE /api/cart/items/:id` |
-| `cartService.bulkAdd(items)` | `Cart` | `cart.mock` | `POST /api/cart/bulk` |
+| `cartService.bulkAdd(items)` | `Cart` | `cart.mock` + repeated `cartService.addItem()` | derived from `POST /api/cart/items` |
 | **Wishlist** | | | |
 | `wishlistService.get()` | `Wishlist[]` | `wishlist.mock` | `GET /api/wishlist` |
 | `wishlistService.add(productId)` | `Wishlist` | `wishlist.mock` | `POST /api/wishlist` |
 | `wishlistService.remove(productId)` | `{ success: boolean }` | `wishlist.mock` | `DELETE /api/wishlist/:productId` |
-| `wishlistService.toggle(productId)` | `{ removed: boolean, item? }` | `wishlist.mock` | `POST /api/wishlist/toggle` |
+| `wishlistService.toggle(productId)` | `{ removed: boolean, item? }` | `wishlist.mock` + `wishlistService.get/add/remove` | derived from `GET/POST/DELETE /api/wishlist*` |
 | **Orders** | | | |
 | `orderService.listMine()` | `Order[]` | `orders.mock` | `GET /api/orders` |
 | `orderService.byNumber(orderNumber)` | `Order` | `orders.mock` | `GET /api/orders/:orderNumber` |
@@ -41,8 +41,8 @@ the same signature — toggle controlled by `NEXT_PUBLIC_USE_MOCKS`.
 | `orderService.downloadInvoice(orderNumber)` | `Blob` | `orders.mock` | `GET /api/orders/:orderNumber/invoice` |
 | **Reviews** | | | |
 | `reviewService.listForProduct(productId, { page?, pageSize? })` | `ListResponse<Review>` | `reviews.mock` | `GET /api/reviews/product/:id` |
-| `reviewService.canReview(productId)` | `boolean` | `reviews.mock` + `orders.mock` | `GET /api/reviews/product/:id/can-review` |
-| `reviewService.toWrite()` | `OrderItem[]` | `orders.mock` + `reviews.mock` | `GET /api/reviews/to-write` |
+| `reviewService.canReview(productId)` | `boolean` | `reviews.mock` + `orders.mock` + `orderService.listMine()` | derived from `GET /api/orders` + `GET /api/reviews/product/:id` |
+| `reviewService.toWrite()` | `OrderItem[]` | `orders.mock` + `reviews.mock` + `orderService.listMine()` | derived from `GET /api/orders` + `GET /api/reviews/product/:id` |
 | `reviewService.getTestimonials(limit?)` | `Testimonial[]` | `reviews.mock` + `users.mock` + `products.mock` | `GET /api/reviews/testimonials` |
 | **Checkout** | | | |
 | `checkoutService.quote(payload)` | `Quote` | `cartService.get` | `POST /api/checkout/quote` |
@@ -60,11 +60,11 @@ the same signature — toggle controlled by `NEXT_PUBLIC_USE_MOCKS`.
 | `notificationService.markRead(id)` | `{ success: boolean }` | `notifications.mock` | `POST /api/notifications/:id/read` |
 | `notificationService.markAllRead()` | `{ success: boolean }` | `notifications.mock` | `POST /api/notifications/read-all` |
 | **Public forms** | | | |
-| `wholesaleService.submit(payload)` | `{ success: true, inquiryId }` | — | `POST /api/wholesale` |
+| `wholesaleService.submit(payload)` | `{ success: true, inquiryId }` | — | `POST /api/wholesale-inquiry` |
 | `newsletterService.subscribe(payload)` | `{ email, subscribed }` | — | `POST /api/newsletter/subscribe` |
 | `contactService.submit(payload)` | `{ success, receivedAt }` | — | `POST /api/contact` |
 | **Uploads** (Cloudinary signed) | | | |
-| `uploadService.getSignature(folder)` | `UploadSignature` | env-derived | `GET /api/upload/signature` |
+| `uploadService.getSignature(folder)` | `UploadSignature` | env-derived | `GET /api/upload/signature?folder=` |
 | `uploadService.upload(file)` | `UploadResult` | dataURL stub | `POST /api/upload` |
 | `uploadService.persist(payload)` | `ProductImage` | stub | `POST /api/upload/persist` |
 | **Admin — Products** | | | |
