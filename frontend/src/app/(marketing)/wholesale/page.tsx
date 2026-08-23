@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import Container from '@/components/common/Container';
 import wholesaleService from '@/services/wholesale.service';
+import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 const BUSINESS_TYPES = [
   'Hotel',
@@ -99,6 +100,8 @@ export default function WholesalePage() {
                 quantityRequirement: form.quantityRequirement || undefined,
                 message: form.message || undefined,
               });
+              const inquiry = `Hello, I’m interested in your products.\n\nCompany: ${form.companyName}\nContact: ${form.contactPerson}\nEmail: ${form.email}\nPhone: ${form.phone}\nBusiness: ${form.businessType}\nProducts: ${form.productInterest || 'Not specified'}\nQuantity: ${form.quantityRequirement || 'Not specified'}\nProject: ${form.message || 'Not specified'}`;
+              window.open(whatsappUrl(inquiry), '_blank', 'noopener,noreferrer');
               setSubmitted(true);
               setForm(EMPTY);
               toast.success('Thank you — our wholesale team will contact you shortly.');

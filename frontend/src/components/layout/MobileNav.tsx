@@ -58,16 +58,9 @@ export default function MobileNav() {
         </SheetHeader>
 
         <div className="flex h-[calc(100%-72px)] flex-col overflow-y-auto px-2 pb-8">
-          <div className="px-4 py-4">
-            <Link
-              href="/auth/login"
-              onClick={() => setOpen(false)}
-              data-testid="mobile-nav-login"
-              className="block w-full border border-[var(--gold)] py-3 text-center font-sans text-[12px] uppercase tracking-[0.24em] text-[var(--gold)] hover:bg-[var(--gold)] hover:text-[var(--surface)]"
-              style={{ transition: 'background-color 200ms, color 200ms' }}
-            >
-              Sign in / Register
-            </Link>
+          <div className="grid grid-cols-2 gap-2 px-4 py-4">
+            <Link href="/cart" onClick={() => setOpen(false)} data-testid="mobile-nav-cart" className="border border-[var(--gold)] py-3 text-center font-sans text-[12px] uppercase tracking-[0.2em] text-[var(--gold)] hover:bg-[var(--gold)] hover:text-[var(--surface)]">Cart</Link>
+            <Link href="/account/wishlist" onClick={() => setOpen(false)} data-testid="mobile-nav-wishlist" className="border border-[var(--gold)] py-3 text-center font-sans text-[12px] uppercase tracking-[0.2em] text-[var(--gold)] hover:bg-[var(--gold)] hover:text-[var(--surface)]">Wishlist</Link>
           </div>
 
           <Accordion type="multiple" className="px-4">

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import Container from '@/components/common/Container';
 import contactService from '@/services/contact.service';
+import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 interface ContactFormState {
   name: string;
@@ -64,6 +65,8 @@ export default function ContactPage() {
                 subject: form.subject || undefined,
                 message: form.message,
               });
+              const inquiry = `Hello, I’m interested in your products.\n\nName: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone || 'Not provided'}\nSubject: ${form.subject || 'General enquiry'}\nMessage: ${form.message}`;
+              window.open(whatsappUrl(inquiry), '_blank', 'noopener,noreferrer');
               toast.success('Thank you — we will reply within one working day.');
               setForm(EMPTY);
             } catch (error) {

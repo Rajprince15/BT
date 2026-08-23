@@ -1,34 +1,34 @@
 # Bhavita Textiles Redesign
 
 ## Original problem statement
-Comprehensively redesign the existing Bhavita Textiles website using https://bhavitatextiles.lovable.app/ as the primary visual, layout, hierarchy, UX and content inspiration while preserving the original website's core features and routes. The redesign must be responsive for desktop, tablet and mobile, and work only with code files without starting frontend or backend services.
-
-## User choices
-- Preserve core functionality while allowing small UX improvements that do not add features.
-- Reuse the reference site's visible content and history language.
-- Support desktop, tablet and mobile.
-- Do not start or restart frontend or backend services.
+Redesign the existing Bhavita Textiles website to match the theme, colors, visual hierarchy, layout, and content of https://bhavitatextiles.lovable.app/. Add a frontend-only WhatsApp button using a configurable number, exact product image links with local filename-based overrides, preserve important existing features, remove account and notification controls from the public header, and provide free contact/wholesale/footer enquiry handoffs.
 
 ## Architecture decisions
-- Preserved the Next.js storefront, service layer, hooks, route structure, account, checkout, admin, wholesale and catalogue flows.
-- Changed the shared visual layer and primary homepage experience only: earthy mill-inspired palette, Cormorant Garamond plus Plus Jakarta Sans, procurement-led messaging, responsive sections and stronger accessibility metadata.
-- Kept existing mock/service-layer data integrations untouched.
+- Keep the existing Next.js App Router and public catalogue routes.
+- Use the reference site’s cream paper, charcoal, and gold palette with serif headings and Manrope body text.
+- Keep contact and wholesale on the existing frontend service layer; in mock mode, open WhatsApp with submitted details.
+- Product images first request `/images/products/<slug>.jpg`; the client component switches to the exact remote product image when the local file is absent.
+- WhatsApp configuration lives in `components/layout/WhatsAppWidget.tsx` so the placeholder number and message have one edit point.
 
 ## Implemented
-- Reworked global tokens, fonts, metadata and responsive base styling.
-- Redesigned Header and Footer while preserving search, mobile navigation, cart, wishlist, account, notification, theme and newsletter interactions.
-- Redesigned HeroCarousel, FeaturedCategories, BrandStory and WholesaleCTA around the reference site's Panipat manufacturing story.
-- Added keyboard arrow navigation to the hero carousel and removed nested main landmarks.
-- Corrected the self-referential border token in globals.css.
+- Rebuilt the homepage around the Panipat manufacturing story, featured range, plant scale, procurement benefits, and bulk RFQ CTA.
+- Replaced the public header/footer with manufacturer-focused navigation and contact links.
+- Added a site-wide floating WhatsApp CTA and WhatsApp handoffs for contact and wholesale forms.
+- Updated theme tokens, texture treatment, remote image allow-list, and robust product image fallback.
+- Fixed static rendering boundaries on login and checkout success pages so all 39 Next routes build.
+- Updated frontend package-manager metadata so the supervisor can start the current Next frontend.
+- Restored local cart, wishlist, search, theme toggle, and mobile navigation; only account and notification controls are hidden from the public header.
+
 
 ## Prioritized backlog
-- P0: Run a browser responsive/accessibility pass when a preview is intentionally available.
-- P1: Replace remaining legacy editorial fallback illustrations with approved textile photography.
-- P1: Align the remaining homepage product, seasonal and testimonial sections with the new visual system.
-- P2: Connect catalogue and RFQ copy to production content once backend data is available.
+- P0: Replace the temporary WhatsApp number and configure the owner’s preferred reply email.
+- P1: Align the supervisor/backend entrypoint with the repository’s Node backend if API persistence is required.
+- P1: Replace mock contact, wholesale, and catalogue services with live services when backend persistence is ready.
+- P2: Add the remaining seven-category content and product-specific image files under `public/images/products`.
 
 ## Verification
-- ESLint passed for all rewritten TypeScript/TSX files.
-- Static frontend review completed with three findings; all three were fixed.
-- Frontend and backend services were not started or restarted, per user instruction.
-- `npx tsc --noEmit` is blocked by the existing `tsconfig.json` `ignoreDeprecations` setting being rejected by the installed TypeScript version.
+- TypeScript/TSX lint passed.
+- Production build passed all 39 routes with `yarn build`.
+- Reference product asset returned HTTP 200.
+- Browser pass rendered the redesigned homepage; intermittent Cloudflare verification can block automated preview navigation.
+- Contact, wholesale, and catalogue service layers remain MOCKED in frontend mock mode; no backend persistence is active.

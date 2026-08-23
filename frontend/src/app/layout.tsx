@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import JsonLd from '@/components/common/JsonLd';
 import { organizationJsonLd, websiteJsonLd } from '@/lib/seo';
+import WhatsAppWidget from '@/components/layout/WhatsAppWidget';
 
 const serif = Cormorant_Garamond({
   subsets: ['latin'],
@@ -84,7 +85,12 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <WhatsAppWidget />
         </Providers>
+          
+        
+          
+
       </body>
     </html>
   );
