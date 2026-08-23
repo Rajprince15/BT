@@ -1,193 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, FormEvent } from 'react';
-import { Instagram, Facebook, Youtube, ArrowRight } from 'lucide-react';
+import { FormEvent, useState } from 'react';
+import { ArrowRight, ArrowUpRight, Facebook, Instagram, Youtube } from 'lucide-react';
 import { toast } from 'sonner';
 import newsletterService from '@/services/newsletter.service';
 
-const SHOP_LINKS = [
-  { label: 'New Arrivals', href: '/collections/new-arrivals' },
-  { label: 'Best Sellers', href: '/collections/best-sellers' },
-  { label: 'Bedroom', href: '/shop/bedroom' },
-  { label: 'Living Room', href: '/shop/living-room' },
-  { label: 'Bath', href: '/shop/bath' },
-  { label: 'Home Decor', href: '/shop/home-decor' },
-  { label: 'Handloom Heritage', href: '/shop/handloom-heritage' },
-  { label: 'Wholesale', href: '/wholesale' },
-];
-
-const CARE_LINKS = [
-  { label: 'Contact', href: '/contact' },
-  { label: 'Order Tracking', href: '/account/orders' },
-  { label: 'Returns', href: '/return-policy' },
-  { label: 'Shipping', href: '/shipping-policy' },
-  { label: 'About', href: '/about' },
-];
-
-const POLICY_LINKS = [
-  { label: 'Privacy', href: '/privacy' },
-  { label: 'Terms', href: '/terms' },
-  { label: 'Return Policy', href: '/return-policy' },
-  { label: 'Shipping Policy', href: '/shipping-policy' },
-];
+const SHOP_LINKS = [{ label: 'New Arrivals', href: '/collections/new-arrivals' }, { label: 'Best Sellers', href: '/collections/best-sellers' }, { label: 'Bedroom', href: '/shop/bedroom' }, { label: 'Living Room', href: '/shop/living-room' }, { label: 'Bath', href: '/shop/bath' }, { label: 'Wholesale', href: '/wholesale' }];
+const CARE_LINKS = [{ label: 'Contact', href: '/contact' }, { label: 'Order Tracking', href: '/account/orders' }, { label: 'Returns', href: '/return-policy' }, { label: 'Shipping', href: '/shipping-policy' }, { label: 'About', href: '/about' }];
+const POLICY_LINKS = [{ label: 'Privacy', href: '/privacy' }, { label: 'Terms', href: '/terms' }, { label: 'Return Policy', href: '/return-policy' }, { label: 'Shipping Policy', href: '/shipping-policy' }];
+const SOCIAL_LINKS = [{ Icon: Instagram, label: 'Instagram', href: 'https://instagram.com' }, { Icon: Facebook, label: 'Facebook', href: 'https://facebook.com' }, { Icon: Youtube, label: 'YouTube', href: 'https://youtube.com' }];
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
-  const handleSubscribe = async (e: FormEvent) => {
-    e.preventDefault();
-      if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-      toast.error('Please enter a valid email');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await newsletterService.subscribe({ email });
-      toast.success('Welcome to BHAVITA — check your inbox.');
-      setEmail('');
-    } catch {
-      toast.error('Could not subscribe. Try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <footer
-      data-testid="site-footer"
-      className="mt-24 border-t border-[var(--gold-soft)] bg-[var(--surface-2)] text-[var(--ink)]"
-    >
-      <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-16 md:grid-cols-2 lg:grid-cols-4 lg:px-10">
-        <div>
-          <Link href="/" className="font-serif text-2xl tracking-[0.32em] text-[var(--navy)]">
-            BHAVITA
-          </Link>
-          <p className="mt-4 max-w-xs font-serif text-base italic leading-relaxed text-[var(--ink-2)]">
-            Handcrafted Home Textiles &amp; Decor for Elegant Living.
-          </p>
-          <div className="mt-6 flex gap-3">
-            {[
-              { Icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
-              { Icon: Facebook, href: 'https://facebook.com', label: 'Facebook' },
-              { Icon: Youtube, href: 'https://youtube.com', label: 'YouTube' },
-            ].map(({ Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                data-testid={`footer-social-${label.toLowerCase()}`}
-                className="inline-flex h-9 w-9 items-center justify-center border border-[var(--border)] text-[var(--ink-2)] hover:border-[var(--gold)] hover:text-[var(--gold)]"
-                style={{ transition: 'color 200ms, border-color 200ms' }}
-              >
-                <Icon size={16} />
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <FooterColumn title="Shop" links={SHOP_LINKS} testid="footer-shop" />
-        <FooterColumn title="Customer Care" links={CARE_LINKS} testid="footer-care" />
-
-        <div>
-          <h3 className="font-serif text-lg text-[var(--navy)]">Stay in the Loop</h3>
-          <span className="mt-1 block h-px w-8 bg-[var(--gold)]" />
-          <p className="mt-4 font-sans text-[13px] leading-relaxed text-[var(--ink-2)]">
-            Receive private invitations, early access to seasonal collections and curated
-            stories from our atelier.
-          </p>
-          <form
-            onSubmit={handleSubscribe}
-            data-testid="footer-newsletter-form"
-            className="mt-4 flex border border-[var(--gold)] bg-[var(--surface)]"
-          >
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              aria-label="Email address"
-              data-testid="footer-newsletter-input"
-              className="flex-1 bg-transparent px-3 py-3 font-sans text-[13px] text-[var(--ink)] placeholder:text-[var(--ink-2)] focus:outline-none"
-            />
-            <button
-              type="submit"
-              disabled={submitting}
-              aria-label="Subscribe"
-              data-testid="footer-newsletter-submit"
-              className="bg-[var(--gold)] px-4 text-[var(--surface)] hover:bg-[var(--gold-2)] disabled:opacity-50"
-              style={{ transition: 'background-color 200ms' }}
-            >
-              <ArrowRight size={16} />
-            </button>
-          </form>
-          <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2">
-            {POLICY_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className="font-sans text-[11px] uppercase tracking-[0.18em] text-[var(--ink-2)] hover:text-[var(--gold)]"
-                >
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t border-[var(--gold-soft)]">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 px-6 py-6 md:flex-row lg:px-10">
-          <span className="font-sans text-[11px] uppercase tracking-[0.22em] text-[var(--ink-2)]">
-            © {new Date().getFullYear()} Bhavita Textiles · All rights reserved
-          </span>
-          <div className="flex items-center gap-3 font-sans text-[10px] uppercase tracking-[0.22em] text-[var(--ink-2)]">
-            <span>Visa</span>
-            <span>·</span>
-            <span>Mastercard</span>
-            <span>·</span>
-            <span>UPI</span>
-            <span>·</span>
-            <span>Razorpay</span>
-          </div>
-          <span className="font-serif text-xs italic text-[var(--ink-2)]">
-            Made with care in Jaipur
-          </span>
-        </div>
-      </div>
-    </footer>
-  );
+  const handleSubscribe = async (event: FormEvent) => { event.preventDefault(); if (!/^\S+@\S+\.\S+$/.test(email)) { toast.error('Please enter a valid email'); return; } setSubmitting(true); try { await newsletterService.subscribe({ email }); toast.success('Welcome to Bhavita Textiles.'); setEmail(''); } catch { toast.error('Could not subscribe. Try again.'); } finally { setSubmitting(false); } };
+  return <footer data-testid="site-footer" className="border-t border-border bg-navy text-bg"><div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-16 sm:px-10 lg:grid-cols-[1.3fr_0.7fr_0.7fr_1fr] lg:px-16 lg:py-20"><div><Link href="/" data-testid="footer-logo" className="font-serif text-3xl tracking-[0.2em] text-bg">BHAVITA</Link><p className="mt-5 max-w-xs text-sm leading-7 text-bg/65">A family-run manufacturer of printed bedsheets, mink blankets and floor mats from Panipat.</p><div className="mt-7 flex gap-2">{SOCIAL_LINKS.map(({ Icon, label, href }) => <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} data-testid={`footer-social-${label.toLowerCase()}`} className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/65 transition-colors hover:border-gold hover:text-gold"><Icon size={15} /></a>)}</div></div><FooterColumn title="Shop" links={SHOP_LINKS} testid="footer-shop" /><FooterColumn title="Customer Care" links={CARE_LINKS} testid="footer-care" /><div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold">Stay in the loop</p><h3 className="mt-4 font-serif text-3xl leading-none">Factory notes, not noise.</h3><p className="mt-4 text-sm leading-6 text-bg/65">Receive private invitations, early access and stories from our mill.</p><form onSubmit={handleSubscribe} data-testid="footer-newsletter-form" className="mt-6 flex rounded-full border border-bg/20 bg-bg/[0.06] p-1"><input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="your@email.com" aria-label="Email address" data-testid="footer-newsletter-input" className="min-w-0 flex-1 bg-transparent px-4 py-2.5 text-xs text-bg outline-none placeholder:text-bg/40" /><button type="submit" disabled={submitting} aria-label="Subscribe" data-testid="footer-newsletter-submit" className="inline-flex size-10 items-center justify-center rounded-full bg-gold text-ink transition-colors hover:bg-gold-2 disabled:opacity-50"><ArrowRight size={15} /></button></form></div></div><div className="border-t border-bg/15"><div className="mx-auto flex max-w-[1440px] flex-col gap-4 px-6 py-6 text-[10px] font-semibold uppercase tracking-[0.15em] text-bg/45 sm:px-10 md:flex-row md:items-center md:justify-between lg:px-16"><span>© {new Date().getFullYear()} Bhavita Textiles · All rights reserved</span><div className="flex flex-wrap gap-x-4 gap-y-2">{POLICY_LINKS.map((link) => <Link key={link.href} href={link.href} data-testid={`footer-policy-${link.label.toLowerCase().replaceAll(' ', '-')}`} className="transition-colors hover:text-gold">{link.label}</Link>)}</div><Link href="/contact" data-testid="footer-contact-link" className="inline-flex items-center gap-1 transition-colors hover:text-gold">Talk to the mill <ArrowUpRight size={13} /></Link></div></div></footer>;
 }
 
-function FooterColumn({
-  title,
-  links,
-  testid,
-}: {
-  title: string;
-  links: { label: string; href: string }[];
-  testid: string;
-}) {
-  return (
-    <div data-testid={testid}>
-      <h3 className="font-serif text-lg text-[var(--navy)]">{title}</h3>
-      <span className="mt-1 block h-px w-8 bg-[var(--gold)]" />
-      <ul className="mt-4 space-y-2.5">
-        {links.map((l) => (
-          <li key={l.href}>
-            <Link
-              href={l.href}
-              className="font-sans text-[13px] text-[var(--ink-2)] hover:text-[var(--gold)]"
-            >
-              {l.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+function FooterColumn({ title, links, testid }: { title: string; links: { label: string; href: string }[]; testid: string }) { return <div data-testid={testid}><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold">{title}</p><ul className="mt-5 space-y-3">{links.map((link) => <li key={link.href}><Link href={link.href} data-testid={`footer-link-${link.label.toLowerCase().replaceAll(' ', '-')}`} className="text-sm text-bg/65 transition-colors hover:text-gold">{link.label}</Link></li>)}</ul></div>; }

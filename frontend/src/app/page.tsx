@@ -11,20 +11,15 @@ import WholesaleCTA from '@/components/home/WholesaleCTA';
 import NewsletterSignup from '@/components/home/NewsletterSignup';
 
 export const metadata: Metadata = {
-  title: 'Bhavita Textiles — Heritage Luxury for the Indian Home',
+  title: 'Eight years of loom-woven trust, shipped in bulk',
   description:
-    'Handloom-woven bedsheets, block-printed curtains, plush bath linens and heritage rugs — signed by the master artisans of Jaipur and Rajasthan.',
-  openGraph: {
-    title: 'Bhavita Textiles — Heritage Luxury for the Indian Home',
-    description:
-      'Handloom-woven bedsheets, block-printed curtains, plush bath linens and heritage rugs.',
-    type: 'website',
-  },
+    'Bhavita Textiles is a family-run manufacturer of printed bedsheets, mink blankets and floor mats for hospitality, export and corporate gifting buyers.',
 };
 
 export default function HomePage() {
   return (
-    <main data-testid="home-page">
+    <div data-testid="home-page" className="overflow-hidden">
+    
       <HeroCarousel />
       <FeaturedCategories />
       <NewArrivals />
@@ -35,6 +30,6 @@ export default function HomePage() {
       <BrandStory />
       <WholesaleCTA />
       <NewsletterSignup />
-    </main>
+    </div>
   );
 }

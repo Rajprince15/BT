@@ -36,7 +36,7 @@ export default function HandloomHeritage() {
   return (
     <section
       data-testid="handloom-heritage"
-      className="relative overflow-hidden bg-[color-mix(in_oklab,var(--gold-soft)_60%,var(--bg))] py-20 md:py-28"
+      className="relative overflow-hidden bg-bg py-20 md:py-28"
     >
       {/* gold hairline top + bottom */}
       <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-gold/30" />

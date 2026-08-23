@@ -155,7 +155,7 @@ export default function Testimonials() {
   return (
     <section
       data-testid="testimonials"
-      className="bg-surface/40 py-20 md:py-28"
+      className="bg-bg py-20 md:py-28"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}

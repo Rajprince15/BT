@@ -53,7 +53,7 @@ export default function NewsletterSignup() {
   return (
     <section
       data-testid="newsletter-signup"
-      className="bg-[color-mix(in_oklab,var(--gold-soft)_45%,var(--bg))] py-20 md:py-28"
+      className="bg-bg py-20 md:py-28"
     >
       <Container>
         <div className="mx-auto max-w-3xl text-center">

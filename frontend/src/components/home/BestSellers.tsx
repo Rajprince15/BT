@@ -18,7 +18,7 @@ export default function BestSellers() {
   return (
     <section
       data-testid="best-sellers"
-      className="border-y border-gold-soft/40 bg-surface-2/60 py-20 md:py-28"
+      className="border-y border-border bg-bg py-20 md:py-28"
     >
       <Container>
         <SectionHeading
