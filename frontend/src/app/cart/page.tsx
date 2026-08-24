@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import Container from '@/components/common/Container';
 import CartLineItem from '@/components/cart/CartLineItem';

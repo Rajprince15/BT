@@ -1,154 +1,119 @@
 'use client';
 
-import { useMemo, useState, type FormEvent } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, type FormEvent } from 'react';
+import {
+  CheckCircle2,
+  Clock3,
+  Mail,
+  MapPin,
+  Phone,
+  Upload,
+  X,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import Container from '@/components/common/Container';
-import productService from '@/services/product.service';
 import wholesaleService from '@/services/wholesale.service';
 import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
-import type { Product } from '@/types/Product';
 
-type Choice = { quantity: number; variantId?: number };
-type Selection = Record<number, Choice>;
+const categories = [
+  'Bedsheets',
+  'Blankets',
+  'Floor mats',
+  'Cushion covers',
+  'Curtains',
+  'Towels',
+  'Other',
+];
 
-const groups: Record<string, string> = {
-  BS: 'Bedsheets',
-  MB: 'Mink blankets',
-  FM: 'Floor mats',
-  CM: 'Comforters',
-  PC: 'Pillow covers',
-  TW: 'Towels',
-  CT: 'Curtains',
-};
+const moqOptions = ['300', '500', '1000', '2500', '5000+'];
 
-const money = (value: number) => `₹${value.toLocaleString('en-IN')}`;
-
-const basePrice = (product: Product) =>
-  product.salePrice && product.salePrice < product.price
-    ? product.salePrice
-    : product.price;
-
-const groupFor = (product: Product) =>
-  groups[product.sku.split('-')[1]] ?? 'Other';
-
-const variantPrice = (product: Product, variantId?: number) =>
-  product.variants.find((variant) => variant.id === variantId)?.price ??
-  basePrice(product);
+const timelines = [
+  'Within 30 days',
+  '30–60 days',
+  '60+ days',
+  'Flexible',
+];
 
 export default function BulkEnquiryPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ['bulk-catalogue'],
-    queryFn: () => productService.list({ limit: 1000, sort: 'new' }),
-  });
-
-  const products = useMemo(
-    () => (data?.items ?? []).filter((product) => Boolean(product.moq)),
-    [data],
-  );
-
-  const categories = useMemo(
-    () => ['All', ...Array.from(new Set(products.map(groupFor)))],
-    [products],
-  );
-
-  const [category, setCategory] = useState('All');
-  const [selection, setSelection] = useState<Selection>({});
-  const [form, setForm] = useState({
-    company: '',
-    name: '',
-    email: '',
-    phone: '',
-    business: 'Hotel',
-    message: '',
-  });
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [confirming, setConfirming] = useState(false);
 
-  const visibleProducts = products.filter(
-    (product) => category === 'All' || groupFor(product) === category,
-  );
-
-  const chosen = products.filter(
-    (product) => selection[product.id]?.quantity > 0,
-  );
-
-  const total = chosen.reduce((sum, product) => {
-    const choice = selection[product.id];
-    return sum + variantPrice(product, choice.variantId) * choice.quantity;
-  }, 0);
-
-  const update = (key: keyof typeof form, value: string) =>
-    setForm((old) => ({ ...old, [key]: value }));
-
-  const toggle = (product: Product) =>
-    setSelection((old) =>
-      old[product.id]
-        ? { ...old, [product.id]: { quantity: 0 } }
-        : {
-            ...old,
-            [product.id]: {
-              quantity: 1,
-              variantId: product.variants[0]?.id,
-            },
-          },
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((current) =>
+      current.includes(category)
+        ? current.filter((item) => item !== category)
+        : [...current, category],
     );
-
-  const updateChoice = (product: Product, choice: Partial<Choice>) =>
-    setSelection((old) => ({
-      ...old,
-      [product.id]: { ...old[product.id], ...choice },
-    }));
+  };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!chosen.length) {
-      toast.error('Select at least one catalogue item first.');
-      return;
-    }
+    const data = new FormData(event.currentTarget);
 
-    setConfirming(true);
-  };
+    const companyName = String(data.get('companyName') ?? '');
+    const contactPerson = String(data.get('contactPerson') ?? '');
+    const email = String(data.get('email') ?? '');
+    const phone = String(data.get('phone') ?? '');
+    const moq = String(data.get('moq') ?? '');
+    const timeline = String(data.get('timeline') ?? 'Flexible');
+    const message = String(data.get('message') ?? '');
+    const fileNames =
+      files.map((file) => file.name).join(', ') || 'None';
 
-  const sendWhatsApp = async () => {
     setBusy(true);
-
-    const lines = chosen
-      .map((product) => {
-        const choice = selection[product.id];
-        const variant = product.variants.find(
-          (item) => item.id === choice.variantId,
-        );
-        const unit = variantPrice(product, choice.variantId);
-
-        return `${product.sku} — ${product.name} | Size: ${variant?.size ?? product.sizeLabel} | Unit price: ${money(unit)} | Quantity: ${choice.quantity} | Line total: ${money(unit * choice.quantity)} | MOQ: ${product.moq}`;
-      })
-      .join('\n');
 
     try {
       await wholesaleService.submit({
-        companyName: form.company,
-        contactPerson: form.name,
-        email: form.email,
-        phone: form.phone,
-        businessType: form.business,
-        productInterest: lines,
-        quantityRequirement: chosen
-          .map(
-            (product) =>
-              `${product.sku}: ${selection[product.id].quantity}`,
-          )
-          .join(', '),
-        message: form.message || 'Bulk catalogue enquiry',
+        companyName,
+        contactPerson,
+        email,
+        phone,
+        businessType: String(data.get('designation') ?? ''),
+        productInterest:
+          selectedCategories.join(', ') || 'General textile enquiry',
+        quantityRequirement: `${moq} pcs per SKU · ${timeline}`,
+        message: `${message}\nAttachments: ${fileNames}`,
       });
 
-      window.location.assign(
-        whatsappUrl(
-          `Hello, I would like a bulk quote from Bhavita Textiles.\n\nCompany: ${form.company}\nContact: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nBusiness: ${form.business}\n\nSelected items:\n${lines}\n\nCatalogue total: ${money(total)}\nProject notes: ${form.message || 'Not specified'}`,
-        ),
+      const whatsappMessage = [
+        'Hello, I would like a wholesale quote from Bhavita Textiles.',
+        '',
+        `Company: ${companyName}`,
+        `Contact: ${contactPerson}`,
+        `Email: ${email}`,
+        `Phone: ${phone}`,
+        `Designation: ${String(
+          data.get('designation') ?? 'Not specified',
+        )}`,
+        `Country / City: ${String(
+          data.get('country') ?? 'Not specified',
+        )}`,
+        '',
+        `Product interest: ${
+          selectedCategories.join(', ') || 'General textile enquiry'
+        }`,
+        `Estimated MOQ: ${moq} pcs per SKU`,
+        `Delivery timeline: ${timeline}`,
+        `Website: ${
+          String(data.get('website') ?? 'Not specified') ||
+          'Not specified'
+        }`,
+        '',
+        `Brief: ${message}`,
+        `Files: ${fileNames}`,
+      ].join('\n');
+
+      window.open(
+        whatsappUrl(whatsappMessage),
+        '_blank',
+        'noopener,noreferrer',
       );
+
+      setSubmitted(true);
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -161,371 +126,341 @@ export default function BulkEnquiryPage() {
   };
 
   return (
-    <main data-testid="bulk-enquiry-page" className="bg-bg text-ink">
-      <section className="bg-brand text-brand-ink">
-        <Container className="py-20 sm:py-28">
-          <p
-            data-testid="bulk-enquiry-eyebrow"
-            className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand-ink/70"
-          >
-            Bulk Enquiry · B2B
+    <main data-testid="contact-page" className="bg-bg text-ink">
+      <section
+        data-testid="contact-hero"
+        className="bg-brand text-brand-ink"
+      >
+        <Container className="py-24 sm:py-32">
+          <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand-ink/70">
+            Wholesale program · B2B
           </p>
 
-          <h1
-            data-testid="bulk-enquiry-heading"
-            className="mt-5 max-w-4xl font-serif text-5xl leading-[.95] sm:text-7xl"
-          >
-            Choose your range. We&apos;ll build the volume around it.
+          <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-[.95] sm:text-7xl">
+            Manufactured to your spec. Priced to your volume.
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-8 text-brand-ink/75">
-            Select a range, choose the size and quantity you need, and send a
-            clear request to our WhatsApp team.
+            Share your brief with the mill. We will return with a clear quote,
+            practical timeline and the right next step.
           </p>
+
+          <div className="mt-8 flex flex-wrap gap-3 text-xs">
+            <span className="rounded-full border border-brand-ink/25 px-4 py-2">
+              24-hour quote
+            </span>
+
+            <span className="rounded-full border border-brand-ink/25 px-4 py-2">
+              MOQ from 300 pcs
+            </span>
+          </div>
         </Container>
       </section>
 
-      <Container className="grid gap-12 py-20 lg:grid-cols-[1.3fr_.7fr]">
+      <Container className="grid gap-16 py-20 sm:py-28 lg:grid-cols-[.45fr_.55fr]">
         <section>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
-                The catalogue
-              </p>
+          <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
+            Talk to the mill
+          </p>
 
-              <h2
-                data-testid="bulk-catalogue-heading"
-                className="mt-3 font-serif text-4xl text-ink sm:text-5xl"
-              >
-                Existing ranges &amp; prices
-              </h2>
+          <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+            A considered beginning to a dependable supply partnership.
+          </h2>
+
+          <p className="mt-6 text-sm leading-7 text-ink-2">
+            Hotels, furnishing buyers, retailers and designers can use this
+            form to share quantities, specifications, packaging needs and
+            delivery expectations.
+          </p>
+
+          <div className="mt-12 divide-y divide-border">
+            <div
+              data-testid="contact-info-factory-address"
+              className="flex gap-4 border-t border-border py-6"
+            >
+              <MapPin className="mt-1 size-5 text-brand" />
+
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Factory address
+                </p>
+
+                <p className="mt-2 text-sm text-ink">
+                  Panipat, Haryana, India
+                </p>
+              </div>
             </div>
 
-            <span
-              data-testid="bulk-catalogue-count"
-              className="text-xs uppercase tracking-[.16em] text-ink-2"
+            <div
+              data-testid="contact-info-phone-whatsapp"
+              className="flex gap-4 py-6"
             >
-              {products.length} items
-            </span>
-          </div>
+              <Phone className="mt-1 size-5 text-brand" />
 
-          <div
-            data-testid="bulk-category-filters"
-            className="mt-8 flex flex-wrap gap-2"
-          >
-            {categories.map((item) => (
-              <button
-                key={item}
-                type="button"
-                data-testid={`bulk-filter-${item
-                  .toLowerCase()
-                  .replace(/\s+/g, '-')}`}
-                aria-pressed={category === item}
-                onClick={() => setCategory(item)}
-                className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[.14em] transition-colors focus-visible:ring-2 focus-visible:ring-gold ${
-                  category === item
-                    ? 'border-brand bg-brand text-brand-ink'
-                    : 'border-border bg-surface text-ink-2 hover:border-brand hover:text-ink'
-                }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Phone / WhatsApp
+                </p>
 
-          {isLoading ? (
-            <p
-              data-testid="bulk-catalogue-loading"
-              className="mt-8 text-sm text-ink-2"
-            >
-              Loading catalogue…
-            </p>
-          ) : (
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {visibleProducts.map((product) => {
-                const choice = selection[product.id];
-                const selected = Boolean(choice?.quantity);
-                const variant =
-                  product.variants.find(
-                    (item) => item.id === choice?.variantId,
-                  ) ?? product.variants[0];
-                const unit = variantPrice(product, choice?.variantId);
-                const productKey = product.sku.toLowerCase();
-
-                return (
-                  <article
-                    key={product.id}
-                    data-testid={`bulk-product-${productKey}`}
-                    className={`rounded-lg border bg-surface p-5 transition-shadow hover:shadow-[0_18px_40px_-24px_rgba(125,44,40,0.28)] ${
-                      selected ? 'border-brand' : 'border-border'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <input
-                        data-testid={`bulk-product-select-${productKey}`}
-                        type="checkbox"
-                        checked={selected}
-                        onChange={() => toggle(product)}
-                        className="mt-1 size-5 accent-brand"
-                        aria-label={`Select ${product.name}`}
-                      />
-
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-brand">
-                              {product.sku} · {groupFor(product)}
-                            </p>
-
-                            <h3
-                              data-testid={`bulk-product-name-${productKey}`}
-                              className="mt-2 font-serif text-xl leading-tight text-ink"
-                            >
-                              {product.name}
-                            </h3>
-                          </div>
-
-                          <p
-                            data-testid={`bulk-product-price-${productKey}`}
-                            className="shrink-0 font-serif text-xl text-brand"
-                          >
-                            {money(unit)}
-                          </p>
-                        </div>
-
-                        <p className="mt-3 line-clamp-2 text-xs leading-5 text-ink-2">
-                          {product.shortDescription}
-                        </p>
-
-                        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-4 text-[11px] text-ink-2">
-                          <span data-testid={`bulk-product-size-${productKey}`}>
-                            Size:{' '}
-                            <b className="text-ink">
-                              {variant?.size ?? product.sizeLabel}
-                            </b>
-                          </span>
-
-                          <span>
-                            MOQ: <b className="text-ink">{product.moq}</b>
-                          </span>
-                        </div>
-
-                        {selected ? (
-                          <div className="mt-4 grid grid-cols-2 gap-3">
-                            <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-[.14em] text-ink-2">
-                              Size
-
-                              <select
-                                data-testid={`bulk-product-size-select-${productKey}`}
-                                value={choice.variantId ?? ''}
-                                onChange={(event) =>
-                                  updateChoice(product, {
-                                    variantId: Number(event.target.value),
-                                  })
-                                }
-                                className="h-10 rounded-md border border-border bg-bg px-2 text-xs font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
-                              >
-                                {product.variants.map((item) => (
-                                  <option key={item.id} value={item.id}>
-                                    {item.size ?? product.sizeLabel}
-                                    {item.color ? ` · ${item.color}` : ''}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-
-                            <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-[.14em] text-ink-2">
-                              Quantity
-
-                              <input
-                                data-testid={`bulk-product-quantity-${productKey}`}
-                                type="number"
-                                min="1"
-                                value={choice.quantity}
-                                onChange={(event) =>
-                                  updateChoice(product, {
-                                    quantity: Math.max(
-                                      1,
-                                      Number(event.target.value) || 1,
-                                    ),
-                                  })
-                                }
-                                className="h-10 rounded-md border border-border bg-bg px-2 text-xs font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
-                              />
-                            </label>
-
-                            <p
-                              data-testid={`bulk-product-line-total-${productKey}`}
-                              className="col-span-2 text-right text-xs font-semibold text-brand"
-                            >
-                              Line total: {money(unit * choice.quantity)}
-                            </p>
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
+                <p className="mt-2 text-sm text-ink">
+                  +91 99999 99999
+                </p>
+              </div>
             </div>
-          )}
+
+            <div
+              data-testid="contact-info-email"
+              className="flex gap-4 py-6"
+            >
+              <Mail className="mt-1 size-5 text-brand" />
+
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Email
+                </p>
+
+                <p className="mt-2 text-sm text-ink">
+                  hello@bhavitatextiles.com
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 py-6">
+              <Clock3 className="mt-1 size-5 text-brand" />
+
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Business hours
+                </p>
+
+                <p className="mt-2 text-sm text-ink">
+                  Mon–Sat · 10:00–18:00 IST
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <aside className="lg:sticky lg:top-28 lg:self-start">
-          <form
-            data-testid="bulk-enquiry-form"
-            onSubmit={submit}
-            className="grid gap-5 rounded-lg border border-border bg-surface p-6 sm:p-8"
-          >
-            <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
-              Send your request
-            </p>
-
-            <h2 className="font-serif text-3xl text-ink">
-              A precise quote, sent securely
-            </h2>
-
-            <p
-              data-testid="bulk-enquiry-selected-summary"
-              className="rounded-md bg-brand-soft p-4 text-sm leading-6 text-ink-2"
+        <section
+          data-testid="contact-form"
+          className="rounded-lg border border-border bg-surface p-6 sm:p-10"
+        >
+          {submitted ? (
+            <div
+              data-testid="contact-form-success"
+              className="grid min-h-[560px] place-items-center text-center"
             >
-              {chosen.length
-                ? `${chosen.length} item${chosen.length === 1 ? '' : 's'} selected · ${money(total)} catalogue total`
-                : 'Select items from the catalogue to begin.'}
-            </p>
+              <div>
+                <span className="inline-flex size-16 items-center justify-center rounded-full bg-brand-soft text-brand">
+                  <CheckCircle2 className="size-8" />
+                </span>
 
-            {(['company', 'name', 'email', 'phone'] as const).map((key) => (
-              <label
-                key={key}
-                className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2"
-              >
-                {key === 'company'
-                  ? 'Company'
-                  : key === 'name'
-                    ? 'Contact person'
-                    : key[0].toUpperCase() + key.slice(1)}
+                <h2 className="mt-6 font-serif text-4xl text-ink">
+                  Your brief is with the mill.
+                </h2>
 
-                <input
-                  data-testid={`bulk-enquiry-${key}`}
-                  required
-                  value={form[key]}
-                  onChange={(event) => update(key, event.target.value)}
-                  type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
-                  className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                />
-              </label>
-            ))}
-
-            <label className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
-              Business type
-
-              <select
-                data-testid="bulk-enquiry-business"
-                value={form.business}
-                onChange={(event) => update('business', event.target.value)}
-                className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
-              >
-                <option>Hotel</option>
-                <option>Retail Store</option>
-                <option>Interior Designer</option>
-                <option>Corporate Gifting</option>
-                <option>Government Tender</option>
-                <option>Other</option>
-              </select>
-            </label>
-
-            <label className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
-              Project notes
-
-              <textarea
-                data-testid="bulk-enquiry-message"
-                rows={4}
-                value={form.message}
-                onChange={(event) => update('message', event.target.value)}
-                className="min-h-28 rounded-md border border-border bg-bg p-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-              />
-            </label>
-
-            <button
-              data-testid="bulk-enquiry-submit"
-              type="submit"
-              disabled={busy || !chosen.length}
-              className="mt-1 inline-flex h-12 items-center justify-center rounded-full bg-brand px-6 text-[11px] font-semibold uppercase tracking-[.18em] text-brand-ink transition-colors hover:bg-brand-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {busy ? 'Preparing WhatsApp…' : 'Review WhatsApp message'}
-            </button>
-
-            {confirming ? (
-              <div
-                data-testid="bulk-whatsapp-confirmation"
-                className="rounded-lg border border-brand bg-brand-soft p-5"
-              >
-                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-brand">
-                  Final check
+                <p className="mt-4 text-sm leading-7 text-ink-2">
+                  WhatsApp has opened with your enquiry. Our team will reply
+                  within 24 hours.
                 </p>
 
-                <h3 className="mt-2 font-serif text-2xl text-ink">
-                  Send this exact request?
-                </h3>
-
-                <div
-                  data-testid="bulk-locked-summary"
-                  className="mt-4 max-h-48 overflow-y-auto rounded-md bg-surface p-4 text-xs leading-5 text-ink"
+                <a
+                  data-testid="contact-success-home"
+                  href="/"
+                  className="mt-7 inline-flex h-11 items-center rounded-full border border-border px-6 text-[11px] font-semibold uppercase tracking-[.18em] text-ink hover:border-brand"
                 >
-                  {chosen.map((product) => (
-                    <p key={product.id}>
-                      {product.sku} · {selection[product.id].quantity} ×{' '}
-                      {money(
-                        variantPrice(
-                          product,
-                          selection[product.id].variantId,
-                        ),
-                      )}
-                    </p>
-                  ))}
-
-                  <p className="mt-3 border-t border-border pt-3 font-semibold">
-                    Total: {money(total)}
-                  </p>
-                </div>
-
-                <p className="mt-3 text-[11px] leading-5 text-ink-2">
-                  This review shows the calculated sizes, quantities and prices
-                  before WhatsApp opens.
+                  Return home
+                </a>
+              </div>
+            </div>
+          ) : (
+            <form
+              data-testid="bulk-enquiry-form"
+              onSubmit={submit}
+              className="grid gap-5"
+            >
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
+                  Company details
                 </p>
 
-                <div className="mt-4 flex gap-2">
-                  <button
-                    type="button"
-                    data-testid="bulk-whatsapp-confirm"
-                    onClick={sendWhatsApp}
-                    disabled={busy}
-                    className="flex-1 rounded-full bg-success px-3 py-3 text-[10px] font-semibold uppercase tracking-[.14em] text-brand-ink disabled:opacity-50"
-                  >
-                    Confirm &amp; open
-                  </button>
-
-                  <button
-                    type="button"
-                    data-testid="bulk-whatsapp-cancel"
-                    onClick={() => setConfirming(false)}
-                    className="rounded-full border border-border px-3 py-3 text-[10px] font-semibold uppercase tracking-[.14em] text-ink"
-                  >
-                    Edit
-                  </button>
-                </div>
+                <h2 className="mt-3 font-serif text-3xl text-ink">
+                  Tell us who you are.
+                </h2>
               </div>
-            ) : null}
 
-            <p
-              data-testid="bulk-enquiry-security-note"
-              className="text-[11px] leading-5 text-ink-2"
-            >
-              Prices are calculated automatically from the selected size and
-              quantity. No price field can be edited in this form.
-            </p>
-          </form>
-        </aside>
+              <div className="grid gap-5 sm:grid-cols-2">
+                {[
+                  ['companyName', 'Company name', 'text', true],
+                  ['contactPerson', 'Contact person', 'text', true],
+                  ['designation', 'Designation', 'text', false],
+                  ['email', 'Email', 'email', true],
+                  ['phone', 'Phone with country code', 'tel', true],
+                  ['country', 'Country / City', 'text', false],
+                  ['website', 'Website', 'url', false],
+                ].map(([name, label, type, required]) => (
+                  <label
+                    key={String(name)}
+                    className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2"
+                  >
+                    {label}
+
+                    <input
+                      data-testid={`contact-form-${name}`}
+                      name={String(name)}
+                      required={Boolean(required)}
+                      type={String(type)}
+                      className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <div className="mt-8 border-t border-border pt-8">
+                <p className="font-serif text-2xl text-ink">
+                  Product interest
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {categories.map((category) => {
+                    const active =
+                      selectedCategories.includes(category);
+
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        data-testid={`contact-category-${category
+                          .toLowerCase()
+                          .replaceAll(' ', '-')}`}
+                        aria-pressed={active}
+                        onClick={() => toggleCategory(category)}
+                        className={`rounded-full border px-4 py-2 text-xs transition-colors ${
+                          active
+                            ? 'border-brand bg-brand text-brand-ink'
+                            : 'border-border text-ink-2 hover:border-brand'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <label className="mt-6 grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                  Estimated MOQ per SKU
+
+                  <select
+                    data-testid="contact-form-moq"
+                    name="moq"
+                    required
+                    className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
+                  >
+                    {moqOptions.map((option) => (
+                      <option key={option}>{option}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="border-t border-border pt-8">
+                <p className="font-serif text-2xl text-ink">
+                  Brief &amp; timeline
+                </p>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {timelines.map((timeline) => (
+                    <label
+                      key={timeline}
+                      className="flex min-h-12 items-center gap-3 rounded-md border border-border bg-bg px-4 text-sm text-ink"
+                    >
+                      <input
+                        data-testid={`contact-timeline-${timeline
+                          .toLowerCase()
+                          .replaceAll(' ', '-')}`}
+                        type="radio"
+                        name="timeline"
+                        value={timeline}
+                        defaultChecked={timeline === 'Flexible'}
+                        className="size-4 accent-brand"
+                      />
+
+                      {timeline}
+                    </label>
+                  ))}
+                </div>
+
+                <textarea
+                  data-testid="contact-form-message"
+                  name="message"
+                  required
+                  placeholder="Tell us about print styles, GSM, packaging or private-label needs…"
+                  className="mt-5 min-h-40 w-full rounded-md border border-border bg-bg p-4 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                />
+              </div>
+
+              
+                
+
+
+              
+
+              <label className="flex items-center gap-3 text-sm text-ink">
+                <input
+                  data-testid="contact-form-consent"
+                  required
+                  type="checkbox"
+                  className="size-4 accent-brand"
+                />
+
+                I agree to receive quotes and updates from Bhavita Textiles.
+              </label>
+
+              <button
+                data-testid="contact-form-submit"
+                disabled={busy}
+                type="submit"
+                className="h-12 rounded-full bg-brand text-[11px] font-semibold uppercase tracking-[.18em] text-brand-ink transition-colors hover:bg-brand-2 disabled:opacity-60"
+              >
+                {busy
+                  ? 'Preparing WhatsApp…'
+                  : 'Send enquiry on WhatsApp'}
+              </button>
+
+              <p className="text-center text-xs text-ink-2">
+                Typical response within 24 hours.
+              </p>
+            </form>
+          )}
+        </section>
+      </Container>
+
+      <Container className="pb-24">
+        <div
+          data-testid="contact-map"
+          className="overflow-hidden rounded-lg border border-border bg-surface"
+        >
+          <iframe
+            title="Bhavita Textiles factory location"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d111235.59384228835!2d76.80822447722554!3d29.396270499959137!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390dda457afbe651%3A0x41d3f6feacaa74d4!2sPanipat%2C%20Haryana!5e0!3m2!1sen!2sin!4v1787605821564!5m2!1sen!2sin"
+            className="h-[360px] w-full border-0 sm:h-[440px]"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+
+          <div className="flex items-center gap-3 border-t border-border px-5 py-4">
+            <MapPin className="size-5 shrink-0 text-brand" />
+
+            <div>
+              <p className="text-sm font-semibold text-ink">
+                Bhavita Textiles
+              </p>
+              <p className="text-xs text-ink-2">
+                Panipat, Haryana, India
+              </p>
+            </div>
+          </div>
+        </div>
       </Container>
     </main>
   );

@@ -1,9 +1,170 @@
 'use client';
-import { ArrowUpRight, Instagram, Linkedin, Mail, MapPin, Youtube } from 'lucide-react';
+
+import {
+  ArrowUpRight,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Youtube,
+} from 'lucide-react';
 import Link from 'next/link';
 
-import { useState, useTransition, type FormEvent } from 'react';
-import { toast } from 'sonner';
 import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
-import newsletterService from '@/services/newsletter.service';
-export default function Footer() { const [email, setEmail] = useState(''); const [pending, startTransition] = useTransition(); const submitNewsletter = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const value = email.trim(); if (!value) { toast.error('Enter your email address.'); return; } startTransition(() => { newsletterService.subscribe({ email: value }).then(() => { setEmail(''); toast.success('You are on the list.'); }).catch((error: unknown) => toast.error(error instanceof Error ? error.message : 'Subscription failed.')); }); }; const columns = [{ name: 'Shop', links: [['/shop', 'Full catalogue'], ['/collections', 'Collections']] }, { name: 'Company', links: [['/about', 'Our story'], ['/wholesale', 'Wholesale'], ['/contact', 'Contact']] }, { name: 'Support', links: [['/shipping-policy', 'Shipping'], ['/return-policy', 'Returns'], ['/privacy', 'Privacy']] }]; return <footer data-testid="footer" className="border-t border-bg/10 bg-ink text-bg"><div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-10 lg:px-16 lg:py-20"><div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end"><div><p data-testid="footer-newsletter-label" className="text-[11px] font-semibold uppercase tracking-[.22em] text-gold">The mill&apos;s letter</p><h2 className="mt-3 font-serif text-4xl text-bg">News from the loom.</h2><p className="mt-3 text-sm text-bg/60">One thoughtful note each month. No noise.</p></div><form onSubmit={submitNewsletter} className="flex w-full max-w-md gap-2"><input data-testid="footer-newsletter-input" value={email} onChange={(event) => setEmail(event.target.value)} type="email" placeholder="Your email address" className="h-12 min-w-0 flex-1 rounded-full border border-bg/20 bg-bg/5 px-5 text-sm text-bg outline-none placeholder:text-bg/40 focus:border-gold" /><button type="submit" disabled={pending} data-testid="footer-newsletter-submit" className="h-12 rounded-full bg-gold px-5 text-[11px] font-semibold uppercase tracking-[.16em] text-ink transition-colors hover:bg-gold-2 disabled:opacity-60">{pending ? 'Joining…' : 'Join'}</button></form></div><div className="my-12 border-t border-bg/10" /><div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5"><div><Link href="/" data-testid="footer-logo" className="font-serif text-3xl tracking-[.18em]">BHAVITA</Link><p data-testid="footer-description" className="mt-5 text-sm leading-7 text-bg/60">A family-run textile manufacturer from Panipat, built for hospitality and export buyers.</p><div className="mt-6 flex gap-2"><a data-testid="footer-social-instagram" href="#" aria-label="Instagram" className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"><Instagram className="size-4" /></a><a data-testid="footer-social-linkedin" href="#" aria-label="LinkedIn" className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"><Linkedin className="size-4" /></a><a data-testid="footer-social-youtube" href="#" aria-label="YouTube" className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"><Youtube className="size-4" /></a></div></div>{columns.map((column) => <div key={column.name} data-testid={`footer-column-${column.name.toLowerCase()}`}><p className="text-[11px] font-semibold uppercase tracking-[.22em] text-gold">{column.name}</p><div className="mt-5 grid gap-3 text-sm text-bg/70">{column.links.map(([href, label]) => <Link key={href} href={href} className="transition-colors hover:text-gold">{label}</Link>)}</div></div>)}<div data-testid="footer-column-contact"><p className="text-[11px] font-semibold uppercase tracking-[.22em] text-gold">Contact</p><div className="mt-5 grid gap-4 text-sm leading-6 text-bg/70"><span className="flex gap-3"><MapPin className="mt-1 size-4 shrink-0" />Panipat, Haryana, India</span><a data-testid="footer-email-link" href="mailto:hello@bhavitatextiles.com" className="flex gap-3 hover:text-gold"><Mail className="mt-1 size-4 shrink-0" />hello@bhavitatextiles.com</a><a data-testid="footer-whatsapp-link" href={whatsappUrl()} className="flex gap-3 hover:text-gold"><ArrowUpRight className="mt-1 size-4 shrink-0" />WhatsApp enquiry</a></div></div></div></div><div className="border-t border-bg/10"><div data-testid="footer-copyright" className="mx-auto flex max-w-[1440px] flex-col gap-2 px-6 py-6 text-xs text-bg/50 sm:px-10 md:flex-row md:justify-between lg:px-16"><span>© {new Date().getFullYear()} Bhavita Textiles · Panipat, India</span><span>Direct from the loom · Export ready</span></div></div></footer>; }
+
+export default function Footer() {
+  const columns = [
+    {
+      name: 'Shop',
+      links: [
+        ['/shop', 'Full catalogue'],
+       
+      ],
+    },
+    {
+      name: 'Company',
+      links: [
+        ['/about', 'Our story'],
+        ['/wholesale', 'Wholesale'],
+        ['/contact', 'Contact'],
+      ],
+    },
+    {
+      name: 'Support',
+      links: [
+        ['/shipping-policy', 'Shipping'],
+        ['/return-policy', 'Returns'],
+        ['/privacy', 'Privacy'],
+      ],
+    },
+  ];
+
+  return (
+    <footer
+      data-testid="footer"
+      className="border-t border-bg/10 bg-ink text-bg"
+    >
+      <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Brand */}
+          <div>
+            <Link
+              href="/"
+              data-testid="footer-logo"
+              className="font-serif text-3xl tracking-[.18em]"
+            >
+              BHAVITA
+            </Link>
+
+            <p
+              data-testid="footer-description"
+              className="mt-5 text-sm leading-7 text-bg/60"
+            >
+              A family-run textile manufacturer from Panipat, built for
+              hospitality and export buyers.
+            </p>
+
+            <div className="mt-6 flex gap-2">
+              <a
+                data-testid="footer-social-instagram"
+                href="#"
+                aria-label="Instagram"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"
+              >
+                <Instagram className="size-4" />
+              </a>
+
+              <a
+                data-testid="footer-social-linkedin"
+                href="#"
+                aria-label="LinkedIn"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"
+              >
+                <Linkedin className="size-4" />
+              </a>
+
+              <a
+                data-testid="footer-social-youtube"
+                href="#"
+                aria-label="YouTube"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"
+              >
+                <Youtube className="size-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Navigation Columns */}
+          {columns.map((column) => (
+            <div
+              key={column.name}
+              data-testid={`footer-column-${column.name.toLowerCase()}`}
+            >
+              <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-gold">
+                {column.name}
+              </p>
+
+              <div className="mt-5 grid gap-3 text-sm text-bg/70">
+                {column.links.map(([href, label]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="transition-colors hover:text-gold"
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          {/* Contact */}
+          <div data-testid="footer-column-contact">
+            <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-gold">
+              Contact
+            </p>
+
+            <div className="mt-5 grid gap-4 text-sm leading-6 text-bg/70">
+              <span className="flex gap-3">
+                <MapPin className="mt-1 size-4 shrink-0" />
+                Panipat, Haryana, India
+              </span>
+
+              <a
+                data-testid="footer-email-link"
+                href="mailto:hello@bhavitatextiles.com"
+                className="flex gap-3 transition-colors hover:text-gold"
+              >
+                <Mail className="mt-1 size-4 shrink-0" />
+                hello@bhavitatextiles.com
+              </a>
+
+              <a
+                data-testid="footer-whatsapp-link"
+                href={whatsappUrl()}
+                className="flex gap-3 transition-colors hover:text-gold"
+              >
+                <ArrowUpRight className="mt-1 size-4 shrink-0" />
+                WhatsApp enquiry
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Copyright */}
+      <div className="border-t border-bg/10">
+        <div
+          data-testid="footer-copyright"
+          className="mx-auto flex max-w-[1440px] flex-col gap-2 px-6 py-6 text-xs text-bg/50 sm:px-10 md:flex-row md:justify-between lg:px-16"
+        >
+          <span>
+            © {new Date().getFullYear()} Bhavita Textiles · Panipat, India
+          </span>
+
+          <span>Direct from the loom · Export ready</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
