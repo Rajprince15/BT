@@ -165,7 +165,7 @@ export default function ProductPage() {
   const specs: Array<[string, string | undefined]> = [
     ['Specification', product.specification],
     ['Size', product.sizeLabel],
-    ['Minimum order', product.moq],
+  
     ['Best for', product.buyerSegments?.join(' · ')],
   ];
   const hasSpecs = specs.some(([, value]) => Boolean(value));
@@ -260,10 +260,10 @@ export default function ProductPage() {
             </p>
 
             {/* Key specs summary — B2B priority */}
-            {(product.sizeLabel || product.moq || product.specification) ? (
+            {(product.sizeLabel || product.specification) ? (
               <dl
                 data-testid="product-key-specs"
-                className="mt-7 grid grid-cols-2 gap-x-6 gap-y-4 rounded-lg border border-border bg-surface p-5 sm:grid-cols-3"
+                className="mt-7 grid grid-cols-2 gap-x-6 gap-y-4 rounded-lg border border-border bg-surface p-5 sm:grid-cols-2"
               >
                 {product.specification ? (
                   <div>
@@ -285,16 +285,7 @@ export default function ProductPage() {
                     </dd>
                   </div>
                 ) : null}
-                {product.moq ? (
-                  <div>
-                    <dt className="text-[10px] font-semibold uppercase tracking-wider2 text-ink-2">
-                      MOQ
-                    </dt>
-                    <dd className="mt-1 text-sm font-semibold text-brand">
-                      {product.moq}
-                    </dd>
-                  </div>
-                ) : null}
+                
               </dl>
             ) : null}
 
@@ -307,53 +298,105 @@ export default function ProductPage() {
               />
             </div>
 
-            {/* Quantity + primary CTA */}
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <div className="flex h-12 items-center rounded-full border border-border bg-surface">
-                <button
-                  type="button"
-                  data-testid="quantity-decrease"
-                  aria-label="Decrease quantity"
-                  onClick={() =>
-                    setQuantity((value) => Math.max(1, value - 1))
-                  }
-                  className="inline-flex size-11 items-center justify-center rounded-l-full text-ink-2 transition-colors hover:text-brand"
-                >
-                  <Minus className="size-4" />
-                </button>
-                <span
-                  data-testid="quantity-value"
-                  className="w-8 text-center text-sm font-semibold text-ink"
-                >
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  data-testid="quantity-increase"
-                  aria-label="Increase quantity"
-                  onClick={() =>
-                    setQuantity((value) => Math.min(stock || 1, value + 1))
-                  }
-                  className="inline-flex size-11 items-center justify-center rounded-r-full text-ink-2 transition-colors hover:text-brand"
-                >
-                  <Plus className="size-4" />
-                </button>
+                        {/* Quantity + primary CTA */}
+            <div className="mt-7 space-y-3">
+              <p className="text-[10px] font-semibold uppercase tracking-wider2 text-ink-2">
+                Quantity
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex h-12 items-center overflow-hidden rounded-full border border-border bg-surface">
+                  <button
+                    type="button"
+                    data-testid="quantity-decrease"
+                    aria-label="Decrease quantity"
+                    onClick={() =>
+                      setQuantity((value) => Math.max(1, value - 1))
+                    }
+                    className="inline-flex size-11 items-center justify-center text-ink-2 transition-colors hover:bg-bg hover:text-brand"
+                  >
+                    <Minus className="size-4" />
+                  </button>
+
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    data-testid="quantity-input"
+                    aria-label="Quantity"
+                    min={1}
+                    max={stock || undefined}
+                    value={quantity}
+                    onChange={(event) => {
+                      const raw = event.target.value;
+
+                      if (raw === '') {
+                        setQuantity(1);
+                        return;
+                      }
+
+                      const parsed = Number.parseInt(raw, 10);
+
+                      if (Number.isNaN(parsed)) return;
+
+                      const clamped = Math.max(
+                        1,
+                        Math.min(stock || parsed, parsed),
+                      );
+
+                      setQuantity(clamped);
+                    }}
+                    onBlur={(event) => {
+                      const parsed = Number.parseInt(
+                        event.target.value,
+                        10,
+                      );
+
+                      if (Number.isNaN(parsed) || parsed < 1) {
+                        setQuantity(1);
+                      }
+                    }}
+                    className="h-full w-14 border-x border-border bg-transparent text-center text-sm font-semibold text-ink outline-none focus:bg-bg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
+
+                  <button
+                    type="button"
+                    data-testid="quantity-increase"
+                    aria-label="Increase quantity"
+                    onClick={() =>
+                      setQuantity((value) =>
+                        Math.min(stock || value + 1, value + 1),
+                      )
+                    }
+                    className="inline-flex size-11 items-center justify-center text-ink-2 transition-colors hover:bg-bg hover:text-brand"
+                  >
+                    <Plus className="size-4" />
+                  </button>
+                </div>
+
+                <div className="flex flex-1 items-center gap-3">
+                  <AddToCartButton
+                    productId={product.id}
+                    variantId={variant?.id}
+                    quantity={quantity}
+                    disabled={!canAddToCart}
+                  />
+
+                  <WishlistButton productId={product.id} />
+                </div>
               </div>
 
-              <div className="flex flex-1 items-center gap-3">
-                <AddToCartButton
-                  productId={product.id}
-                  variantId={variant?.id}
-                  quantity={quantity}
-                  disabled={!canAddToCart}
-                />
-                <WishlistButton productId={product.id} />
-              </div>
+              <p className="text-[11px] text-ink-2">
+                Type the exact number of pieces or use the buttons.
+              </p>
             </div>
 
             {/* Bulk enquiry accent CTA */}
             <a
-              href="/wholesale"
+              href={`/wholesale?product=${encodeURIComponent(
+                product.slug,
+              )}&productName=${encodeURIComponent(
+                product.name,
+              )}&sku=${encodeURIComponent(product.sku)}&qty=${quantity}`}
               data-testid="product-bulk-cta"
               className="group mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-brand/25 bg-brand-soft/40 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand transition-all duration-300 hover:border-brand/60 hover:bg-brand-soft"
             >
@@ -473,3 +516,5 @@ export default function ProductPage() {
     </main>
   );
 }
+
+

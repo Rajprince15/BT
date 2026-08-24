@@ -132,16 +132,6 @@ function ProductCard({
             </span>
           ) : null}
         </div>
-
-        {/* MOQ pill — B2B priority signal */}
-        {product.moq ? (
-          <span
-            data-testid="product-card-moq"
-            className="absolute bottom-3 left-3 rounded-full bg-bg/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider2 text-ink shadow-sm"
-          >
-            MOQ · {product.moq}
-          </span>
-        ) : null}
       </Link>
 
       {/* Wishlist */}

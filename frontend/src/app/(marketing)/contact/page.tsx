@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
   Clock3,
   Mail,
   MapPin,
+  Package,
   Phone,
-  Upload,
-  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,18 +28,42 @@ const categories = [
 
 const moqOptions = ['300', '500', '1000', '2500', '5000+'];
 
-const timelines = [
-  'Within 30 days',
-  '30–60 days',
-  '60+ days',
-  'Flexible',
-];
+const timelines = ['Within 30 days', '30–60 days', '60+ days', 'Flexible'];
 
 export default function BulkEnquiryPage() {
+  const search = useSearchParams();
+  const prefill = useMemo(() => {
+    const productName = search.get('productName') ?? '';
+    const productSlug = search.get('product') ?? '';
+    const sku = search.get('sku') ?? '';
+    const qty = search.get('qty') ?? '';
+    return { productName, productSlug, sku, qty };
+  }, [search]);
+
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
+  const [files] = useState<File[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+
+  // Prefill the message when arriving from a product page.
+  useEffect(() => {
+    if (prefill.productName) {
+      setMessage(
+        [
+          `Enquiry for: ${prefill.productName}`,
+          prefill.sku ? `SKU: ${prefill.sku}` : null,
+          prefill.qty
+            ? `Interested quantity: ${prefill.qty} pcs (indicative)`
+            : null,
+          '',
+          'Please share your best wholesale price, lead time, packaging options and MOQ details for this product.',
+        ]
+          .filter(Boolean)
+          .join('\n'),
+      );
+    }
+  }, [prefill.productName, prefill.sku, prefill.qty]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((current) =>
@@ -60,9 +84,8 @@ export default function BulkEnquiryPage() {
     const phone = String(data.get('phone') ?? '');
     const moq = String(data.get('moq') ?? '');
     const timeline = String(data.get('timeline') ?? 'Flexible');
-    const message = String(data.get('message') ?? '');
-    const fileNames =
-      files.map((file) => file.name).join(', ') || 'None';
+    const brief = String(data.get('message') ?? '');
+    const fileNames = files.map((file) => file.name).join(', ') || 'None';
 
     setBusy(true);
 
@@ -74,9 +97,11 @@ export default function BulkEnquiryPage() {
         phone,
         businessType: String(data.get('designation') ?? ''),
         productInterest:
-          selectedCategories.join(', ') || 'General textile enquiry',
+          prefill.productName ||
+          selectedCategories.join(', ') ||
+          'General textile enquiry',
         quantityRequirement: `${moq} pcs per SKU · ${timeline}`,
-        message: `${message}\nAttachments: ${fileNames}`,
+        message: `${brief}\nAttachments: ${fileNames}`,
       });
 
       const whatsappMessage = [
@@ -86,26 +111,28 @@ export default function BulkEnquiryPage() {
         `Contact: ${contactPerson}`,
         `Email: ${email}`,
         `Phone: ${phone}`,
-        `Designation: ${String(
-          data.get('designation') ?? 'Not specified',
-        )}`,
-        `Country / City: ${String(
-          data.get('country') ?? 'Not specified',
-        )}`,
+        `Designation: ${String(data.get('designation') ?? 'Not specified')}`,
+        `Country / City: ${String(data.get('country') ?? 'Not specified')}`,
         '',
-        `Product interest: ${
-          selectedCategories.join(', ') || 'General textile enquiry'
-        }`,
+        prefill.productName
+          ? `Product: ${prefill.productName}${
+              prefill.sku ? ` (SKU: ${prefill.sku})` : ''
+            }`
+          : `Product interest: ${
+              selectedCategories.join(', ') || 'General textile enquiry'
+            }`,
+        prefill.qty ? `Interested quantity: ${prefill.qty} pcs` : null,
         `Estimated MOQ: ${moq} pcs per SKU`,
         `Delivery timeline: ${timeline}`,
         `Website: ${
-          String(data.get('website') ?? 'Not specified') ||
-          'Not specified'
+          String(data.get('website') ?? 'Not specified') || 'Not specified'
         }`,
         '',
-        `Brief: ${message}`,
+        `Brief: ${brief}`,
         `Files: ${fileNames}`,
-      ].join('\n');
+      ]
+        .filter(Boolean)
+        .join('\n');
 
       window.open(
         whatsappUrl(whatsappMessage),
@@ -116,9 +143,7 @@ export default function BulkEnquiryPage() {
       setSubmitted(true);
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Unable to submit enquiry',
+        error instanceof Error ? error.message : 'Unable to submit enquiry',
       );
     } finally {
       setBusy(false);
@@ -127,10 +152,7 @@ export default function BulkEnquiryPage() {
 
   return (
     <main data-testid="contact-page" className="bg-bg text-ink">
-      <section
-        data-testid="contact-hero"
-        className="bg-brand text-brand-ink"
-      >
+      <section data-testid="contact-hero" className="bg-brand text-brand-ink">
         <Container className="py-24 sm:py-32">
           <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand-ink/70">
             Wholesale program · B2B
@@ -149,7 +171,6 @@ export default function BulkEnquiryPage() {
             <span className="rounded-full border border-brand-ink/25 px-4 py-2">
               24-hour quote
             </span>
-
             <span className="rounded-full border border-brand-ink/25 px-4 py-2">
               MOQ from 300 pcs
             </span>
@@ -168,9 +189,9 @@ export default function BulkEnquiryPage() {
           </h2>
 
           <p className="mt-6 text-sm leading-7 text-ink-2">
-            Hotels, furnishing buyers, retailers and designers can use this
-            form to share quantities, specifications, packaging needs and
-            delivery expectations.
+            Hotels, furnishing buyers, retailers and designers can use this form
+            to share quantities, specifications, packaging needs and delivery
+            expectations.
           </p>
 
           <div className="mt-12 divide-y divide-border">
@@ -179,15 +200,11 @@ export default function BulkEnquiryPage() {
               className="flex gap-4 border-t border-border py-6"
             >
               <MapPin className="mt-1 size-5 text-brand" />
-
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
                   Factory address
                 </p>
-
-                <p className="mt-2 text-sm text-ink">
-                  Panipat, Haryana, India
-                </p>
+                <p className="mt-2 text-sm text-ink">Panipat, Haryana, India</p>
               </div>
             </div>
 
@@ -196,43 +213,30 @@ export default function BulkEnquiryPage() {
               className="flex gap-4 py-6"
             >
               <Phone className="mt-1 size-5 text-brand" />
-
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
                   Phone / WhatsApp
                 </p>
-
-                <p className="mt-2 text-sm text-ink">
-                  +91 99999 99999
-                </p>
+                <p className="mt-2 text-sm text-ink">+91 99999 99999</p>
               </div>
             </div>
 
-            <div
-              data-testid="contact-info-email"
-              className="flex gap-4 py-6"
-            >
+            <div data-testid="contact-info-email" className="flex gap-4 py-6">
               <Mail className="mt-1 size-5 text-brand" />
-
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
                   Email
                 </p>
-
-                <p className="mt-2 text-sm text-ink">
-                  hello@bhavitatextiles.com
-                </p>
+                <p className="mt-2 text-sm text-ink">hello@bhavitatextiles.com</p>
               </div>
             </div>
 
             <div className="flex gap-4 py-6">
               <Clock3 className="mt-1 size-5 text-brand" />
-
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
                   Business hours
                 </p>
-
                 <p className="mt-2 text-sm text-ink">
                   Mon–Sat · 10:00–18:00 IST
                 </p>
@@ -254,16 +258,13 @@ export default function BulkEnquiryPage() {
                 <span className="inline-flex size-16 items-center justify-center rounded-full bg-brand-soft text-brand">
                   <CheckCircle2 className="size-8" />
                 </span>
-
                 <h2 className="mt-6 font-serif text-4xl text-ink">
                   Your brief is with the mill.
                 </h2>
-
                 <p className="mt-4 text-sm leading-7 text-ink-2">
                   WhatsApp has opened with your enquiry. Our team will reply
                   within 24 hours.
                 </p>
-
                 <a
                   data-testid="contact-success-home"
                   href="/"
@@ -279,11 +280,38 @@ export default function BulkEnquiryPage() {
               onSubmit={submit}
               className="grid gap-5"
             >
+              {/* Product context banner */}
+              {prefill.productName ? (
+                <div
+                  data-testid="contact-product-context"
+                  className="flex items-start gap-3 rounded-lg border border-brand/25 bg-brand-soft/50 p-4"
+                >
+                  <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink">
+                    <Package size={16} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider2 text-brand">
+                      Enquiring about
+                    </p>
+                    <p className="mt-1 line-clamp-2 font-serif text-lg text-ink">
+                      {prefill.productName}
+                    </p>
+                    <p className="mt-1 text-xs text-ink-2">
+                      {prefill.sku ? `SKU ${prefill.sku}` : null}
+                      {prefill.qty
+                        ? `${prefill.sku ? ' · ' : ''}Interested qty ${
+                            prefill.qty
+                          } pcs`
+                        : null}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
                   Company details
                 </p>
-
                 <h2 className="mt-3 font-serif text-3xl text-ink">
                   Tell us who you are.
                 </h2>
@@ -304,7 +332,6 @@ export default function BulkEnquiryPage() {
                     className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2"
                   >
                     {label}
-
                     <input
                       data-testid={`contact-form-${name}`}
                       name={String(name)}
@@ -316,52 +343,51 @@ export default function BulkEnquiryPage() {
                 ))}
               </div>
 
-              <div className="mt-8 border-t border-border pt-8">
-                <p className="font-serif text-2xl text-ink">
-                  Product interest
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {categories.map((category) => {
-                    const active =
-                      selectedCategories.includes(category);
-
-                    return (
-                      <button
-                        key={category}
-                        type="button"
-                        data-testid={`contact-category-${category
-                          .toLowerCase()
-                          .replaceAll(' ', '-')}`}
-                        aria-pressed={active}
-                        onClick={() => toggleCategory(category)}
-                        className={`rounded-full border px-4 py-2 text-xs transition-colors ${
-                          active
-                            ? 'border-brand bg-brand text-brand-ink'
-                            : 'border-border text-ink-2 hover:border-brand'
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    );
-                  })}
+              {!prefill.productName ? (
+                <div className="mt-8 border-t border-border pt-8">
+                  <p className="font-serif text-2xl text-ink">
+                    Product interest
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {categories.map((category) => {
+                      const active = selectedCategories.includes(category);
+                      return (
+                        <button
+                          key={category}
+                          type="button"
+                          data-testid={`contact-category-${category
+                            .toLowerCase()
+                            .replaceAll(' ', '-')}`}
+                          aria-pressed={active}
+                          onClick={() => toggleCategory(category)}
+                          className={`rounded-full border px-4 py-2 text-xs transition-colors ${
+                            active
+                              ? 'border-brand bg-brand text-brand-ink'
+                              : 'border-border text-ink-2 hover:border-brand'
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
+              ) : null}
 
-                <label className="mt-6 grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
-                  Estimated MOQ per SKU
-
-                  <select
-                    data-testid="contact-form-moq"
-                    name="moq"
-                    required
-                    className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
-                  >
-                    {moqOptions.map((option) => (
-                      <option key={option}>{option}</option>
-                    ))}
-                  </select>
-                </label>
-              </div>
+              <label className="mt-6 grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                Estimated MOQ per SKU
+                <select
+                  data-testid="contact-form-moq"
+                  name="moq"
+                  required
+                  defaultValue={prefill.qty ? '500' : moqOptions[0]}
+                  className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
+                >
+                  {moqOptions.map((option) => (
+                    <option key={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
 
               <div className="border-t border-border pt-8">
                 <p className="font-serif text-2xl text-ink">
@@ -384,7 +410,6 @@ export default function BulkEnquiryPage() {
                         defaultChecked={timeline === 'Flexible'}
                         className="size-4 accent-brand"
                       />
-
                       {timeline}
                     </label>
                   ))}
@@ -394,16 +419,12 @@ export default function BulkEnquiryPage() {
                   data-testid="contact-form-message"
                   name="message"
                   required
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
                   placeholder="Tell us about print styles, GSM, packaging or private-label needs…"
                   className="mt-5 min-h-40 w-full rounded-md border border-border bg-bg p-4 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
               </div>
-
-              
-                
-
-
-              
 
               <label className="flex items-center gap-3 text-sm text-ink">
                 <input
@@ -412,7 +433,6 @@ export default function BulkEnquiryPage() {
                   type="checkbox"
                   className="size-4 accent-brand"
                 />
-
                 I agree to receive quotes and updates from Bhavita Textiles.
               </label>
 
@@ -447,17 +467,11 @@ export default function BulkEnquiryPage() {
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
-
           <div className="flex items-center gap-3 border-t border-border px-5 py-4">
             <MapPin className="size-5 shrink-0 text-brand" />
-
             <div>
-              <p className="text-sm font-semibold text-ink">
-                Bhavita Textiles
-              </p>
-              <p className="text-xs text-ink-2">
-                Panipat, Haryana, India
-              </p>
+              <p className="text-sm font-semibold text-ink">Bhavita Textiles</p>
+              <p className="text-xs text-ink-2">Panipat, Haryana, India</p>
             </div>
           </div>
         </div>

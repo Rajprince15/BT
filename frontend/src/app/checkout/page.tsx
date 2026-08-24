@@ -220,7 +220,7 @@ export default function CheckoutPage() {
             ) : null}
           </div>
 
-          <OrderSummary cart={cart} />
+          <OrderSummary cart={cart} shipping={shipping} />
         </div>
       </Container>
 

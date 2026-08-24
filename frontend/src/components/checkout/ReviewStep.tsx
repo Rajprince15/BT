@@ -27,7 +27,17 @@ function formatINR(value: number) {
   return `Rs. ${value.toLocaleString('en-IN')}`;
 }
 
-function buildWhatsAppMessage(cart: Cart, address: Address, shipping: ShippingSummary) {
+function computeTotals(cart: Cart, shipping: ShippingSummary) {
+  const shippingCost = shipping.price;
+  const total = cart.subtotal + cart.tax + shippingCost;
+  return { shippingCost, total };
+}
+
+function buildWhatsAppMessage(
+  cart: Cart,
+  address: Address,
+  shipping: ShippingSummary,
+) {
   const orderRef = `BT-${Date.now().toString().slice(-6)}`;
   const today = new Date().toLocaleDateString('en-IN', {
     day: '2-digit',
@@ -58,6 +68,8 @@ function buildWhatsAppMessage(cart: Cart, address: Address, shipping: ShippingSu
     .filter(Boolean)
     .join('\n');
 
+  const { shippingCost, total } = computeTotals(cart, shipping);
+
   return [
     'Namaste,',
     '',
@@ -71,15 +83,12 @@ function buildWhatsAppMessage(cart: Cart, address: Address, shipping: ShippingSu
     '',
     '--- ORDER SUMMARY ---',
     `Subtotal: ${formatINR(cart.subtotal)}`,
-    `Shipping: ${formatINR(cart.shipping)}`,
+    `Shipping (${shipping.label} · ${shipping.eta}): ${formatINR(shippingCost)}`,
     `Tax: ${formatINR(cart.tax)}`,
-    `Grand Total: ${formatINR(cart.total)}`,
+    `Grand Total: ${formatINR(total)}`,
     '',
     '--- DELIVERY ADDRESS ---',
     addressLines,
-    '',
-    '--- DELIVERY METHOD ---',
-    `${shipping.label} (${shipping.eta})`,
     '',
     'Kindly acknowledge this request and share next steps.',
     '',
@@ -99,6 +108,11 @@ export default function ReviewStep({
   whatsappMode = false,
 }: ReviewStepProps) {
   const [confirming, setConfirming] = useState(false);
+
+  const { shippingCost, total } = useMemo(
+    () => computeTotals(cart, shipping),
+    [cart, shipping],
+  );
 
   const whatsappMessage = useMemo(
     () => (whatsappMode ? buildWhatsAppMessage(cart, address, shipping) : ''),
@@ -125,9 +139,12 @@ export default function ReviewStep({
         <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">
           Step 3
         </p>
-        <h2 className="mt-2 font-serif text-3xl text-ink">Review &amp; place order</h2>
+        <h2 className="mt-2 font-serif text-3xl text-ink">
+          Review &amp; place order
+        </h2>
         <p className="mt-2 text-sm text-ink-2">
-          Please review your details below. Everything is locked to what you selected.
+          Please review your details below. Everything is locked to what you
+          selected.
         </p>
       </header>
 
@@ -160,25 +177,38 @@ export default function ReviewStep({
       </article>
 
       {/* Delivery Method */}
-      <article className="rounded-xl border border-border bg-surface p-5 transition-shadow hover:shadow-sm">
+      <article
+        data-testid="checkout-review-shipping"
+        className="rounded-xl border border-border bg-surface p-5 transition-shadow hover:shadow-sm"
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">
               Delivery method
             </p>
-            <p className="mt-2 font-serif text-lg text-ink">{shipping.label}</p>
+            <p className="mt-2 font-serif text-lg text-ink">
+              {shipping.label}
+            </p>
             <p className="mt-1 text-xs uppercase tracking-wider2 text-ink-2">
               {shipping.eta}
             </p>
           </div>
-          <button
-            type="button"
-            data-testid="checkout-edit-shipping"
-            onClick={onEditShipping}
-            className="text-xs uppercase tracking-wider2 text-gold hover:text-gold-2"
-          >
-            Edit
-          </button>
+          <div className="text-right">
+            <p
+              data-testid="checkout-review-shipping-price"
+              className="text-lg font-semibold text-ink"
+            >
+              ₹{shippingCost.toLocaleString('en-IN')}
+            </p>
+            <button
+              type="button"
+              data-testid="checkout-edit-shipping"
+              onClick={onEditShipping}
+              className="mt-1 text-xs uppercase tracking-wider2 text-gold hover:text-gold-2"
+            >
+              Edit
+            </button>
+          </div>
         </div>
       </article>
 
@@ -200,7 +230,70 @@ export default function ReviewStep({
             </li>
           ))}
         </ul>
+
+        {/* Totals block with shipping */}
+        <dl className="mt-4 space-y-1.5 border-t border-border pt-4 text-sm">
+          <div className="flex justify-between">
+            <dt className="text-ink-2">Subtotal</dt>
+            <dd
+              data-testid="checkout-review-subtotal"
+              className="text-ink"
+            >
+              ₹{cart.subtotal.toLocaleString('en-IN')}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-ink-2">
+              Shipping ·{' '}
+              <span className="text-[11px] uppercase tracking-wider2 text-gold">
+                {shipping.label}
+              </span>
+            </dt>
+            <dd
+              data-testid="checkout-review-shipping-line"
+              className="text-ink"
+            >
+              ₹{shippingCost.toLocaleString('en-IN')}
+            </dd>
+          </div>
+          {cart.tax > 0 ? (
+            <div className="flex justify-between">
+              <dt className="text-ink-2">Tax</dt>
+              <dd className="text-ink">
+                ₹{cart.tax.toLocaleString('en-IN')}
+              </dd>
+            </div>
+          ) : null}
+          <div className="mt-2 flex items-baseline justify-between border-t border-border pt-3">
+            <dt className="font-serif text-lg text-ink">Grand total</dt>
+            <dd
+              data-testid="checkout-review-total"
+              className="font-serif text-xl text-ink"
+            >
+              ₹{total.toLocaleString('en-IN')}
+            </dd>
+          </div>
+        </dl>
       </article>
+
+      {/* Shipping selection info banner */}
+      <div
+        data-testid="checkout-review-shipping-notice"
+        className="rounded-lg border border-gold/30 bg-gold-soft/40 p-4 text-xs leading-5 text-ink"
+      >
+        <p className="font-semibold uppercase tracking-wider2 text-gold">
+          Delivery selected
+        </p>
+        <p className="mt-1 text-ink-2">
+          You picked{' '}
+          <span className="font-semibold text-ink">{shipping.label}</span> (
+          {shipping.eta}). Shipping of{' '}
+          <span className="font-semibold text-ink">
+            ₹{shippingCost.toLocaleString('en-IN')}
+          </span>{' '}
+          has been added to your grand total above.
+        </p>
+      </div>
 
       {/* Primary Action Button */}
       <button
@@ -228,8 +321,8 @@ export default function ReviewStep({
           data-testid="checkout-whatsapp-note"
           className="rounded-lg border border-[#1f9d58]/30 bg-[#1f9d58]/10 p-3 text-xs leading-5 text-ink-2"
         >
-          On confirming, you will see the formatted order message and can send it directly
-          to Bhavita Textiles on WhatsApp.
+          On confirming, you will see the formatted order message and can send
+          it directly to Bhavita Textiles on WhatsApp.
         </p>
       ) : null}
 
@@ -271,7 +364,8 @@ export default function ReviewStep({
                   Confirm your order message
                 </h3>
                 <p className="mt-1 text-xs text-ink-2">
-                  This exact message will be sent to Bhavita Textiles on WhatsApp.
+                  This exact message will be sent to Bhavita Textiles on
+                  WhatsApp.
                 </p>
               </div>
               <button
