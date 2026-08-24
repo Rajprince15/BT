@@ -101,7 +101,7 @@ export default function Header() {
           </Link>
 
           <Link
-            href="/products"
+            href="/shop"
             data-testid="nav-catalogue-link"
             className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink-2 transition-colors hover:text-gold-2"
           >
