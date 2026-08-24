@@ -30,4 +30,9 @@ export interface Product {
   variants: ProductVariant[];
   aggregateRating: number;
   reviewCount: number;
+  /** Optional catalogue fields shared by the frontend mock and future API. */
+  specification?: string;
+  sizeLabel?: string;
+  moq?: string;
+  buyerSegments?: string[];
 }

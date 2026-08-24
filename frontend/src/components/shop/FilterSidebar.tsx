@@ -280,7 +280,7 @@ export default function FilterSidebar({
                     <button
                       key={c}
                       type="button"
-                      data-testid={`filter-color-${c.toLowerCase().replace(/s+/g, '-')}`}
+                      data-testid={`filter-color-${c.toLowerCase().replace(/\s+/g, '-')}`}
                       aria-pressed={active}
                       onClick={() => onChange({ color: active ? undefined : c })}
                       title={c}
@@ -319,7 +319,7 @@ export default function FilterSidebar({
                     <button
                       key={s}
                       type="button"
-                      data-testid={`filter-size-${s.toLowerCase().replace(/s+/g, '-')}`}
+                      data-testid={`filter-size-${s.toLowerCase().replace(/\s+/g, '-')}`}
                       aria-pressed={active}
                       onClick={() => onChange({ size: active ? undefined : s })}
                       className={cn(

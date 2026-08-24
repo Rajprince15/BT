@@ -144,6 +144,7 @@ export const categories: Category[] = [
 export const categoryIds = {
   cottonBedsheets: cottonBedsheets.id,
   handloomBedsheets: handloomBedsheets.id,
+  printedBedsheets: printedBedsheets.id,
   premiumBedsheets: premiumBedsheets.id,
   winterBlankets: winterBlankets.id,
   quilts: quilts.id,

@@ -212,6 +212,21 @@ export default function ProductPage() {
           >
             {product.description ?? product.shortDescription}
           </p>
+          {(product.specification || product.sizeLabel || product.moq || product.buyerSegments?.length) ? (
+            <div data-testid="product-technical-specs" className="mt-8 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+              {([
+                ['Specification', product.specification],
+                ['Size', product.sizeLabel],
+                ['Minimum order', product.moq],
+                ['Best for', product.buyerSegments?.join(' · ')],
+              ] as Array<[string, string | undefined]>).map(([label, value]) => value ? (
+                <div key={label} className="bg-surface px-5 py-5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider2 text-gold-2">{label}</p>
+                  <p data-testid={`product-spec-${label.toLowerCase().replaceAll(' ', '-')}`} className="mt-2 text-sm font-semibold text-ink">{value}</p>
+                </div>
+              ) : null)}
+            </div>
+          ) : null}
         </div>
 
         <ReviewList

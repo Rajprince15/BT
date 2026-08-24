@@ -1,9 +1,12 @@
+
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+
 import ShopBrowser from '@/components/shop/ShopBrowser';
 import categoryService from '@/services/category.service';
 import env from '@/lib/env';
+
 import type { BreadcrumbItem } from '@/components/shop/Breadcrumbs';
 
 interface ShopPageProps {
@@ -16,18 +19,20 @@ async function getCategories() {
 
 function findCategory(
   categories: Awaited<ReturnType<typeof getCategories>>,
-  slug?: string,
+  slug?: string
 ) {
   if (!slug) {
     return null;
   }
 
-  return categories.find((category) => category.slug === slug) ?? null;
+  return categories.find(
+    (category) => category.slug === slug
+  ) ?? null;
 }
 
 function buildCrumbs(
   categories: Awaited<ReturnType<typeof getCategories>>,
-  slugChain: string[] = [],
+  slugChain: string[] = []
 ): BreadcrumbItem[] {
   const crumbs: BreadcrumbItem[] = [
     {
@@ -35,7 +40,7 @@ function buildCrumbs(
       href: '/',
     },
     {
-      label: 'Shop',
+      label: 'Catalogue',
       href: '/shop',
     },
   ];
@@ -43,7 +48,9 @@ function buildCrumbs(
   let path = '/shop';
 
   for (const slug of slugChain) {
-    const category = categories.find((item) => item.slug === slug);
+    const category = categories.find(
+      (item) => item.slug === slug
+    );
 
     if (!category) {
       continue;
@@ -62,21 +69,25 @@ function buildCrumbs(
 
 function isValidCategoryPath(
   categories: Awaited<ReturnType<typeof getCategories>>,
-  slugChain: string[] = [],
+  slugChain: string[] = []
 ) {
   let parentId: number | undefined;
 
   return slugChain.every((slug) => {
-    const category = categories.find((item) => item.slug === slug);
+    const category = categories.find(
+      (item) => item.slug === slug
+    );
 
     if (
       !category ||
-      (parentId !== undefined && category.parentId !== parentId)
+      (parentId !== undefined &&
+        category.parentId !== parentId)
     ) {
       return false;
     }
 
     parentId = category.id;
+
     return true;
   });
 }
@@ -85,29 +96,44 @@ export async function generateMetadata({
   params,
 }: ShopPageProps): Promise<Metadata> {
   const { slug } = await params;
+
   const last = slug?.[slug.length - 1];
+
   const categories = await getCategories();
 
-  if (slug?.length && !isValidCategoryPath(categories, slug)) {
+  if (
+    slug?.length &&
+    !isValidCategoryPath(categories, slug)
+  ) {
     notFound();
   }
 
   const category = findCategory(categories, last);
-  const baseUrl = env.NEXT_PUBLIC_APP_URL;
-  const path =
-    slug && slug.length > 0 ? `/shop/${slug.join('/')}` : '/shop';
 
+  const baseUrl = env.NEXT_PUBLIC_APP_URL;
+
+  const path =
+    slug && slug.length > 0
+      ? `/shop/${slug.join('/')}`
+      : '/shop';
+
+  /*
+   * Default /shop metadata
+   */
   if (!category) {
     return {
-      title: 'Shop · Bhavita Textiles',
+      title: 'Product Catalogue · Bhavita Textiles',
       description:
-        'Browse our full atelier — luxury bedsheets, curtains, rugs, bath linen, decor and handloom heritage pieces.',
+        'Browse Bhavita Textiles bulk home-textile products, specifications, sizes and MOQs.',
       alternates: {
         canonical: `${baseUrl}/shop`,
       },
     };
   }
 
+  /*
+   * Category-specific metadata
+   */
   return {
     title: `${category.name} · Bhavita Textiles`,
     description:
@@ -119,32 +145,50 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({ params }: ShopPageProps) {
+export default async function Page({
+  params,
+}: ShopPageProps) {
   const { slug } = await params;
+
   const last = slug?.[slug.length - 1];
+
   const categories = await getCategories();
 
-  if (slug?.length && !isValidCategoryPath(categories, slug)) {
+  if (
+    slug?.length &&
+    !isValidCategoryPath(categories, slug)
+  ) {
     notFound();
   }
 
   const category = findCategory(categories, last);
 
-  const title = category ? category.name : 'The Atelier';
-  const eyebrow = category ? 'Shop' : 'Atelier';
+  /*
+   * Default /shop catalogue content
+   */
+  const title = category
+    ? category.name
+    : 'Product Catalogue';
+
+  const eyebrow = category
+    ? 'Shop'
+    : 'Bulk home textiles · 30+ SKUs';
 
   const description = category
     ? category.description
-    : 'Bedroom, living, bath, decor — every piece woven by hands that have done so for generations.';
+    : 'Browse printed bedsheets, mink blankets, floor mats, comforters, pillow covers, towels and furnishing panels — with technical specs and MOQ details for every range.';
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-bg" />}>
+    <Suspense
+      fallback={<div className="min-h-screen bg-bg" />}
+    >
       <ShopBrowser
         title={title}
         eyebrow={eyebrow}
         description={description}
         breadcrumbs={buildCrumbs(categories, slug)}
         lockedCategorySlug={category?.slug}
+        limit={!category ? 12 : undefined}
       />
     </Suspense>
   );
