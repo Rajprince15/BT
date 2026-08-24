@@ -11,16 +11,29 @@
   --border: #e6dfd5;
   --success: #47735c;
   --danger: #9a4e46;
+
+  /* Brand burgundy — used sparingly for the primary brand identity */
+  --brand: #7d2c28;
+  --brand-2: #5a1e1b;
+  --brand-soft: #f1dede;
+  --brand-ink: #ffffff; /* text on brand fills */
 }
+
 [data-theme="dark"] {
-  --bg: #1c1a17;
-  --surface: #292621;
-  --surface-2: #373129;
-  --ink: #f9f6f0;
+  --bg: #181514;
+  --surface: #24201e;
+  --surface-2: #2f2a26;
+  --ink: #f5f1eb;
   --ink-2: #c9c0b4;
   --gold: #d7b341;
   --gold-2: #efcf70;
   --gold-soft: #554a2d;
-  --navy: #f9f6f0;
-  --border: #4a4339;
+  --navy: #f5f1eb;
+  --border: #3a332d;
+
+  /* Softer burgundy for dark surfaces so it stays warm and readable */
+  --brand: #b45852;
+  --brand-2: #d1746e;
+  --brand-soft: #3a1f1d;
+  --brand-ink: #1c1a17;
 }
