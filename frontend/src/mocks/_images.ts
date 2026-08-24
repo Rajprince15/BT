@@ -1,8 +1,9 @@
 const EDITORIAL_IMAGES = [
-  '/images/editorial/handloom-heritage.svg',
-  '/images/editorial/premium-cotton.svg',
-  '/images/editorial/festive-wear.svg',
-  '/images/editorial/royal-collection.svg',
+  'https://images.pexels.com/photos/38890438/pexels-photo-38890438.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.unsplash.com/photo-1707978932202-751b08324daf?auto=format&fit=crop&w=1200&q=85',
+  'https://images.pexels.com/photos/10317106/pexels-photo-10317106.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  'https://images.pexels.com/photos/6167463/pexels-photo-6167463.jpeg?auto=compress&cs=tinysrgb&w=1200',
+
 ] as const;
 const PRODUCT_IMAGES: Record<string, string[]> = {
   bedsheet: [

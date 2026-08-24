@@ -1,34 +1,36 @@
-# Bhavita Textiles Redesign
+# Bhavita Textiles Frontend Health Fix
 
 ## Original problem statement
-Redesign the existing Bhavita Textiles website to match the theme, colors, visual hierarchy, layout, and content of https://bhavitatextiles.lovable.app/. Add a frontend-only WhatsApp button using a configurable number, exact product image links with local filename-based overrides, preserve important existing features, remove account and notification controls from the public header, and provide free contact/wholesale/footer enquiry handoffs.
+Run and fix my website and give me the file location for every files you change.
 
 ## Architecture decisions
-- Keep the existing Next.js App Router and public catalogue routes.
-- Use the reference site’s cream paper, charcoal, and gold palette with serif headings and Manrope body text.
-- Keep contact and wholesale on the existing frontend service layer; in mock mode, open WhatsApp with submitted details.
-- Product images first request `/images/products/<slug>.jpg`; the client component switches to the exact remote product image when the local file is absent.
-- WhatsApp configuration lives in `components/layout/WhatsAppWidget.tsx` so the placeholder number and message have one edit point.
+- Frontend-only changes; backend routes and service-layer contracts remain untouched.
+- Keep the existing Next.js App Router, mock service layer, Tailwind v4 styling, and supervisor port configuration.
+- Use `/shop` as the canonical catalogue route and valid remote image URLs with a branded inline fallback.
 
 ## Implemented
-- Rebuilt the homepage around the Panipat manufacturing story, featured range, plant scale, procurement benefits, and bulk RFQ CTA.
-- Replaced the public header/footer with manufacturer-focused navigation and contact links.
-- Added a site-wide floating WhatsApp CTA and WhatsApp handoffs for contact and wholesale forms.
-- Updated theme tokens, texture treatment, remote image allow-list, and robust product image fallback.
-- Fixed static rendering boundaries on login and checkout success pages so all 39 Next routes build.
-- Updated frontend package-manager metadata so the supervisor can start the current Next frontend.
-- Restored local cart, wishlist, search, theme toggle, and mobile navigation; only account and notification controls are hidden from the public header.
-
+- Repaired the package-manager declaration and installed the existing frontend dependencies.
+- Added the missing PostCSS loader configuration so Tailwind utilities render in every route.
+- Corrected catalogue links from `/products` to `/shop`.
+- Repaired product, editorial, and hero fallback image behavior; verified zero broken catalogue images.
+- Verified the production build, supervisor-managed frontend, requested routes, product click-through, mobile navigation, and no horizontal overflow.
 
 ## Prioritized backlog
-- P0: Replace the temporary WhatsApp number and configure the owner’s preferred reply email.
-- P1: Align the supervisor/backend entrypoint with the repository’s Node backend if API persistence is required.
-- P1: Replace mock contact, wholesale, and catalogue services with live services when backend persistence is ready.
-- P2: Add the remaining seven-category content and product-specific image files under `public/images/products`.
-
-## Verification
-- TypeScript/TSX lint passed.
+- P0: Keep the frontend service layer aligned with the future backend API contract.
+# Bhavita Textiles Frontend Health Fix
+Run and fix my website and give me the file location for every files you change.
+- Product images use the provided remote image first and switch to a branded inline SVG fallback only when the remote image fails.
+- Updated frontend package-manager metadata so the supervisor can start the current Next frontend.
+- Added the missing PostCSS loader configuration so Tailwind utilities render in every route.
+- Corrected catalogue links from `/products` to the canonical `/shop` route.
+- Updated mock editorial and hero fallback image URLs to valid remote assets.
+- Restored local cart, wishlist, search, theme toggle, and mobile navigation; only account and notification controls are hidden from the public header.
+- P2: Add automated visual snapshots for storefront, account, checkout, and admin route groups.
 - Production build passed all 39 routes with `yarn build`.
-- Reference product asset returned HTTP 200.
-- Browser pass rendered the redesigned homepage; intermittent Cloudflare verification can block automated preview navigation.
-- Contact, wholesale, and catalogue service layers remain MOCKED in frontend mock mode; no backend persistence is active.
+- Browser regression passed home, catalogue, product click-through, requested route loads, mobile navigation, and no horizontal overflow.
+- Catalogue regression verified 12 cards and zero broken images.
+- A non-blocking ESLint circular-configuration warning remains from the current toolchain.
+
+## Next tasks
+- Backend integration can replace service internals without changing pages or components.
+- Resolve the non-blocking ESLint circular-configuration warning during the next tooling cleanup.
