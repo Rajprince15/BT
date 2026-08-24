@@ -40,6 +40,7 @@ export default function MobileNav() {
       <SheetContent
         data-testid="mobile-nav-drawer"
         side="left"
+        showCloseButton={false}
         className="w-[88vw] max-w-[420px] border-r border-[var(--gold-soft)] bg-[var(--surface)] p-0 text-[var(--ink)]"
       >
         <SheetHeader className="flex flex-row items-center justify-between border-b border-[var(--gold-soft)] px-6 py-5">

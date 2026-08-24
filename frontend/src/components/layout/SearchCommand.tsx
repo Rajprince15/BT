@@ -67,6 +67,11 @@ export default function SearchCommand() {
         const lc = debounced.toLowerCase();
         setCategories(tree.filter((c) => c.name.toLowerCase().includes(lc)).slice(0, 5));
       })
+      .catch(() => {
+        if (cancelled) return;
+        setProducts([]);
+        setCategories([]);
+      })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
@@ -84,7 +89,7 @@ export default function SearchCommand() {
     <CommandDialog
       open={open}
       onOpenChange={setOpen}
-      data-testid="global-search-dialog"
+      contentTestId="global-search-dialog"
       title="Search BHAVITA TEXTILES"
       description="Find products and categories"
     >

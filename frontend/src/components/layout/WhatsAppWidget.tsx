@@ -3,7 +3,7 @@
 import { MessageCircle } from 'lucide-react';
 
 // Replace this placeholder with the owner's WhatsApp number, including country code.
-export const WHATSAPP_NUMBER = '919852244801';
+export const WHATSAPP_NUMBER = '919999999999'; // Example: '919876543210' for India
 export const WHATSAPP_MESSAGE = 'Hello, I’m interested in your products.';
 export const whatsappUrl = (message = WHATSAPP_MESSAGE) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 

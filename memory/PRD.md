@@ -1,36 +1,21 @@
-# Bhavita Textiles Frontend Health Fix
+# Bhavita Textiles Frontend PRD
 
 ## Original problem statement
-Run and fix my website and give me the file location for every files you change.
+Run and verify why no UI is visible, and make the theme/colour like https://bhavitatextiles.lovable.app/.
 
 ## Architecture decisions
-- Frontend-only changes; backend routes and service-layer contracts remain untouched.
-- Keep the existing Next.js App Router, mock service layer, Tailwind v4 styling, and supervisor port configuration.
-- Use `/shop` as the canonical catalogue route and valid remote image URLs with a branded inline fallback.
+- Frontend-only work in the existing Next.js app; backend was not started or modified.
+- Preserve the luxury editorial textile storefront structure with warm ivory, charcoal, muted gold, serif display headings, and Manrope body text.
+- Keep existing service and mock-runtime behavior unchanged.
 
 ## Implemented
-- Repaired the package-manager declaration and installed the existing frontend dependencies.
-- Added the missing PostCSS loader configuration so Tailwind utilities render in every route.
-- Corrected catalogue links from `/products` to `/shop`.
-- Repaired product, editorial, and hero fallback image behavior; verified zero broken catalogue images.
-- Verified the production build, supervisor-managed frontend, requested routes, product click-through, mobile navigation, and no horizontal overflow.
+- Confirmed the blank preview was caused by the frontend supervisor process exiting because `next start` could not find `.next/BUILD_ID`.
+- Built the existing frontend and restarted only the frontend process; homepage serves successfully on port 3000.
+- Verified desktop and mobile homepage rendering, themed hero, navigation, catalogue sections, plant-scale section, wholesale CTA, footer, and no horizontal overflow.
+- Fixed the mobile drawer duplicate close control by disabling the Sheet primitive close button when the custom close button is present.
+- Forwarded the global search test ID to rendered dialog content and added rejected-search handling.
 
 ## Prioritized backlog
-- P0: Keep the frontend service layer aligned with the future backend API contract.
-# Bhavita Textiles Frontend Health Fix
-Run and fix my website and give me the file location for every files you change.
-- Product images use the provided remote image first and switch to a branded inline SVG fallback only when the remote image fails.
-- Updated frontend package-manager metadata so the supervisor can start the current Next frontend.
-- Added the missing PostCSS loader configuration so Tailwind utilities render in every route.
-- Corrected catalogue links from `/products` to the canonical `/shop` route.
-- Updated mock editorial and hero fallback image URLs to valid remote assets.
-- Restored local cart, wishlist, search, theme toggle, and mobile navigation; only account and notification controls are hidden from the public header.
-- P2: Add automated visual snapshots for storefront, account, checkout, and admin route groups.
-- Production build passed all 39 routes with `yarn build`.
-- Browser regression passed home, catalogue, product click-through, requested route loads, mobile navigation, and no horizontal overflow.
-- Catalogue regression verified 12 cards and zero broken images.
-- A non-blocking ESLint circular-configuration warning remains from the current toolchain.
-
-## Next tasks
-- Backend integration can replace service internals without changing pages or components.
-- Resolve the non-blocking ESLint circular-configuration warning during the next tooling cleanup.
+- P0: Provide the frontend runtime environment value required for live external preview validation (`REACT_APP_BACKEND_URL`) without starting the backend in this task.
+- P1: Re-run the live search interaction check once the frontend environment is available.
+- P2: Replace the existing MOCKED API/services with connected production data when backend work is explicitly requested.
