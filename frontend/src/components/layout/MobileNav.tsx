@@ -108,9 +108,8 @@ export default function MobileNav() {
 
           <div className="mt-6 space-y-1 px-6">
             {[
-              { label: 'Wholesale', href: '/wholesale' },
-              { label: 'About', href: '/about' },
-              { label: 'Contact', href: '/contact' },
+              { label: 'Our Heritage', href: '/about' },
+              { label: 'Bulk Enquiry', href: '/contact' },
               { label: 'Privacy', href: '/privacy' },
               { label: 'Terms', href: '/terms' },
             ].map((link) => (
@@ -118,7 +117,7 @@ export default function MobileNav() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                data-testid={`mobile-nav-link-${link.label.toLowerCase()}`}
+                data-testid={`mobile-nav-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}
                 className="block py-2 font-sans text-[12px] uppercase tracking-[0.22em] text-[var(--ink-2)] hover:text-[var(--gold)]"
               >
                 {link.label}

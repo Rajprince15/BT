@@ -119,7 +119,7 @@ export default function MegaMenu() {
         {[
           { label: 'Wholesale', href: '/wholesale' },
           { label: 'About', href: '/about' },
-          { label: 'Contact', href: '/contact' },
+          { label: 'Bulk Enquiry', href: '/contact' },
         ].map((item) => (
           <NavigationMenuItem key={item.href}>
             <NavigationMenuLink asChild>

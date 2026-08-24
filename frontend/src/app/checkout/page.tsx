@@ -14,6 +14,8 @@ import MockRazorpayModal, { type MockRazorpayResult } from '@/components/checkou
 import { useCart } from '@/hooks/useCart';
 import userService from '@/services/user.service';
 import checkoutService from '@/services/checkout.service';
+import env from '@/lib/env';
+import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 interface ShippingSummary {
   id: string;
@@ -77,6 +79,12 @@ export default function CheckoutPage() {
 
   const beginPayment = async () => {
     if (!addressId || !shipping || !selectedAddress) return;
+    if (!env.REACT_APP_RAZORPAY_ENABLED) {
+      const items = cart.items.map((item) => `${item.productSku} — ${item.productName} | Quantity: ${item.quantity} | Unit price: ₹${item.price.toLocaleString('en-IN')} | Line total: ₹${(item.price * item.quantity).toLocaleString('en-IN')}`).join('\n');
+      const message = `Hello, I would like to place this Bhavita Textiles order.\n\nItems:\n${items}\n\nOrder total: ₹${cart.total.toLocaleString('en-IN')}\n\nDelivery details:\n${selectedAddress.fullName}\n${selectedAddress.addressLine1}${selectedAddress.addressLine2 ? `, ${selectedAddress.addressLine2}` : ''}\n${selectedAddress.city}, ${selectedAddress.state} - ${selectedAddress.pincode}\nPhone: ${selectedAddress.phone}\nDelivery method: ${shipping.label} (${shipping.eta})`;
+      window.location.assign(whatsappUrl(message));
+      return;
+    }
     setPreparing(true);
     try {
       const quote = await checkoutService.quote({ addressId, paymentMethod: 'razorpay' });
@@ -191,6 +199,7 @@ export default function CheckoutPage() {
                 onEditShipping={() => setStep('shipping')}
                 onPay={beginPayment}
                 busy={preparing}
+                whatsappMode={!env.REACT_APP_RAZORPAY_ENABLED}
               />
             ) : null}
           </div>

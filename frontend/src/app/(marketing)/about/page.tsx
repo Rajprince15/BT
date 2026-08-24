@@ -1,61 +1,26 @@
 import type { Metadata } from 'next';
 import Container from '@/components/common/Container';
 
-export const metadata: Metadata = {
-  title: 'About Bhavita Textiles',
-  description:
-    'Bhavita Textiles is a premium home-furnishing atelier translating India’s handloom heritage into modern luxury for elegant living.',
-};
+export const metadata: Metadata = { title: 'Our Heritage | Bhavita Textiles', description: 'The family-run Panipat textile mill behind Bhavita Textiles.' };
 
-const CRAFT = [
-  { title: 'Handloom heritage', copy: 'Sanganeri, Bagru and Maheshwari villages weave every fabric on wooden pit-looms.' },
-  { title: 'Natural dyes', copy: 'Indigo, madder and turmeric — the tones our grandmothers slept in, still soft on the skin.' },
-  { title: 'Ateliers, not factories', copy: 'Small teams. Long hours. Prices that pay the maker as much as they pay us.' },
+const milestones = [
+  ['2017', 'The first loom', 'Bhavita Textiles begins as a two-loom unit in Panipat, weaving cotton bedsheets for local wholesalers.'],
+  ['2019', 'In-house printing', 'We add rotary printing and stitching, controlling the process from grey fabric to finished pack.'],
+  ['2021', 'Hospitality clients', 'Our first multi-hotel supply contract introduces 5-stage QC and export-grade packaging.'],
+  ['2023', 'Export desk', 'IEC-registered exports begin, serving buyers across the Middle East, Africa and South-East Asia.'],
+  ['2025', '40,000 sq.ft. plant', 'Looms, printing, stitching, QC and packaging are consolidated under one roof.'],
+];
+const checks = [
+  ['01', 'Yarn & grey inspection', 'Count, tensile strength and grey width verified before weaving.'], ['02', 'Loom-side audit', 'Every loom is checked hourly for pick density and defects.'], ['03', 'Post-print QC', 'Colour-fastness, print alignment and shrinkage tested on sample lots.'], ['04', 'Stitching inspection', 'Seam strength, hem symmetry and size tolerance of ± 1 cm.'], ['05', 'Pre-shipment audit', 'AQL 2.5 sample check with a photographic report shared with the buyer.'],
 ];
 
 export default function AboutPage() {
-  return (
-    <main data-testid="about-page" className="bg-bg">
-      <section className="border-b border-border bg-surface-2/40">
-        <Container className="grid gap-10 py-20 md:grid-cols-[1.1fr_.9fr] md:items-center md:py-28">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">Our story</p>
-            <h1 className="mt-4 font-serif text-5xl leading-tight text-ink md:text-6xl">
-              A quieter kind of luxury.
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-ink-2">
-              Bhavita Textiles began as a project between weavers in Rajasthan and a small studio in Jaipur.
-              A decade later, we make heirloom-grade bed linen, drapery and rugs for homes across India — one
-              hand-finished piece at a time.
-            </p>
-          </div>
-          <div className="aspect-[4/5] rounded-3xl border border-gold/20 bg-[linear-gradient(135deg,_#F3EEE3,_#E5DDC9)]" aria-hidden />
-        </Container>
-      </section>
-
-      <section className="border-b border-border">
-        <Container className="grid gap-8 py-20 md:grid-cols-3">
-          {CRAFT.map((item) => (
-            <article key={item.title} data-testid={`about-pillar-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
-              className="rounded-2xl border border-border bg-surface p-8"
-            >
-              <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">Craft</p>
-              <h2 className="mt-3 font-serif text-2xl text-ink">{item.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-ink-2">{item.copy}</p>
-            </article>
-          ))}
-        </Container>
-      </section>
-
-      <section className="bg-navy text-bg">
-        <Container className="py-20 text-center">
-          <p className="text-xs uppercase tracking-[.35em] text-gold-soft">A promise</p>
-          <blockquote className="mx-auto mt-6 max-w-2xl font-serif text-3xl leading-snug md:text-4xl">
-            “Every piece leaves our workshop carrying a name — the weaver’s, then ours, then yours.”
-          </blockquote>
-          <p className="mt-6 text-xs uppercase tracking-wider2 text-bg/60">— Bhavita, Founder</p>
-        </Container>
-      </section>
-    </main>
-  );
+  return <main data-testid="about-page" className="bg-bg text-ink">
+    <section className="border-b border-border bg-navy text-bg"><Container className="grid gap-10 py-20 md:grid-cols-[1.1fr_.9fr] md:items-center md:py-28"><div><p data-testid="heritage-eyebrow" className="text-xs font-semibold uppercase tracking-[.3em] text-gold-soft">Our Heritage</p><h1 data-testid="heritage-heading" className="mt-4 max-w-3xl font-serif text-5xl leading-[.98] md:text-7xl">A Panipat family, eight years of loom-woven trust.</h1><p data-testid="heritage-intro" className="mt-7 max-w-xl text-base leading-8 text-bg/75">Bhavita Textiles was founded in 2017 in Panipat — the town that weaves nearly 75% of India&apos;s home textiles. We are a family-run manufacturer, not a trading house, and every metre we ship starts on our own looms.</p></div><div className="overflow-hidden rounded-2xl border border-gold/30 bg-[#574335]"><img src="https://bhavitatextiles.lovable.app/assets/hero-loom-factory-yO9x27s4.jpg" alt="Bhavita Textiles loom floor" className="aspect-[4/5] w-full object-cover" /></div></Container></section>
+    <section className="border-b border-border"><Container className="grid gap-12 py-20 md:grid-cols-[.8fr_1.2fr] md:py-28"><div><p className="text-xs font-semibold uppercase tracking-[.3em] text-gold">The Story</p><h2 data-testid="heritage-story-heading" className="mt-4 font-serif text-4xl leading-tight md:text-5xl">Built from a two-loom shed into a 40,000 sq.ft. mill.</h2></div><div className="space-y-5 text-sm leading-8 text-ink-2"><p>Panipat has woven the fabric of Indian homes for generations. In 2017 our family put its first two looms on the floor with one commitment: never resell someone else&apos;s work as our own.</p><p>Eight years later, that discipline is what our hospitality, export and gifting buyers depend on — a mill they can walk through, a QC head they can call, and a family name on every carton.</p><p>We are large enough to service national tenders and small enough that the founders still sign every export invoice.</p></div></Container></section>
+    <section className="bg-surface-2/50"><Container className="py-20 md:py-28"><p className="text-xs font-semibold uppercase tracking-[.3em] text-gold">Milestones</p><h2 data-testid="heritage-milestones-heading" className="mt-4 font-serif text-4xl md:text-5xl">Eight years, one loom-floor.</h2><div className="mt-12 grid gap-5 md:grid-cols-5">{milestones.map(([year, title, copy]) => <article key={year} data-testid={`heritage-milestone-${year}`} className="border-t-2 border-gold pt-5"><p className="font-serif text-3xl text-gold">{year}</p><h3 className="mt-4 font-serif text-xl">{title}</h3><p className="mt-3 text-sm leading-7 text-ink-2">{copy}</p></article>)}</div></Container></section>
+    <section className="border-b border-border"><Container className="py-20 md:py-28"><div className="max-w-2xl"><p className="text-xs font-semibold uppercase tracking-[.3em] text-gold">Quality Assurance</p><h2 data-testid="heritage-quality-heading" className="mt-4 font-serif text-4xl md:text-5xl">A 5-stage inspection built for export-buyer due diligence.</h2><p className="mt-5 text-sm leading-7 text-ink-2">Every consignment ships with a photographic pre-shipment audit report. Third-party inspections by SGS, Bureau Veritas and Intertek are accommodated on request.</p></div><div className="mt-12 grid gap-4 md:grid-cols-5">{checks.map(([number, title, copy]) => <article key={number} data-testid={`heritage-quality-${number}`} className="rounded-xl border border-border bg-surface p-5"><span className="text-xs font-bold text-gold">{number}</span><h3 className="mt-8 font-serif text-xl">{title}</h3><p className="mt-3 text-sm leading-7 text-ink-2">{copy}</p></article>)}</div><div className="mt-12 grid grid-cols-2 gap-6 border-t border-border pt-8 sm:grid-cols-4">{[['120+', 'Team members'], ['50K', 'Units per month'], ['12+', 'Export markets'], ['8+', 'Years established']].map(([value, label]) => <div key={label} data-testid={`heritage-stat-${label.toLowerCase().replace(/\s+/g, '-')}`}><p className="font-serif text-4xl text-gold">{value}</p><p className="mt-2 text-xs uppercase tracking-wider2 text-ink-2">{label}</p></div>)}</div></Container></section>
+    <section className="bg-navy text-center text-bg"><Container className="py-20 md:py-24"><p className="text-xs uppercase tracking-[.3em] text-gold-soft">Visit the mill</p><h2 data-testid="heritage-cta-heading" className="mx-auto mt-4 max-w-2xl font-serif text-4xl md:text-5xl">Ready to walk through our mill on your next India trip?</h2><p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-bg/70">Book a factory visit or request a virtual walkthrough.</p><a href="/contact" data-testid="heritage-bulk-enquiry-link" className="mt-8 inline-flex rounded-full bg-gold px-6 py-3.5 text-xs font-bold uppercase tracking-wider2 text-ink transition-transform hover:-translate-y-1">Start a bulk enquiry</a></Container></section>
+  </main>;
 }
+

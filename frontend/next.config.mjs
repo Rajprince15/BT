@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  env: {
+    REACT_APP_RAZORPAY_ENABLED: process.env.REACT_APP_RAZORPAY_ENABLED,
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,

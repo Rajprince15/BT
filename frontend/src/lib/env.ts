@@ -6,6 +6,7 @@ export const env = {
   NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
   NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN || '',
+  REACT_APP_RAZORPAY_ENABLED: process.env.REACT_APP_RAZORPAY_ENABLED === 'true',
 };
 
 export type Env = typeof env;
