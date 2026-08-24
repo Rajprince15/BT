@@ -6,7 +6,8 @@ import { Mail, ShieldCheck, Sparkles } from 'lucide-react';
 import Container from '@/components/common/Container';
 import newsletterService from '@/services/newsletter.service';
 
-const EMAIL_RE = /^[^s@]+@[^s@]+.[^s@]+$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState('');
@@ -53,12 +54,12 @@ export default function NewsletterSignup() {
   return (
     <section
       data-testid="newsletter-signup"
-      className="bg-bg py-20 md:py-28"
+      className="bg-bg py-24 sm:py-32"
     >
       <Container>
         <div className="mx-auto max-w-3xl text-center">
-          <Sparkles aria-hidden className="mx-auto size-7 text-gold" />
-          <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider2 text-gold">
+          <Sparkles aria-hidden className="mx-auto size-7 text-brand" />
+          <p data-testid="newsletter-eyebrow" className="mt-4 text-[11px] font-semibold uppercase tracking-[.22em] text-brand">  
             The Atelier Dispatch
           </p>
           <h2 className="mt-3 font-serif text-4xl leading-[1.05] text-ink md:text-5xl">
@@ -122,7 +123,7 @@ export default function NewsletterSignup() {
                   data-testid="newsletter-email-input"
                   aria-invalid={Boolean(error)}
                   aria-describedby={error ? 'newsletter-error' : 'newsletter-hint'}
-                  className="h-12 w-full rounded-full border border-ink/15 bg-bg pl-11 pr-4 text-[14px] text-ink placeholder:text-ink-2 focus-visible:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                   className="h-12 w-full rounded-full border border-border bg-bg pl-11 pr-4 text-[14px] text-ink placeholder:text-ink-2 focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 />
               </div>
 
@@ -130,7 +131,7 @@ export default function NewsletterSignup() {
                 type="submit"
                 disabled={pending}
                 data-testid="newsletter-submit"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-7 text-[12px] font-semibold uppercase tracking-wider2 text-bg transition-colors duration-200 hover:bg-ink/85 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-brand px-7 text-[12px] font-semibold uppercase tracking-[.18em] text-brand-ink transition-colors duration-200 hover:bg-brand-2 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               >
                 {pending ? 'Subscribing…' : 'Subscribe'}
               </button>

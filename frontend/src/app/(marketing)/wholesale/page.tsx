@@ -1,203 +1,354 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
+import { CheckCircle2, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
+
 import Container from '@/components/common/Container';
 import wholesaleService from '@/services/wholesale.service';
-import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
-const BUSINESS_TYPES = [
-  'Hotel',
-  'Resort',
-  'Hospital',
-  'Hostel',
-  'Retail Store',
-  'Interior Designer',
-  'Corporate Gifting',
+const categories = [
+  'Bedsheets',
+  'Blankets',
+  'Floor mats',
+  'Cushion covers',
+  'Curtains',
+  'Towels',
   'Other',
 ];
 
-interface FormState {
-  companyName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  businessType: string;
-  productInterest: string;
-  quantityRequirement: string;
-  message: string;
-  website: string; // honeypot
-}
+const processSteps = [
+  'Submit brief',
+  'Sample & quote',
+  'Approve & schedule',
+  'Ship & inspect',
+];
 
-const EMPTY: FormState = {
-  companyName: '',
-  contactPerson: '',
-  email: '',
-  phone: '',
-  businessType: BUSINESS_TYPES[0],
-  productInterest: '',
-  quantityRequirement: '',
-  message: '',
-  website: '',
-};
+const formFields = [
+  ['companyName', 'Company name'],
+  ['contactPerson', 'Contact person'],
+  ['designation', 'Designation'],
+  ['email', 'Email'],
+  ['phone', 'Phone with country code'],
+  ['country', 'Country / City'],
+  ['website', 'Website'],
+] as const;
+
+const moqOptions = ['300', '500', '1000', '2500', '5000+'];
 
 export default function WholesalePage() {
-  const [form, setForm] = useState<FormState>(EMPTY);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
-  const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((current) =>
+      current.includes(category)
+        ? current.filter((item) => item !== category)
+        : [...current, category],
+    );
+  };
+
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const selectedFiles = Array.from(event.target.files ?? []).slice(0, 3);
+    setFiles(selectedFiles);
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    setFiles((current) =>
+      current.filter((_, index) => index !== indexToRemove),
+    );
+  };
+
+  const submitForm = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setBusy(true);
+
+    const formData = new FormData(event.currentTarget);
+
+    try {
+      await wholesaleService.submit({
+        companyName: String(formData.get('companyName') ?? ''),
+        contactPerson: String(formData.get('contactPerson') ?? ''),
+        email: String(formData.get('email') ?? ''),
+        phone: String(formData.get('phone') ?? ''),
+        businessType: String(formData.get('designation') ?? ''),
+        productInterest: selectedCategories.join(', '),
+        quantityRequirement: String(formData.get('moq') ?? ''),
+        message: [
+          String(formData.get('message') ?? ''),
+          `Files: ${files.map((file) => file.name).join(', ')}`,
+        ].join('\n'),
+      });
+
+      setSent(true);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Unable to send enquiry',
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <main data-testid="wholesale-page" className="bg-bg">
-      <section className="border-b border-border bg-navy text-bg">
-        <Container className="py-20 md:py-24">
-          <p className="text-xs uppercase tracking-[.35em] text-gold-soft">Wholesale · B2B</p>
-          <h1 className="mt-4 font-serif text-5xl leading-tight md:text-6xl">
-            Furnish your rooms with pieces that have a story.
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-8 text-bg/70">
-            Hotels, resorts, interior designers, and corporate gifters: partner with our atelier for
-            custom collections, bulk orders, and priority production.
+      <section
+        data-testid="wholesale-hero"
+        className="bg-brand text-brand-ink"
+      >
+        <Container className="py-24 sm:py-32">
+          <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand-ink/70">
+            Wholesale program
           </p>
+
+          <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-[.95] sm:text-7xl">
+            Manufactured to your spec. Priced to your volume.
+          </h1>
+
+          <p className="mt-6 max-w-2xl text-base leading-8 text-brand-ink/75">
+            From a considered first sample to a dependable repeat order, we
+            build around your brief.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <span className="rounded-full border border-brand-ink/25 px-4 py-2 text-xs">
+              24-hour quote
+            </span>
+
+            <span className="rounded-full border border-brand-ink/25 px-4 py-2 text-xs">
+              MOQ from 300 pcs
+            </span>
+          </div>
         </Container>
       </section>
 
-      <Container className="grid gap-12 py-16 lg:grid-cols-[.9fr_1.1fr]">
-        <aside>
-          <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">Why partner with us</p>
-          <ul className="mt-6 grid gap-4 text-sm leading-7 text-ink-2">
-            {[
-              'Volume pricing tuned to your project brief',
-              'Custom colourways, sizes, monograms, packaging',
-              'Priority production windows for opening timelines',
-              'Direct-from-atelier logistics for pan-India delivery',
-            ].map((line) => (
-              <li key={line} className="flex gap-3">
-                <span aria-hidden className="mt-1 size-2 rounded-full bg-gold" />
-                <span>{line}</span>
-              </li>
-            ))}
-          </ul>
-        </aside>
+      <section className="border-b border-border">
+        <Container className="grid gap-8 py-16 sm:grid-cols-4">
+          {processSteps.map((title, index) => (
+            <div
+              key={title}
+              data-testid={`wholesale-step-${index + 1}`}
+              className="border-t border-brand pt-4"
+            >
+              <p className="font-serif text-4xl text-brand">
+                0{index + 1}
+              </p>
 
-        <form
-          data-testid="wholesale-form"
-          className="grid gap-4 rounded-2xl border border-border bg-surface p-8"
-          onSubmit={async (event) => {
-            event.preventDefault();
-            if (form.website) return; // honeypot
-            setBusy(true);
-            try {
-              await wholesaleService.submit({
-                companyName: form.companyName,
-                contactPerson: form.contactPerson,
-                email: form.email,
-                phone: form.phone,
-                businessType: form.businessType,
-                productInterest: form.productInterest || undefined,
-                quantityRequirement: form.quantityRequirement || undefined,
-                message: form.message || undefined,
-              });
-              const inquiry = `Hello, I’m interested in your products.\n\nCompany: ${form.companyName}\nContact: ${form.contactPerson}\nEmail: ${form.email}\nPhone: ${form.phone}\nBusiness: ${form.businessType}\nProducts: ${form.productInterest || 'Not specified'}\nQuantity: ${form.quantityRequirement || 'Not specified'}\nProject: ${form.message || 'Not specified'}`;
-              window.open(whatsappUrl(inquiry), '_blank', 'noopener,noreferrer');
-              setSubmitted(true);
-              setForm(EMPTY);
-              toast.success('Thank you — our wholesale team will contact you shortly.');
-            } catch (error) {
-              toast.error(error instanceof Error ? error.message : 'Unable to submit inquiry');
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          <input
-            type="text"
-            tabIndex={-1}
-            autoComplete="off"
-            aria-hidden
-            value={form.website}
-            onChange={(event) => update('website', event.target.value)}
-            className="hidden"
-          />
-          <div className="grid gap-4 md:grid-cols-2">
-            {(
-              [
-                ['companyName', 'Company', 'text'],
-                ['contactPerson', 'Contact person', 'text'],
-                ['email', 'Business email', 'email'],
-                ['phone', 'Phone', 'tel'],
-              ] as const
-            ).map(([key, label, type]) => (
-              <label key={key} className="grid gap-2 text-sm text-ink">
-                {label}
-                <input
-                  data-testid={`wholesale-${key}`}
-                  required
-                  type={type}
-                  value={form[key]}
-                  onChange={(event) => update(key, event.target.value)}
-                  className="h-12 rounded border border-border bg-bg px-4 outline-none focus:border-gold"
-                />
-              </label>
-            ))}
-            <label className="grid gap-2 text-sm text-ink">
-              Business type
-              <select
-                data-testid="wholesale-business-type"
-                value={form.businessType}
-                onChange={(event) => update('businessType', event.target.value)}
-                className="h-12 rounded border border-border bg-bg px-3 outline-none focus:border-gold"
+              <h2 className="mt-4 font-semibold text-ink">
+                {title}
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-ink-2">
+                A clear next step, with one team beside you.
+              </p>
+            </div>
+          ))}
+        </Container>
+      </section>
+
+      <Container className="py-20 sm:py-28">
+        <div className="mx-auto max-w-4xl">
+          {sent ? (
+            <div
+              data-testid="wholesale-success"
+              className="rounded-lg border border-border bg-surface p-12 text-center"
+            >
+              <span className="inline-flex size-16 items-center justify-center rounded-full bg-brand-soft text-brand">
+                <CheckCircle2 className="size-8" />
+              </span>
+
+              <h2 className="mt-6 font-serif text-4xl text-ink">
+                Your brief is with the mill.
+              </h2>
+
+              <p className="mt-4 text-sm leading-7 text-ink-2">
+                Our wholesale team will reply within 24 hours with the next
+                steps.
+              </p>
+
+              <a
+                data-testid="wholesale-success-catalogue"
+                href="/shop"
+                className="mt-8 inline-flex h-12 items-center rounded-full bg-brand px-6 text-[11px] font-semibold uppercase tracking-[.18em] text-brand-ink"
               >
-                {BUSINESS_TYPES.map((type) => (
-                  <option key={type}>{type}</option>
+                Explore the catalogue
+              </a>
+            </div>
+          ) : (
+            <form
+              data-testid="wholesale-form"
+              onSubmit={submitForm}
+              className="rounded-lg border border-border bg-surface p-6 sm:p-10 lg:p-14"
+            >
+              <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
+                Company details
+              </p>
+
+              <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                {formFields.map(([name, label]) => (
+                  <label
+                    key={name}
+                    className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2"
+                  >
+                    {label}
+
+                    <input
+                      data-testid={`wholesale-form-${name}`}
+                      name={name}
+                      required={[
+                        'companyName',
+                        'contactPerson',
+                        'email',
+                        'phone',
+                      ].includes(name)}
+                      type={name === 'email' ? 'email' : 'text'}
+                      className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                    />
+                  </label>
                 ))}
-              </select>
-            </label>
-            <label className="grid gap-2 text-sm text-ink">
-              Quantity required
-              <input
-                data-testid="wholesale-quantity"
-                value={form.quantityRequirement}
-                onChange={(event) => update('quantityRequirement', event.target.value)}
-                className="h-12 rounded border border-border bg-bg px-4 outline-none focus:border-gold"
-              />
-            </label>
-          </div>
-          <label className="grid gap-2 text-sm text-ink">
-            Product interest
-            <input
-              data-testid="wholesale-interest"
-              value={form.productInterest}
-              onChange={(event) => update('productInterest', event.target.value)}
-              className="h-12 rounded border border-border bg-bg px-4 outline-none focus:border-gold"
-            />
-          </label>
-          <label className="grid gap-2 text-sm text-ink">
-            Tell us about the project
-            <textarea
-              data-testid="wholesale-message"
-              rows={5}
-              value={form.message}
-              onChange={(event) => update('message', event.target.value)}
-              className="min-h-[140px] rounded border border-border bg-bg p-4 outline-none focus:border-gold"
-            />
-          </label>
-          {submitted ? (
-            <p data-testid="wholesale-success" className="rounded border border-success/30 bg-success/10 p-4 text-sm text-success">
-              Thank you — a member of the wholesale team will reach out within one working day.
-            </p>
-          ) : null}
-          <button
-            data-testid="wholesale-submit"
-            type="submit"
-            disabled={busy}
-            className="mt-2 inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold disabled:opacity-50"
-          >
-            {busy ? 'Sending…' : 'Send inquiry'}
-          </button>
-        </form>
+              </div>
+
+              <div className="mt-12 border-t border-border pt-10">
+                <p className="font-serif text-2xl text-ink">
+                  Product interest
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {categories.map((category) => {
+                    const isSelected =
+                      selectedCategories.includes(category);
+
+                    const testId =
+                      category === 'Other'
+                        ? 'bhavita-bulk-order'
+                        : category.toLowerCase().replaceAll(' ', '-');
+
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        data-testid={`wholesale-category-chip-${testId}`}
+                        aria-pressed={isSelected}
+                        onClick={() => toggleCategory(category)}
+                        className={`rounded-full border px-4 py-2 text-xs transition-colors ${
+                          isSelected
+                            ? 'border-brand bg-brand text-brand-ink'
+                            : 'border-border text-ink-2 hover:border-brand'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <label className="mt-6 grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                  Estimated MOQ per SKU
+
+                  <select
+                    data-testid="wholesale-form-moq"
+                    name="moq"
+                    className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink"
+                  >
+                    {moqOptions.map((option) => (
+                      <option key={option}>{option}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="mt-12 border-t border-border pt-10">
+                <p className="font-serif text-2xl text-ink">
+                  Your brief
+                </p>
+
+                <textarea
+                  data-testid="wholesale-form-message"
+                  name="message"
+                  required
+                  placeholder="Tell us about print styles, GSM, packaging or private-label needs…"
+                  className="mt-5 min-h-40 w-full rounded-md border border-border bg-bg p-4 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                />
+
+                <label
+                  data-testid="wholesale-file-drop"
+                  className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-border bg-surface-2 p-8 text-center"
+                >
+                  <Upload className="size-6 text-brand" />
+
+                  <span className="mt-3 text-sm text-ink">
+                    Drop files here or browse
+                  </span>
+
+                  <span className="mt-1 text-xs text-ink-2">
+                    PDF, JPG, PNG or ZIP · 10 MB each
+                  </span>
+
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.zip"
+                    className="sr-only"
+                    onChange={handleFileChange}
+                  />
+                </label>
+
+                {files.length > 0 ? (
+                  <ul className="mt-4 grid gap-2">
+                    {files.map((file, index) => (
+                      <li
+                        key={`${file.name}-${index}`}
+                        data-testid={`wholesale-file-${index}`}
+                        className="flex items-center justify-between rounded-md bg-surface-2 px-3 py-2 text-xs text-ink"
+                      >
+                        <span>{file.name}</span>
+
+                        <button
+                          type="button"
+                          data-testid={`wholesale-file-remove-${index}`}
+                          aria-label={`Remove ${file.name}`}
+                          onClick={() => removeFile(index)}
+                        >
+                          <X className="size-4" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
+                <label className="mt-5 flex items-center gap-3 text-sm text-ink">
+                  <input
+                    data-testid="wholesale-form-consent"
+                    required
+                    type="checkbox"
+                    className="size-4 accent-brand"
+                  />
+
+                  I agree to receive quotes and updates from Bhavita Textiles.
+                </label>
+
+                <button
+                  data-testid="wholesale-submit"
+                  type="submit"
+                  disabled={busy}
+                  className="mt-8 h-12 w-full rounded-full bg-brand text-[11px] font-semibold uppercase tracking-[.18em] text-brand-ink hover:bg-brand-2 disabled:opacity-60"
+                >
+                  {busy ? 'Sending…' : 'Send bulk enquiry'}
+                </button>
+
+                <p className="mt-4 text-center text-xs text-ink-2">
+                  Typical response within 24 hours.
+                </p>
+              </div>
+            </form>
+          )}
+        </div>
       </Container>
     </main>
   );

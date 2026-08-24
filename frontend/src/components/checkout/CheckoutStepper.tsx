@@ -21,7 +21,8 @@ export default function CheckoutStepper({ current, completed, onNavigate }: Chec
   const currentIndex = STEPS.findIndex((step) => step.id === current);
 
   return (
-    <ol data-testid="checkout-stepper" className="flex items-center gap-2" aria-label="Checkout progress">
+    <ol data-testid="checkout-stepper" className="grid gap-3 sm:flex sm:items-center sm:gap-2" aria-label="Checkout progress">
+
       {STEPS.map((step, index) => {
         const isCompleted = completed.includes(step.id);
         const isCurrent = current === step.id;

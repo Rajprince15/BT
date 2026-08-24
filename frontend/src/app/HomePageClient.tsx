@@ -481,13 +481,7 @@ export default function HomePageClient() {
                 className="transition-transform duration-300 group-hover:translate-x-1"
               />
             </Link>
-            <Link
-              href="/wholesale"
-              data-testid="cta-wholesale-link"
-              className="inline-flex items-center rounded-full border border-bg/30 px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors duration-300 hover:border-gold hover:text-gold"
-            >
-              Wholesale program
-            </Link>
+            
           </div>
         </motion.div>
       </section>
