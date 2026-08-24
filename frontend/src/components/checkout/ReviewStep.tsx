@@ -1,9 +1,10 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, MessageCircle, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import type { Cart } from '@/types/Cart';
 import type { Address } from '@/types/Address';
-import { useState } from 'react';
+import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 interface ShippingSummary {
   label: string;
@@ -22,6 +23,71 @@ interface ReviewStepProps {
   whatsappMode?: boolean;
 }
 
+function formatINR(value: number) {
+  return `Rs. ${value.toLocaleString('en-IN')}`;
+}
+
+function buildWhatsAppMessage(cart: Cart, address: Address, shipping: ShippingSummary) {
+  const orderRef = `BT-${Date.now().toString().slice(-6)}`;
+  const today = new Date().toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  const itemLines = cart.items
+    .map((item, index) => {
+      const lineTotal = item.price * item.quantity;
+      return [
+        `${index + 1}. ${item.productName}`,
+        `   SKU: ${item.productSku}`,
+        `   Quantity: ${item.quantity}`,
+        `   Unit Price: ${formatINR(item.price)}`,
+        `   Line Total: ${formatINR(lineTotal)}`,
+      ].join('\n');
+    })
+    .join('\n\n');
+
+  const addressLines = [
+    address.fullName,
+    address.addressLine1,
+    address.addressLine2 || null,
+    `${address.city}, ${address.state} - ${address.pincode}`,
+    `Phone: ${address.phone}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  return [
+    'Namaste,',
+    '',
+    'I would like to place the following order with Bhavita Textiles. Please confirm availability, dispatch timeline and share the payment link at your earliest convenience.',
+    '',
+    `Order Reference: ${orderRef}`,
+    `Date: ${today}`,
+    '',
+    '--- ORDER ITEMS ---',
+    itemLines,
+    '',
+    '--- ORDER SUMMARY ---',
+    `Subtotal: ${formatINR(cart.subtotal)}`,
+    `Shipping: ${formatINR(cart.shipping)}`,
+    `Tax: ${formatINR(cart.tax)}`,
+    `Grand Total: ${formatINR(cart.total)}`,
+    '',
+    '--- DELIVERY ADDRESS ---',
+    addressLines,
+    '',
+    '--- DELIVERY METHOD ---',
+    `${shipping.label} (${shipping.eta})`,
+    '',
+    'Kindly acknowledge this request and share next steps.',
+    '',
+    'Thank you,',
+    address.fullName,
+  ].join('\n');
+}
+
 export default function ReviewStep({
   cart,
   address,
@@ -34,49 +100,54 @@ export default function ReviewStep({
 }: ReviewStepProps) {
   const [confirming, setConfirming] = useState(false);
 
+  const whatsappMessage = useMemo(
+    () => (whatsappMode ? buildWhatsAppMessage(cart, address, shipping) : ''),
+    [whatsappMode, cart, address, shipping],
+  );
+
+  const handlePrimary = () => {
+    if (whatsappMode) {
+      setConfirming(true);
+    } else {
+      onPay();
+    }
+  };
+
+  const openWhatsApp = () => {
+    const url = whatsappUrl(whatsappMessage);
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setConfirming(false);
+  };
+
   return (
-    <section
-      data-testid="checkout-review-step"
-      className="grid gap-6"
-    >
+    <section data-testid="checkout-review-step" className="grid gap-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">
           Step 3
         </p>
-
-        <h2 className="mt-2 font-serif text-3xl text-ink">
-          Review &amp; pay
-        </h2>
-
+        <h2 className="mt-2 font-serif text-3xl text-ink">Review &amp; place order</h2>
         <p className="mt-2 text-sm text-ink-2">
-          One last look before we send this to production.
+          Please review your details below. Everything is locked to what you selected.
         </p>
       </header>
 
       {/* Shipping Address */}
-      <article className="rounded-xl border border-border bg-surface p-5">
-        <div className="flex items-start justify-between">
+      <article className="rounded-xl border border-border bg-surface p-5 transition-shadow hover:shadow-sm">
+        <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">
               Shipping address
             </p>
-
-            <p className="mt-2 font-serif text-lg text-ink">
-              {address.fullName}
-            </p>
-
+            <p className="mt-2 font-serif text-lg text-ink">{address.fullName}</p>
             <p className="mt-1 text-sm leading-6 text-ink-2">
               {address.addressLine1}
-              {address.addressLine2 ? (
-                <>, {address.addressLine2}</>
-              ) : null}
+              {address.addressLine2 ? <>, {address.addressLine2}</> : null}
               <br />
               {address.city}, {address.state} · {address.pincode}
               <br />
               {address.phone}
             </p>
           </div>
-
           <button
             type="button"
             data-testid="checkout-edit-address"
@@ -89,22 +160,17 @@ export default function ReviewStep({
       </article>
 
       {/* Delivery Method */}
-      <article className="rounded-xl border border-border bg-surface p-5">
-        <div className="flex items-start justify-between">
+      <article className="rounded-xl border border-border bg-surface p-5 transition-shadow hover:shadow-sm">
+        <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">
               Delivery method
             </p>
-
-            <p className="mt-2 font-serif text-lg text-ink">
-              {shipping.label}
-            </p>
-
+            <p className="mt-2 font-serif text-lg text-ink">{shipping.label}</p>
             <p className="mt-1 text-xs uppercase tracking-wider2 text-ink-2">
               {shipping.eta}
             </p>
           </div>
-
           <button
             type="button"
             data-testid="checkout-edit-shipping"
@@ -121,40 +187,28 @@ export default function ReviewStep({
         <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">
           Items ({cart.items.length})
         </p>
-
         <ul className="mt-3 divide-y divide-border text-sm">
           {cart.items.map((item) => (
-            <li
-              key={item.id}
-              className="flex justify-between gap-4 py-3"
-            >
+            <li key={item.id} className="flex justify-between gap-4 py-3">
               <span className="text-ink">
                 {item.productName}{' '}
-                <span className="text-ink-2">
-                  × {item.quantity}
-                </span>
+                <span className="text-ink-2">× {item.quantity}</span>
               </span>
-
               <span className="text-ink">
-                ₹
-                {(item.price * item.quantity).toLocaleString(
-                  'en-IN'
-                )}
+                ₹{(item.price * item.quantity).toLocaleString('en-IN')}
               </span>
             </li>
           ))}
         </ul>
       </article>
 
-      {/* Payment / WhatsApp Button */}
+      {/* Primary Action Button */}
       <button
         type="button"
         data-testid="checkout-pay-button"
-        onClick={() =>
-          whatsappMode ? setConfirming(true) : onPay()
-        }
+        onClick={handlePrimary}
         disabled={busy}
-        className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold disabled:opacity-50"
+        className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-all hover:bg-gold hover:text-ink hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
       >
         {busy ? (
           <>
@@ -162,7 +216,7 @@ export default function ReviewStep({
             Preparing request…
           </>
         ) : whatsappMode ? (
-          'Review WhatsApp message'
+          'Confirm'
         ) : (
           'Pay with Razorpay'
         )}
@@ -174,29 +228,94 @@ export default function ReviewStep({
           data-testid="checkout-whatsapp-note"
           className="rounded-lg border border-[#1f9d58]/30 bg-[#1f9d58]/10 p-3 text-xs leading-5 text-ink-2"
         >
-          Your selected items, variants, delivery details and calculated
-          prices will be prefilled in WhatsApp.
+          On confirming, you will see the formatted order message and can send it directly
+          to Bhavita Textiles on WhatsApp.
         </p>
       ) : null}
 
       {/* Terms */}
       <p className="text-[11px] uppercase tracking-wider2 text-ink-2">
         By continuing you agree to our{' '}
-        <a
-          href="/terms"
-          className="text-gold hover:text-gold-2"
-        >
+        <a href="/terms" className="text-gold hover:text-gold-2">
           Terms
         </a>{' '}
         and{' '}
-        <a
-          href="/privacy"
-          className="text-gold hover:text-gold-2"
-        >
+        <a href="/privacy" className="text-gold hover:text-gold-2">
           Privacy Policy
         </a>
         .
       </p>
+
+      {/* Confirmation Preview Modal */}
+      {confirming ? (
+        <div
+          data-testid="checkout-whatsapp-confirm-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="whatsapp-confirm-title"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-ink/60 p-4 backdrop-blur-sm sm:items-center"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setConfirming(false);
+          }}
+        >
+          <div className="scale-in w-full max-w-lg rounded-2xl border border-border bg-surface shadow-2xl">
+            <div className="flex items-start justify-between gap-4 border-b border-border p-5">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider2 text-gold">
+                  Final review
+                </p>
+                <h3
+                  id="whatsapp-confirm-title"
+                  className="mt-1 font-serif text-2xl text-ink"
+                >
+                  Confirm your order message
+                </h3>
+                <p className="mt-1 text-xs text-ink-2">
+                  This exact message will be sent to Bhavita Textiles on WhatsApp.
+                </p>
+              </div>
+              <button
+                type="button"
+                data-testid="checkout-whatsapp-close"
+                onClick={() => setConfirming(false)}
+                aria-label="Close preview"
+                className="rounded-full border border-border p-1.5 text-ink-2 transition-colors hover:border-gold hover:text-ink"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="max-h-[50vh] overflow-y-auto p-5">
+              <pre
+                data-testid="checkout-whatsapp-preview"
+                className="whitespace-pre-wrap break-words rounded-lg border border-border bg-bg p-4 text-[12px] leading-6 text-ink"
+              >
+                {whatsappMessage}
+              </pre>
+            </div>
+
+            <div className="flex flex-col-reverse gap-3 border-t border-border p-5 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                data-testid="checkout-whatsapp-cancel"
+                onClick={() => setConfirming(false)}
+                className="inline-flex h-11 items-center justify-center rounded-full border border-border px-5 text-xs font-semibold uppercase tracking-wider2 text-ink transition-colors hover:border-gold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                data-testid="checkout-whatsapp-send"
+                onClick={openWhatsApp}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#1f9d58] px-6 text-xs font-semibold uppercase tracking-wider2 text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#18834a] hover:shadow-lg"
+              >
+                <MessageCircle size={16} />
+                Place Order Via WhatsApp
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

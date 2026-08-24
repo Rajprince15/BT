@@ -26,18 +26,13 @@ const sans = Manrope({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bhavitatextiles.com'),
-
   title: {
-    default:
-      'BHAVITA TEXTILES — Premium Luxury Textiles & Home Furnishings',
+    default: 'BHAVITA TEXTILES — Premium Luxury Textiles & Home Furnishings',
     template: '%s | BHAVITA TEXTILES',
   },
-
   description:
     'BHAVITA TEXTILES — handcrafted luxury bedsheets, curtains, towels, handloom heritage and home décor. Royal, classic, timeless.',
-
   applicationName: 'BHAVITA TEXTILES',
-
   keywords: [
     'BHAVITA TEXTILES',
     'luxury textiles India',
@@ -48,36 +43,24 @@ export const metadata: Metadata = {
     'bath towels',
     'home décor',
   ],
-
-  authors: [
-    {
-      name: 'BHAVITA TEXTILES',
-    },
-  ],
-
+  authors: [{ name: 'BHAVITA TEXTILES' }],
   creator: 'BHAVITA TEXTILES',
   publisher: 'BHAVITA TEXTILES',
-
   openGraph: {
     type: 'website',
     siteName: 'BHAVITA TEXTILES',
-    title:
-      'BHAVITA TEXTILES — Premium Luxury Textiles & Home Furnishings',
+    title: 'BHAVITA TEXTILES — Premium Luxury Textiles & Home Furnishings',
     description:
       'Royal · Classic · Timeless. Discover handcrafted luxury bedsheets, curtains, towels and handloom heritage.',
     locale: 'en_IN',
   },
-
   twitter: {
     card: 'summary_large_image',
     title: 'BHAVITA TEXTILES',
     description:
       'Royal · Classic · Timeless. Premium luxury textiles & home furnishings.',
   },
-
-  icons: {
-    icon: '/favicon.ico',
-  },
+  icons: { icon: '/favicon.ico' },
 };
 
 export default function RootLayout({
@@ -92,15 +75,8 @@ export default function RootLayout({
       className={`${serif.variable} ${sans.variable}`}
     >
       <body className="bg-bg font-sans text-ink antialiased">
-        <JsonLd
-          id="ld-organization"
-          data={organizationJsonLd()}
-        />
-
-        <JsonLd
-          id="ld-website"
-          data={websiteJsonLd()}
-        />
+        <JsonLd id="ld-organization" data={organizationJsonLd()} />
+        <JsonLd id="ld-website" data={websiteJsonLd()} />
 
         <Providers>
           {/* Skip to content */}
@@ -111,26 +87,14 @@ export default function RootLayout({
             Skip to content
           </a>
 
-          {/* Fixed Header */}
+          {/* Sticky Header (takes natural document flow — no spacer needed) */}
           <Header />
 
-          {/* 
-            Top padding prevents page content from going
-            underneath the fixed header.
-
-            Header:
-            Default/mobile = 88px
-            Large screens = 96px
-          */}
-          <main
-            id="main-content"
-            className="min-h-[60vh] pt-[88px] lg:pt-[96px]"
-          >
+          <main id="main-content" className="min-h-[60vh]">
             {children}
           </main>
 
           <Footer />
-
           <WhatsAppWidget />
         </Providers>
       </body>

@@ -15,7 +15,6 @@ import { useCart } from '@/hooks/useCart';
 import userService from '@/services/user.service';
 import checkoutService from '@/services/checkout.service';
 import env from '@/lib/env';
-import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 interface ShippingSummary {
   id: string;
@@ -37,7 +36,13 @@ export default function CheckoutPage() {
   const [addressId, setAddressId] = useState<number>();
   const [shipping, setShipping] = useState<ShippingSummary | undefined>();
   const [preparing, setPreparing] = useState(false);
-  const [modalState, setModalState] = useState<{ open: boolean; orderId: string; amount: number; currency: string; quoteId: string }>({
+  const [modalState, setModalState] = useState<{
+    open: boolean;
+    orderId: string;
+    amount: number;
+    currency: string;
+    quoteId: string;
+  }>({
     open: false,
     orderId: '',
     amount: 0,
@@ -50,7 +55,12 @@ export default function CheckoutPage() {
     if (defaultAddress && !addressId) setAddressId(defaultAddress.id);
   }, [addresses, addressId]);
 
-  const selectedAddress = useMemo(() => addresses.find((address) => address.id === addressId), [addresses, addressId]);
+  const selectedAddress = useMemo(
+    () => addresses.find((address) => address.id === addressId),
+    [addresses, addressId],
+  );
+
+  const whatsappMode = !env.REACT_APP_RAZORPAY_ENABLED;
 
   if (!cart) {
     return <main data-testid="checkout-loading" className="min-h-[60vh] bg-bg" />;
@@ -61,7 +71,10 @@ export default function CheckoutPage() {
         <Container className="grid place-items-center py-24 text-center">
           <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">Checkout</p>
           <h1 className="mt-3 font-serif text-4xl text-ink">Your cart is empty</h1>
-          <a href="/shop" className="mt-6 inline-flex h-12 items-center rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg hover:bg-gold">
+          <a
+            href="/shop"
+            className="mt-6 inline-flex h-12 items-center rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold hover:text-ink"
+          >
             Continue shopping
           </a>
         </Container>
@@ -69,7 +82,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const markComplete = (id: CheckoutStep) => setCompleted((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  const markComplete = (id: CheckoutStep) =>
+    setCompleted((prev) => (prev.includes(id) ? prev : [...prev, id]));
 
   const goto = (target: CheckoutStep) => {
     if (target === 'shipping' && !addressId) return;
@@ -77,14 +91,10 @@ export default function CheckoutPage() {
     setStep(target);
   };
 
+  // Razorpay-only handler. WhatsApp preview + send is handled inside ReviewStep.
   const beginPayment = async () => {
     if (!addressId || !shipping || !selectedAddress) return;
-    if (!env.REACT_APP_RAZORPAY_ENABLED) {
-      const items = cart.items.map((item) => `${item.productSku} — ${item.productName} | Quantity: ${item.quantity} | Unit price: ₹${item.price.toLocaleString('en-IN')} | Line total: ₹${(item.price * item.quantity).toLocaleString('en-IN')}`).join('\n');
-      const message = `Hello, I would like to place this Bhavita Textiles order.\n\nItems:\n${items}\n\nOrder total: ₹${cart.total.toLocaleString('en-IN')}\n\nDelivery details:\n${selectedAddress.fullName}\n${selectedAddress.addressLine1}${selectedAddress.addressLine2 ? `, ${selectedAddress.addressLine2}` : ''}\n${selectedAddress.city}, ${selectedAddress.state} - ${selectedAddress.pincode}\nPhone: ${selectedAddress.phone}\nDelivery method: ${shipping.label} (${shipping.eta})`;
-      window.location.assign(whatsappUrl(message));
-      return;
-    }
+    if (whatsappMode) return; // ReviewStep owns the WhatsApp flow.
     setPreparing(true);
     try {
       const quote = await checkoutService.quote({ addressId, paymentMethod: 'razorpay' });
@@ -132,7 +142,9 @@ export default function CheckoutPage() {
   return (
     <main data-testid="checkout-page" className="bg-bg">
       <Container className="py-12">
-        <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">A considered finish</p>
+        <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">
+          A considered finish
+        </p>
         <h1 className="mt-2 font-serif text-5xl text-ink">Checkout</h1>
 
         <div className="mt-8">
@@ -143,7 +155,11 @@ export default function CheckoutPage() {
           <div className="space-y-8">
             {step === 'address' ? (
               <div className="grid gap-6">
-                <AddressStep addresses={addresses} selected={addressId} onSelect={setAddressId} />
+                <AddressStep
+                  addresses={addresses}
+                  selected={addressId}
+                  onSelect={setAddressId}
+                />
                 <button
                   type="button"
                   data-testid="checkout-continue-shipping"
@@ -152,7 +168,7 @@ export default function CheckoutPage() {
                     markComplete('address');
                     setStep('shipping');
                   }}
-                  className="inline-flex h-12 items-center justify-center self-start rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg hover:bg-gold disabled:opacity-50"
+                  className="inline-flex h-12 items-center justify-center self-start rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Continue to delivery
                 </button>
@@ -170,7 +186,7 @@ export default function CheckoutPage() {
                     type="button"
                     data-testid="checkout-back-address"
                     onClick={() => setStep('address')}
-                    className="h-12 rounded-full border border-border px-5 text-xs font-semibold uppercase tracking-wider2 text-ink hover:border-gold"
+                    className="h-12 rounded-full border border-border px-5 text-xs font-semibold uppercase tracking-wider2 text-ink transition-colors hover:border-gold"
                   >
                     Back
                   </button>
@@ -182,7 +198,7 @@ export default function CheckoutPage() {
                       markComplete('shipping');
                       setStep('review');
                     }}
-                    className="h-12 rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg hover:bg-gold disabled:opacity-50"
+                    className="h-12 rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Continue to review
                   </button>
@@ -199,7 +215,7 @@ export default function CheckoutPage() {
                 onEditShipping={() => setStep('shipping')}
                 onPay={beginPayment}
                 busy={preparing}
-                whatsappMode={!env.REACT_APP_RAZORPAY_ENABLED}
+                whatsappMode={whatsappMode}
               />
             ) : null}
           </div>

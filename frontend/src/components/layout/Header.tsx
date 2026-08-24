@@ -1,11 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  Heart,
-  Menu,
-  ShoppingBag,
-} from 'lucide-react';
+import { Heart, Menu, ShoppingBag } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
@@ -14,78 +11,96 @@ import { useUIStore } from '@/store/ui.store';
 import MobileNav from '@/components/layout/MobileNav';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 
-function CountPill({
-  value,
-  testid,
-}: {
-  value: number;
-  testid: string;
-}) {
+function CountPill({ value, testid }: { value: number; testid: string }) {
   return value > 0 ? (
     <span
       data-testid={testid}
-      className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-ink"
+      className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold text-brand-ink shadow-sm ring-2 ring-bg"
     >
       {value > 99 ? '99+' : value}
     </span>
   ) : null;
 }
 
+const NAV_LINKS: Array<{ href: string; label: string; testid: string }> = [
+  { href: '/', label: 'Home', testid: 'nav-home-link' },
+  { href: '/shop', label: 'Catalogue', testid: 'nav-catalogue-link' },
+  { href: '/about', label: 'Our Heritage', testid: 'nav-about-link' },
+  { href: '/contact', label: 'Bulk Enquiry', testid: 'nav-contact-link' },
+];
+
 export default function Header() {
   const { data: cart } = useCart();
   const { data: wishlist } = useWishlist();
-
-  const setMobileNavOpen = useUIStore(
-    (state) => state.setMobileNavOpen,
-  );
+  const setMobileNavOpen = useUIStore((state) => state.setMobileNavOpen);
 
   const cartCount =
-    cart?.items?.reduce(
-      (sum, item) => sum + item.quantity,
-      0,
-    ) ?? 0;
-
+    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
   const wishlistCount = wishlist?.length ?? 0;
+
+  // Elevate the header on scroll for a subtle premium feel
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <>
+      {/* Announcement strip */}
+      <div
+        data-testid="site-announcement"
+        className="relative z-50 hidden bg-brand text-brand-ink sm:block"
+      >
+        <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center px-5 text-[11px] font-medium uppercase tracking-[0.22em] sm:px-10 lg:px-16">
+          Crafted in Panipat · Trusted by hospitality &amp; retail across India
+        </div>
+      </div>
+
       <header
         data-testid="site-header"
-        className="fixed inset-x-0 top-0 z-40 w-full border-b border-border/80 bg-bg/95 backdrop-blur-xl"
+        className={
+          'sticky top-0 z-40 w-full border-b transition-[background-color,box-shadow,border-color] duration-300 ' +
+          (scrolled
+            ? 'border-border/80 bg-bg/95 shadow-[0_10px_30px_-24px_rgba(28,26,23,0.5)] backdrop-blur-xl'
+            : 'border-transparent bg-bg/85 backdrop-blur-lg')
+        }
       >
-        <div className="mx-auto flex h-[88px] max-w-[1440px] items-center gap-4 px-5 sm:px-10 lg:h-[96px] lg:gap-6 lg:px-16">
-
+        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center gap-3 px-5 sm:px-10 lg:h-[88px] lg:gap-6 lg:px-16">
           {/* Mobile Menu Button */}
           <button
             type="button"
             data-testid="nav-mobile-hamburger"
             aria-label="Open menu"
             onClick={() => setMobileNavOpen(true)}
-            className="inline-flex size-12 shrink-0 items-center justify-center rounded-full text-ink transition-colors hover:bg-surface-2 hover:text-gold-2 lg:hidden"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-ink transition-all hover:bg-surface-2 hover:text-brand lg:hidden"
           >
-            <Menu size={24} />
+            <Menu size={22} />
           </button>
 
-          {/* Logo */}
+          {/* Logo lockup */}
           <Link
             href="/"
             data-testid="site-logo"
-            className="flex shrink-0 items-center gap-3 sm:gap-4"
+            aria-label="Bhavita Textiles — home"
+            className="group flex shrink-0 items-center gap-3 sm:gap-4"
           >
-            {/* B Circle */}
-            <div className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-[#7d2c28] text-white shadow-sm sm:size-[56px]">
-              <span className="font-serif text-[24px] leading-none sm:text-[28px]">
+            <div className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink shadow-sm ring-1 ring-brand-2/40 transition-transform duration-500 group-hover:scale-[1.04] sm:size-[52px]">
+              <span className="font-serif text-[22px] leading-none sm:text-[26px]">
                 B
               </span>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 rounded-full opacity-0 ring-2 ring-gold transition-opacity duration-300 group-hover:opacity-100"
+              />
             </div>
-
-            {/* Brand Text */}
-            <div className="flex flex-col justify-center">
-              <span className="font-serif text-[21px] font-medium leading-tight tracking-[0.02em] text-[#6f3931] sm:text-[30px]">
+            <div className="flex flex-col justify-center leading-none">
+              <span className="font-serif text-[20px] font-medium tracking-[0.01em] text-ink transition-colors group-hover:text-brand sm:text-[26px]">
                 Bhavita Textiles
               </span>
-
-              <span className="mt-1 hidden text-[9px] font-medium uppercase tracking-[0.28em] text-ink-2 sm:block sm:text-[10px]">
+              <span className="mt-1.5 hidden text-[9px] font-medium uppercase tracking-[0.32em] text-ink-2 sm:block sm:text-[10px]">
                 Panipat · Est. 2017
               </span>
             </div>
@@ -93,77 +108,48 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav
-            className="hidden flex-1 items-center justify-center gap-8 xl:gap-10 lg:flex"
+            className="hidden flex-1 items-center justify-center gap-1 lg:flex xl:gap-2"
             aria-label="Primary navigation"
           >
-            <Link
-              href="/"
-              data-testid="nav-home-link"
-              className="whitespace-nowrap text-[13px] font-bold uppercase tracking-[0.16em] text-ink-2 transition-colors hover:text-gold-2"
-            >
-              Home
-            </Link>
-
-            <Link
-              href="/shop"
-              data-testid="nav-catalogue-link"
-              className="whitespace-nowrap text-[13px] font-bold uppercase tracking-[0.16em] text-ink-2 transition-colors hover:text-gold-2"
-            >
-              Catalogue
-            </Link>
-
-            <Link
-              href="/about"
-              data-testid="nav-about-link"
-              className="whitespace-nowrap text-[13px] font-bold uppercase tracking-[0.16em] text-ink-2 transition-colors hover:text-gold-2"
-            >
-              Our Heritage
-            </Link>
-
-            <Link
-              href="/contact"
-              data-testid="nav-contact-link"
-              className="whitespace-nowrap text-[13px] font-bold uppercase tracking-[0.16em] text-ink-2 transition-colors hover:text-gold-2"
-            >
-              Bulk Enquiry
-            </Link>
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                data-testid={link.testid}
+                className="group relative whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-ink-2 transition-colors hover:text-ink xl:px-5"
+              >
+                {link.label}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-4 -bottom-0.5 h-px origin-center scale-x-0 bg-gradient-to-r from-transparent via-brand to-transparent transition-transform duration-300 group-hover:scale-x-100"
+                />
+              </Link>
+            ))}
           </nav>
 
           {/* Header Actions */}
-          <div className="ml-auto flex shrink-0 items-center gap-2">
-
-            {/* Wishlist */}
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <Link
               href="/account/wishlist"
               data-testid="nav-wishlist-link"
               aria-label="Wishlist"
-              className="relative inline-flex size-12 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-surface-2 hover:text-gold-2"
+              className="relative inline-flex size-11 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand"
             >
-              <Heart size={22} />
-
-              <CountPill
-                value={wishlistCount}
-                testid="nav-wishlist-count"
-              />
+              <Heart size={20} />
+              <CountPill value={wishlistCount} testid="nav-wishlist-count" />
             </Link>
 
-            {/* Cart */}
             <Link
               href="/cart"
               data-testid="nav-cart-link"
               aria-label="Shopping cart"
-              className="relative inline-flex size-12 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-surface-2 hover:text-gold-2"
+              className="relative inline-flex size-11 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand"
             >
-              <ShoppingBag size={22} />
-
-              <CountPill
-                value={cartCount}
-                testid="nav-cart-count"
-              />
+              <ShoppingBag size={20} />
+              <CountPill value={cartCount} testid="nav-cart-count" />
             </Link>
 
-            {/* Theme Toggle */}
-            <span className="hidden sm:inline-flex">
+            <span className="ml-1 hidden sm:inline-flex">
               <ThemeToggle />
             </span>
           </div>
