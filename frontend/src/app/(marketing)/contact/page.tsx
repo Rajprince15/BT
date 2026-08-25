@@ -44,7 +44,6 @@ function BulkEnquiryContent() {
   }, [search]);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [files] = useState<File[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -88,7 +87,7 @@ function BulkEnquiryContent() {
     const moq = String(data.get('moq') ?? '');
     const timeline = String(data.get('timeline') ?? 'Flexible');
     const brief = String(data.get('message') ?? '');
-    const fileNames = files.map((file) => file.name).join(', ') || 'None';
+    
 
     setBusy(true);
 
@@ -104,7 +103,7 @@ function BulkEnquiryContent() {
           selectedCategories.join(', ') ||
           'General textile enquiry',
         quantityRequirement: `${moq} pcs per SKU · ${timeline}`,
-        message: `${brief}\nAttachments: ${fileNames}`,
+        
       });
 
       const whatsappMessage = [
@@ -132,7 +131,7 @@ function BulkEnquiryContent() {
         }`,
         '',
         `Brief: ${brief}`,
-        `Files: ${fileNames}`,
+        
       ]
         .filter(Boolean)
         .join('\n');
