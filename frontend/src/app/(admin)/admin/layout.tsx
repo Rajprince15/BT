@@ -23,13 +23,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (isLoading || !user) {
     return (
       <main data-testid="admin-layout-loading" className="min-h-screen bg-bg">
-        <div className="p-10 text-xs uppercase tracking-wider2 text-ink-2">Checking access…</div>
+        <div className="p-6 text-xs uppercase tracking-wider2 text-ink-2 sm:p-10">Checking access…</div>
       </main>
     );
   }
   if (user.role !== 'admin' && user.role !== 'super_admin') {
     return (
-      <main data-testid="admin-layout-forbidden" className="min-h-screen bg-bg p-10">
+      <main data-testid="admin-layout-forbidden" className="min-h-screen bg-bg p-6 sm:p-10">
         <p className="text-danger">403 · This area is restricted to administrators.</p>
       </main>
     );
@@ -37,9 +37,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <main data-testid="admin-layout" className="min-h-screen bg-bg">
-      <div className="grid min-h-screen grid-cols-[240px_1fr]">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[240px_1fr]">
         <AdminSidebar role={user.role} />
-        <section className="min-w-0 overflow-x-auto bg-bg p-8">{children}</section>
+        <section className="min-w-0 overflow-x-auto bg-bg p-4 sm:p-6 lg:p-8">
+          {children}
+        </section>
       </div>
     </main>
   );

@@ -54,7 +54,7 @@ export default function Header() {
         data-testid="site-announcement"
         className="relative z-50 hidden bg-brand text-brand-ink sm:block"
       >
-        <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center px-5 text-[11px] font-medium uppercase tracking-[0.22em] sm:px-10 lg:px-16">
+        <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center px-5 text-center text-[11px] font-medium uppercase tracking-[0.22em] sm:px-10 lg:px-16">
           Crafted in Panipat · Trusted by hospitality &amp; retail across India
         </div>
       </div>
@@ -68,27 +68,27 @@ export default function Header() {
             : 'border-transparent bg-bg/85 backdrop-blur-lg')
         }
       >
-        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center gap-3 px-5 sm:px-10 lg:h-[88px] lg:gap-6 lg:px-16">
+        <div className="mx-auto flex h-[68px] w-full max-w-[1440px] items-center gap-2 px-4 sm:h-[76px] sm:gap-3 sm:px-8 lg:h-[88px] lg:gap-6 lg:px-16">
           {/* Mobile Menu Button */}
           <button
             type="button"
             data-testid="nav-mobile-hamburger"
             aria-label="Open menu"
             onClick={() => setMobileNavOpen(true)}
-            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-ink transition-all hover:bg-surface-2 hover:text-brand lg:hidden"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink transition-all hover:bg-surface-2 hover:text-brand sm:size-11 lg:hidden"
           >
             <Menu size={22} />
           </button>
 
-          {/* Logo lockup */}
+          {/* Logo lockup — allowed to shrink/truncate on very small screens */}
           <Link
             href="/"
             data-testid="site-logo"
             aria-label="Bhavita Textiles — home"
-            className="group flex shrink-0 items-center gap-3 sm:gap-4"
+            className="group flex min-w-0 flex-1 items-center gap-2.5 sm:gap-4 lg:flex-none"
           >
-            <div className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink shadow-sm ring-1 ring-brand-2/40 transition-transform duration-500 group-hover:scale-[1.04] sm:size-[52px]">
-              <span className="font-serif text-[22px] leading-none sm:text-[26px]">
+            <div className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink shadow-sm ring-1 ring-brand-2/40 transition-transform duration-500 group-hover:scale-[1.04] sm:size-11 lg:size-[52px]">
+              <span className="font-serif text-[19px] leading-none sm:text-[22px] lg:text-[26px]">
                 B
               </span>
               <span
@@ -96,8 +96,8 @@ export default function Header() {
                 className="pointer-events-none absolute inset-0 rounded-full opacity-0 ring-2 ring-gold transition-opacity duration-300 group-hover:opacity-100"
               />
             </div>
-            <div className="flex flex-col justify-center leading-none">
-              <span className="font-serif text-[20px] font-medium tracking-[0.01em] text-ink transition-colors group-hover:text-brand sm:text-[26px]">
+            <div className="flex min-w-0 flex-col justify-center leading-none">
+              <span className="truncate font-serif text-[18px] font-medium tracking-[0.01em] text-ink transition-colors group-hover:text-brand sm:text-[22px] lg:text-[26px]">
                 Bhavita Textiles
               </span>
               <span className="mt-1.5 hidden text-[9px] font-medium uppercase tracking-[0.32em] text-ink-2 sm:block sm:text-[10px]">
@@ -128,12 +128,12 @@ export default function Header() {
           </nav>
 
           {/* Header Actions */}
-          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-2">
             <Link
               href="/account/wishlist"
               data-testid="nav-wishlist-link"
               aria-label="Wishlist"
-              className="relative inline-flex size-11 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand"
+              className="relative inline-flex size-10 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand sm:size-11"
             >
               <Heart size={20} />
               <CountPill value={wishlistCount} testid="nav-wishlist-count" />
@@ -143,7 +143,7 @@ export default function Header() {
               href="/cart"
               data-testid="nav-cart-link"
               aria-label="Shopping cart"
-              className="relative inline-flex size-11 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand"
+              className="relative inline-flex size-10 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand sm:size-11"
             >
               <ShoppingBag size={20} />
               <CountPill value={cartCount} testid="nav-cart-count" />

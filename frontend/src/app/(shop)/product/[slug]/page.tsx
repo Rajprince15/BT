@@ -171,13 +171,13 @@ export default function ProductPage() {
   const hasSpecs = specs.some(([, value]) => Boolean(value));
 
   return (
-    <main data-testid="product-detail-page" className="bg-bg pb-28 lg:pb-0">
+    <main data-testid="product-detail-page" className="bg-bg pb-28 md:pb-0">
       <JsonLdProduct product={product} />
 
       <Container className="py-4">
         <Breadcrumbs items={breadcrumbs} />
 
-        <div className="grid gap-10 py-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)] lg:gap-16 lg:py-12">
+        <div className="grid gap-8 py-6 md:grid-cols-2 md:gap-8 md:py-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)] lg:gap-16 lg:py-12">
           {/* ---------- Gallery ---------- */}
           <motion.div
             initial={{ opacity: 0, y: reduce ? 0 : 16 }}
@@ -213,7 +213,7 @@ export default function ProductPage() {
 
             <h1
               data-testid="product-title"
-              className="mt-3 font-serif text-3xl leading-tight text-ink sm:text-4xl md:text-5xl"
+              className="mt-3 font-serif text-3xl leading-tight text-ink sm:text-4xl lg:text-5xl"
             >
               {product.name}
             </h1>
@@ -304,8 +304,8 @@ export default function ProductPage() {
                 Quantity
               </p>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex h-12 items-center overflow-hidden rounded-full border border-border bg-surface">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <div className="flex h-12 w-full items-center justify-between overflow-hidden rounded-full border border-border bg-surface sm:w-auto sm:justify-start">
                   <button
                     type="button"
                     data-testid="quantity-decrease"
@@ -355,7 +355,7 @@ export default function ProductPage() {
                         setQuantity(1);
                       }
                     }}
-                    className="h-full w-14 border-x border-border bg-transparent text-center text-sm font-semibold text-ink outline-none focus:bg-bg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="h-full w-14 flex-1 border-x border-border bg-transparent text-center text-sm font-semibold text-ink outline-none focus:bg-bg sm:flex-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
 
                   <button
@@ -373,7 +373,7 @@ export default function ProductPage() {
                   </button>
                 </div>
 
-                <div className="flex flex-1 items-center gap-3">
+                <div className="flex w-full items-center gap-3 sm:w-auto sm:flex-1">
                   <AddToCartButton
                     productId={product.id}
                     variantId={variant?.id}
@@ -405,7 +405,7 @@ export default function ProductPage() {
             </a>
 
             {/* Trust row */}
-            <div className="mt-8 grid gap-4 border-t border-border pt-6 sm:grid-cols-3">
+            <div className="mt-8 grid gap-4 border-t border-border pt-6 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
               {TRUST_ITEMS.map(({ Icon, title, body }) => (
                 <div key={title} className="flex items-start gap-3">
                   <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
@@ -492,7 +492,7 @@ export default function ProductPage() {
       </Container>
 
       {/* Mobile sticky purchase bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg/95 px-4 py-3 shadow-[0_-8px_24px_-16px_rgba(0,0,0,0.25)] backdrop-blur-md lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg/95 px-4 py-3 shadow-[0_-8px_24px_-16px_rgba(0,0,0,0.25)] backdrop-blur-md md:hidden">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="truncate text-[11px] font-semibold uppercase tracking-wider2 text-brand">
@@ -516,5 +516,6 @@ export default function ProductPage() {
     </main>
   );
 }
+
 
 

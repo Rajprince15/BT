@@ -29,6 +29,11 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -70,8 +75,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+html, body { overflow-x: hidden; max-width: 100%; }
 
-html, body { overflow-x: hidden; }
+/* Responsiveness safety nets — stop any single element from forcing the page
+   wider than the viewport (the classic "content cut off on the right" bug). */
+img, video, iframe, canvas, svg, object, embed { max-width: 100%; }
+img, video { height: auto; }
+h1, h2, h3, h4, h5, h6, p, a, span, li, dd, dt { overflow-wrap: break-word; }
 
 html { font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, sans-serif; }
 h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif; letter-spacing: -0.03em; }

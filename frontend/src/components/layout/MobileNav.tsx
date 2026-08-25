@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Heart, X, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Heart, X, ChevronRight, Home, LayoutGrid } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -28,6 +28,13 @@ const TOP_SLUGS = [
   'special-collections',
 ];
 
+// Primary links — kept in sync with the desktop header nav so the mobile
+// menu shows the same top-level navigation instead of "different things".
+const PRIMARY_LINKS: Array<{ label: string; href: string; icon: React.ReactNode }> = [
+  { label: 'Home', href: '/', icon: <Home size={16} /> },
+  { label: 'Catalogue', href: '/shop', icon: <LayoutGrid size={16} /> },
+];
+
 const SECONDARY_LINKS: Array<{ label: string; href: string }> = [
   { label: 'Our Heritage', href: '/about' },
   { label: 'Bulk Enquiry', href: '/contact' },
@@ -52,15 +59,15 @@ export default function MobileNav() {
         data-testid="mobile-nav-drawer"
         side="left"
         showCloseButton={false}
-        className="w-[92vw] max-w-[440px] border-r border-border bg-bg p-0 text-ink"
+        className="flex w-[88vw] max-w-[400px] flex-col overflow-x-hidden border-r border-border bg-bg p-0 text-ink"
       >
         {/* Header */}
-        <SheetHeader className="flex flex-row items-center justify-between border-b border-border bg-surface px-6 py-5">
-          <SheetTitle className="flex items-center gap-3">
-            <span className="flex size-9 items-center justify-center rounded-full bg-brand text-brand-ink font-serif text-lg">
+        <SheetHeader className="flex flex-row items-center justify-between gap-3 border-b border-border bg-surface px-5 py-4 sm:px-6 sm:py-5">
+          <SheetTitle className="flex min-w-0 items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink font-serif text-lg">
               B
             </span>
-            <span className="font-serif text-xl tracking-[0.02em] text-ink">
+            <span className="truncate font-serif text-lg tracking-[0.02em] text-ink sm:text-xl">
               Bhavita Textiles
             </span>
           </SheetTitle>
@@ -69,15 +76,15 @@ export default function MobileNav() {
             data-testid="mobile-nav-close"
             onClick={close}
             aria-label="Close menu"
-            className="inline-flex size-9 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-brand hover:text-brand"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-brand hover:text-brand"
           >
             <X size={18} />
           </button>
         </SheetHeader>
 
-        <div className="flex h-[calc(100%-76px)] flex-col overflow-y-auto">
+        <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
           {/* Quick actions */}
-          <div className="grid grid-cols-2 gap-3 border-b border-border px-6 py-5">
+          <div className="grid grid-cols-2 gap-3 border-b border-border px-5 py-4 sm:px-6 sm:py-5">
             <Link
               href="/cart"
               onClick={close}
@@ -96,8 +103,24 @@ export default function MobileNav() {
             </Link>
           </div>
 
+          {/* Primary links (mirrors desktop header nav) */}
+          <nav className="border-b border-border px-3 py-2" aria-label="Primary">
+            {PRIMARY_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={close}
+                data-testid={`mobile-nav-primary-${link.label.toLowerCase()}`}
+                className="flex items-center gap-3 rounded-lg px-3 py-3 font-serif text-[17px] text-ink transition-colors hover:bg-surface-2 hover:text-brand"
+              >
+                <span className="text-brand">{link.icon}</span>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
           {/* Categories */}
-          <div className="px-4 py-2">
+          <div className="px-3 py-2 sm:px-4">
             <p className="px-2 pb-2 pt-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-2">
               Shop by category
             </p>
@@ -114,7 +137,7 @@ export default function MobileNav() {
                   >
                     <AccordionTrigger
                       data-testid={`mobile-nav-cat-${parent.slug}`}
-                      className="py-4 font-serif text-[17px] text-ink hover:no-underline"
+                      className="py-4 text-left font-serif text-[17px] text-ink hover:no-underline"
                     >
                       {parent.name}
                     </AccordionTrigger>
@@ -150,7 +173,7 @@ export default function MobileNav() {
           </div>
 
           {/* Secondary Links */}
-          <div className="mt-2 border-t border-border px-6 py-4">
+          <div className="mt-2 border-t border-border px-5 py-4 sm:px-6">
             <p className="pb-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-2">
               Company
             </p>
@@ -174,7 +197,7 @@ export default function MobileNav() {
           </div>
 
           {/* Theme */}
-          <div className="mt-auto flex items-center justify-between border-t border-border bg-surface px-6 py-5">
+          <div className="mt-auto flex items-center justify-between border-t border-border bg-surface px-5 py-4 sm:px-6 sm:py-5">
             <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
               Appearance
             </span>

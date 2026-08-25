@@ -151,10 +151,10 @@ export default function CheckoutPage() {
           <CheckoutStepper current={step} completed={completed} onNavigate={goto} />
         </div>
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
-          <div className="space-y-8">
+        <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="min-w-0 space-y-8">
             {step === 'address' ? (
-              <div className="grid gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <AddressStep
                   addresses={addresses}
                   selected={addressId}
@@ -176,7 +176,7 @@ export default function CheckoutPage() {
             ) : null}
 
             {step === 'shipping' ? (
-              <div className="grid gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <ShippingStep
                   selected={shipping?.id}
                   onSelect={(_id, method) => setShipping(method)}

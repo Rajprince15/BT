@@ -46,12 +46,22 @@ export default function AdminSidebar({ role = 'admin' }: AdminSidebarProps) {
   const links = LINKS.filter((link) => !link.superAdminOnly || role === 'super_admin');
 
   return (
-    <aside data-testid="admin-sidebar" className="flex h-full flex-col gap-6 border-r border-border bg-surface p-6">
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[.35em] text-gold">Bhavita</p>
-        <h1 className="mt-1 font-serif text-2xl text-ink">Admin</h1>
+    <aside
+      data-testid="admin-sidebar"
+      className="sticky top-0 z-20 flex flex-col gap-4 border-b border-border bg-surface p-4 lg:h-screen lg:gap-6 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-6"
+    >
+      <div className="flex items-center justify-between gap-3 lg:block">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[.35em] text-gold">Bhavita</p>
+          <h1 className="mt-1 font-serif text-xl text-ink lg:text-2xl">Admin</h1>
+        </div>
       </div>
-      <nav className="grid gap-1" aria-label="Admin navigation">
+
+      {/* Horizontal scroll rail on mobile → vertical list on desktop */}
+      <nav
+        className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 lg:mx-0 lg:grid lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0"
+        aria-label="Admin navigation"
+      >
         {links.map((link) => {
           const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
           return (
@@ -61,8 +71,10 @@ export default function AdminSidebar({ role = 'admin' }: AdminSidebarProps) {
               data-testid={`admin-sidebar-${link.label.toLowerCase()}`}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'inline-flex items-center gap-3 rounded px-3 py-2 text-sm transition-colors',
-                active ? 'bg-gold-soft/40 font-semibold text-ink' : 'text-ink-2 hover:text-gold',
+                'inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 text-sm transition-colors lg:rounded lg:shrink lg:gap-3',
+                active
+                  ? 'bg-gold-soft/40 font-semibold text-ink'
+                  : 'text-ink-2 hover:bg-gold-soft/20 hover:text-gold',
               )}
             >
               {link.icon}

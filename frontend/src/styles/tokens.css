@@ -17,6 +17,13 @@
   --brand-2: #5a1e1b;
   --brand-soft: #f1dede;
   --brand-ink: #ffffff; /* text on brand fills */
+
+  /* Popover / menu / dropdown surfaces (opaque) */
+  --popover: #ffffff;
+  --popover-foreground: #1c1a17;
+  --accent: #f0ebe2;
+  --accent-foreground: #1c1a17;
+  --destructive: #9a4e46;
 }
 
 [data-theme="dark"] {
@@ -36,4 +43,11 @@
   --brand-2: #d1746e;
   --brand-soft: #3a1f1d;
   --brand-ink: #1c1a17;
+
+  /* Popover / menu / dropdown surfaces (opaque) */
+  --popover: #24201e;
+  --popover-foreground: #f5f1eb;
+  --accent: #2f2a26;
+  --accent-foreground: #f5f1eb;
+  --destructive: #d1746e;
 }
