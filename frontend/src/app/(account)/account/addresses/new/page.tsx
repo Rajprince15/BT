@@ -2,14 +2,17 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, type FormEvent } from 'react';
+import { Suspense, useState, type FormEvent } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import userService from '@/services/user.service';
 
-export default function NewAddressPage() {
+// Inner component that reads URL search params. It must be rendered inside a
+// <Suspense> boundary — Next.js requires this so that `useSearchParams()`
+// does not force the whole page to bail out of static rendering at build time.
+function NewAddressContent() {
   const router = useRouter();
   const search = useSearchParams();
   const returnTo = search.get('returnTo') ?? '/account/addresses';
@@ -122,6 +125,24 @@ export default function NewAddressPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+// The default export wraps the inner component in a <Suspense> boundary so
+// that `useSearchParams()` no longer causes the "should be wrapped in a
+// suspense boundary" prerender bailout during `next build`.
+export default function NewAddressPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          data-testid="new-address-loading"
+          className="min-h-[60vh] w-full animate-pulse rounded-xl bg-surface-2"
+        />
+      }
+    >
+      <NewAddressContent />
+    </Suspense>
   );
 }
 

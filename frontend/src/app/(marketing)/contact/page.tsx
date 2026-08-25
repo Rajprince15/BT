@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { Suspense, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
@@ -30,7 +30,10 @@ const moqOptions = ['300', '500', '1000', '2500', '5000+'];
 
 const timelines = ['Within 30 days', '30–60 days', '60+ days', 'Flexible'];
 
-export default function BulkEnquiryPage() {
+// Inner component that reads URL search params. It must be rendered inside a
+// <Suspense> boundary — Next.js requires this so that `useSearchParams()` does
+// not force the whole page to bail out of static rendering at build time.
+function BulkEnquiryContent() {
   const search = useSearchParams();
   const prefill = useMemo(() => {
     const productName = search.get('productName') ?? '';
@@ -477,5 +480,16 @@ export default function BulkEnquiryPage() {
         </div>
       </Container>
     </main>
+  );
+}
+
+// The default export wraps the inner component in a <Suspense> boundary so
+// that `useSearchParams()` no longer causes the "should be wrapped in a
+// suspense boundary" prerender bailout during `next build`.
+export default function BulkEnquiryPage() {
+  return (
+    <Suspense fallback={<main data-testid="contact-page-loading" className="min-h-[60vh] bg-bg" />}>
+      <BulkEnquiryContent />
+    </Suspense>
   );
 }
