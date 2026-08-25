@@ -7,6 +7,7 @@ export const env = {
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
   NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN || '',
   REACT_APP_RAZORPAY_ENABLED: process.env.REACT_APP_RAZORPAY_ENABLED === 'true',
+  NEXT_PUBLIC_WHATSAPP_NUMBER: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '',
 };
 
 export type Env = typeof env;
