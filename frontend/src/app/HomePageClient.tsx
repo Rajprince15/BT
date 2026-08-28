@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, Check, Download, Factory, PackageCheck, ShieldCheck, Truck } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, Factory, PackageCheck, ShieldCheck, Truck } from 'lucide-react';
 import ProductImageFallback from '@/components/common/ProductImageFallback';
 
 const images = {
@@ -42,7 +42,7 @@ export default function HomePageClient() {
             <p data-testid="hero-eyebrow" className="text-[10px] uppercase tracking-[0.3em] text-gold">Panipat · India&apos;s home-textile capital</p>
             <h1 data-testid="hero-heading" className="mt-7 max-w-4xl text-balance font-serif text-6xl leading-[0.88] tracking-[-0.045em] sm:text-8xl lg:text-[8.4rem]">The quiet luxury of a well-made layer.</h1>
             <p data-testid="hero-description" className="mt-8 max-w-xl text-sm leading-7 text-bg/75 sm:text-base">Family-run manufacturing for hospitality, export and furnishing buyers who care about hand-feel, finish and consistency.</p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3"><Link href="/shop" data-testid="hero-catalogue-link" className="group inline-flex items-center gap-3 bg-bg px-7 py-4 text-[10px] uppercase tracking-[0.22em] text-ink hover:bg-gold hover:text-ink">View the catalogue <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" /></Link><Link href="/wholesale" data-testid="hero-quote-link" className="inline-flex items-center gap-3 border-b border-bg/50 px-1 py-4 text-[10px] uppercase tracking-[0.22em] text-bg hover:border-gold hover:text-gold">Request a bulk quote <ArrowUpRight size={15} /></Link><a href="/download-frontend" download="bhavita-textiles-frontend.zip" data-testid="home-download-frontend-button" className="inline-flex items-center gap-2 border-b border-bg/25 px-1 py-3 text-[9px] uppercase tracking-[0.18em] text-bg/65 hover:border-gold hover:text-gold"><Download size={14} strokeWidth={1.4} />Download frontend ZIP</a></div>
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3"><Link href="/shop" data-testid="hero-catalogue-link" className="group inline-flex items-center gap-3 bg-bg px-7 py-4 text-[10px] uppercase tracking-[0.22em] text-ink hover:bg-gold hover:text-ink">View the catalogue <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" /></Link><Link href="/wholesale" data-testid="hero-quote-link" className="inline-flex items-center gap-3 border-b border-bg/50 px-1 py-4 text-[10px] uppercase tracking-[0.22em] text-bg hover:border-gold hover:text-gold">Request a bulk quote <ArrowUpRight size={15} /></Link></div>
           </motion.div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-bg/15"><div className="mx-auto flex max-w-[1440px] flex-wrap gap-x-10 gap-y-3 px-6 py-5 text-[9px] uppercase tracking-[0.2em] text-bg/65 sm:px-10 lg:px-14"><span data-testid="hero-stat-years">8+ years in Panipat</span><span data-testid="hero-stat-skus">30+ active SKUs</span><span data-testid="hero-stat-capacity">50K units / month</span><span data-testid="hero-stat-markets">12+ export markets</span></div></div>
