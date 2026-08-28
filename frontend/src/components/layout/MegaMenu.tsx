@@ -117,6 +117,7 @@ export default function MegaMenu() {
         </NavigationMenuItem>
 
         {[
+          { label: 'Wholesale', href: '/wholesale' },
           { label: 'About', href: '/about' },
           { label: 'Bulk Enquiry', href: '/contact' },
         ].map((item) => (

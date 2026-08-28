@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { toast } from 'sonner';
+
 import { cn } from '@/lib/utils';
 import PriceTag from '@/components/common/PriceTag';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,191 +11,213 @@ import type { Product } from '@/types/Product';
 import ProductImageFallback from '@/components/common/ProductImageFallback';
 import { useToggleWishlist, useWishlist } from '@/hooks/useWishlist';
 
-/**
- * Editorial ProductCard.
- *
- * Cardless / paper-floating aesthetic:
- *   - No visible box outlines or heavy shadows around the image.
- *   - Image is the hero. Meta sits quietly beneath.
- *   - Variants control the composition inside the editorial grid.
- *
- *   variant="standard"  → default portrait 4/5 image
- *   variant="hero"      → tall 3/4 image, larger typography
- *   variant="wide"      → landscape 16/10 image spanning wider tile
- *   variant="tall"      → very tall 3/4.5 for asymmetric spreads
- */
-export type ProductCardVariant = 'standard' | 'hero' | 'wide' | 'tall';
-
-export interface ProductCardProps {
+interface ProductCardProps {
   product: Product;
   priority?: boolean;
   size?: 'sm' | 'md' | 'lg';
-  variant?: ProductCardVariant;
-  index?: number;
   className?: string;
 }
 
 const FALLBACK_IMAGE = '/images/editorial/premium-cotton.svg';
 
-const ASPECT: Record<ProductCardVariant, string> = {
-  standard: 'aspect-[4/5]',
-  hero: 'aspect-[3/4]',
-  wide: 'aspect-[16/10]',
-  tall: 'aspect-[3/4.4]',
-};
-
-export default function ProductCard({
+function ProductCard({
   product,
   size = 'md',
-  variant = 'standard',
-  index,
   className,
 }: ProductCardProps) {
   const primary =
     product.images.find((img) => img.sortOrder === 0)?.imageUrl ??
     product.images[0]?.imageUrl ??
     FALLBACK_IMAGE;
+
   const secondary = product.images[1]?.imageUrl;
-  const sale = typeof product.salePrice === 'number' && product.salePrice < product.price;
-  const { data: wishlist = [] } = useWishlist();
-  const toggle = useToggleWishlist();
-  const saved = wishlist.some((item) => item.productId === product.id);
-  const meta = [product.specification, product.sizeLabel].filter(Boolean).slice(0, 2).join(' · ');
+
+  const onSale =
+    typeof product.salePrice === 'number' && product.salePrice < product.price;
 
   const titleSize =
-    variant === 'hero'
-      ? 'text-2xl sm:text-[28px] md:text-3xl'
-      : variant === 'wide'
-        ? 'text-xl sm:text-2xl'
-        : size === 'lg'
-          ? 'text-xl md:text-2xl'
-          : size === 'sm'
-            ? 'text-base'
-            : 'text-lg md:text-xl';
+    size === 'lg'
+      ? 'text-xl md:text-2xl'
+      : size === 'sm'
+        ? 'text-sm'
+        : 'text-base md:text-lg';
+
+  const priceSize: 'sm' | 'md' | 'lg' =
+    size === 'lg' ? 'lg' : size === 'sm' ? 'sm' : 'md';
+
+  const { data: wishlist = [] } = useWishlist();
+  const wishlistMutation = useToggleWishlist();
+
+  const saved = wishlist.some((item) => item.productId === product.id);
+
+  // Compact B2B meta line: e.g. "Cotton · 90×100 in"
+  const metaParts: string[] = [];
+  if (product.specification) metaParts.push(product.specification);
+  if (product.sizeLabel) metaParts.push(product.sizeLabel);
+  const metaLine = metaParts.slice(0, 2).join(' · ');
 
   return (
     <article
-      data-testid={`product-card-${product.id}`}
+      data-testid="product-card"
       data-product-slug={product.slug}
-      className={cn('group relative', className)}
+      className={cn(
+        'group relative flex flex-col',
+        'transition-transform duration-300',
+        className,
+      )}
     >
-      {typeof index === 'number' ? (
-        <span
-          aria-hidden
-          data-testid="product-card-index"
-          className="pointer-events-none absolute -top-2 left-0 z-[1] hidden font-mono text-[10px] uppercase tracking-[0.28em] text-ink-3 sm:block"
-        >
-          N° {String(index + 1).padStart(2, '0')}
-        </span>
-      ) : null}
-
       <Link
         href={`/product/${product.slug}`}
         aria-label={product.name}
         className={cn(
-          'relative block overflow-hidden bg-surface-2/60 focus-visible:outline-none',
-          ASPECT[variant],
+          'relative block aspect-[4/5] overflow-hidden rounded-md border border-border bg-surface-2 outline-none',
+          'transition-all duration-500 ease-out',
+          'focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+          'group-hover:border-brand/30 group-hover:shadow-[0_18px_40px_-24px_rgba(125,44,40,0.28)]',
         )}
       >
         <ProductImageFallback
           slug={product.slug}
-          remote={primary}
+          remote={primary || FALLBACK_IMAGE}
           alt={product.images[0]?.altText ?? product.name}
           className={cn(
-            'absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.035]',
-            secondary && 'group-hover:opacity-0',
+            'absolute inset-0 h-full w-full object-cover transition-transform duration-[700ms] ease-out will-change-transform',
+            'group-hover:scale-[1.05]',
+            secondary ? 'group-hover:opacity-0' : '',
           )}
         />
+
         {secondary ? (
           <img
             data-testid="product-image-secondary"
             src={secondary}
             alt=""
             aria-hidden
-            className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+            className="absolute inset-0 h-full w-full scale-[1.05] object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
           />
         ) : null}
 
-        {/* Corner badges — restrained typography rather than pills */}
-        <div className="pointer-events-none absolute inset-x-5 top-5 flex items-start justify-between gap-3 text-[9px] uppercase tracking-[0.22em]">
-          <div className="flex flex-col gap-1 text-bg drop-shadow-sm">
-            {product.newArrival ? (
-              <span data-testid="product-card-badge-new">Newly Loomed</span>
-            ) : null}
-            {product.bestSeller ? (
-              <span data-testid="product-card-badge-best">House Bestseller</span>
-            ) : null}
-            {sale ? <span data-testid="product-card-badge-sale">On Offer</span> : null}
-          </div>
-        </div>
+        {/* Soft gradient on hover */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        />
 
-        {/* Overlay label reveal — editorial caption on hover */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-ink/40 via-ink/10 to-transparent p-5 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-          <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-bg/90">
-            View Piece
-          </span>
+        {/* Badges */}
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+          {product.newArrival ? (
+            <span
+              data-testid="product-card-badge-new"
+              className="rounded-full bg-bg/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider2 text-brand shadow-sm"
+            >
+              New
+            </span>
+          ) : null}
+
+          {product.bestSeller ? (
+            <span
+              data-testid="product-card-badge-best"
+              className="rounded-full bg-ink px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider2 text-bg"
+            >
+              Best Seller
+            </span>
+          ) : null}
+
+          {onSale ? (
+            <span
+              data-testid="product-card-badge-sale"
+              className="rounded-full bg-brand px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider2 text-brand-ink"
+            >
+              Sale
+            </span>
+          ) : null}
         </div>
       </Link>
 
+      {/* Wishlist */}
       <button
         type="button"
         data-testid="product-card-wishlist"
-        aria-label={saved ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        aria-label={
+          saved
+            ? `Remove ${product.name} from wishlist`
+            : `Add ${product.name} to wishlist`
+        }
         onClick={(event) => {
           event.preventDefault();
-          toggle.mutate(product.id, {
+          event.stopPropagation();
+
+          wishlistMutation.mutate(product.id, {
             onSuccess: (result) =>
-              toast.success(result.removed ? 'Removed from wishlist' : 'Saved to wishlist'),
+              toast.success(
+                result.removed ? 'Removed from wishlist' : 'Saved to wishlist',
+              ),
             onError: (error) => toast.error(error.message),
           });
         }}
-        disabled={toggle.isPending}
+        disabled={wishlistMutation.isPending}
         aria-pressed={saved}
         className={cn(
-          'absolute right-3 top-3 z-10 inline-flex size-9 items-center justify-center rounded-full bg-bg/85 text-ink-2 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100 hover:bg-bg hover:text-terracotta focus-visible:opacity-100',
-          saved && 'text-terracotta opacity-100',
+          'absolute right-3 top-3 z-10 inline-flex size-10 items-center justify-center rounded-full bg-bg/90 shadow-sm backdrop-blur-sm transition-all duration-200',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold',
+          'hover:scale-105',
+          saved ? 'text-brand' : 'text-ink-2 hover:text-brand',
+          wishlistMutation.isPending && 'cursor-not-allowed opacity-60',
         )}
       >
-        <Heart size={15} strokeWidth={1.4} fill={saved ? 'currentColor' : 'none'} />
+        <Heart
+          className="size-4"
+          strokeWidth={1.6}
+          fill={saved ? 'currentColor' : 'none'}
+        />
       </button>
 
-      <div className={cn('pt-5', variant === 'hero' && 'pt-7')}>
+      {/* Body */}
+      <div className="mt-4 flex flex-col gap-1.5">
         <Link
           href={`/product/${product.slug}`}
           data-testid="product-card-name"
           className={cn(
-            'block max-w-full font-serif font-normal leading-[1.15] tracking-tight text-ink transition-colors group-hover:text-terracotta',
+            'relative inline-flex w-fit max-w-full self-start font-serif font-semibold leading-snug text-ink',
+            'transition-colors duration-300 group-hover:text-brand',
             titleSize,
           )}
         >
-          <span className="line-clamp-2">{product.name}</span>
+          <span className="line-clamp-2 pb-0.5">{product.name}</span>
         </Link>
-        {meta ? (
+
+        {metaLine ? (
           <p
             data-testid="product-card-meta"
-            className="mt-2 line-clamp-1 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-3"
+            className="line-clamp-1 text-xs leading-5 text-ink-2"
           >
-            {meta}
+            {metaLine}
           </p>
         ) : null}
+
         <PriceTag
           price={product.price}
           salePrice={product.salePrice}
-          size={variant === 'hero' ? 'lg' : size === 'lg' ? 'lg' : size === 'sm' ? 'sm' : 'md'}
-          className="mt-3"
+          size={priceSize}
+          className="mt-1"
         />
       </div>
     </article>
   );
 }
 
-export function ProductCardSkeleton({ variant = 'standard' }: { variant?: ProductCardVariant }) {
+function ProductCardSkeleton() {
   return (
-    <div data-testid="product-card-skeleton" className="flex flex-col gap-4">
-      <Skeleton className={cn('w-full rounded-none', ASPECT[variant])} />
+    <div data-testid="product-card-skeleton" className="flex flex-col gap-3">
+      <Skeleton className="aspect-[4/5] w-full rounded-md" />
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />
+      <Skeleton className="h-4 w-1/3" />
     </div>
   );
 }
+
 ProductCard.Skeleton = ProductCardSkeleton;
+
+export default ProductCard;
+export { ProductCardSkeleton };

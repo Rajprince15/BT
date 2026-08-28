@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
+import { Cormorant_Garamond, Manrope } from 'next/font/google';
+
 import './globals.css';
 
 import Providers from '@/providers/Providers';
@@ -11,23 +12,15 @@ import WhatsAppWidget from '@/components/layout/WhatsAppWidget';
 
 const serif = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
+  weight: ['500', '600', '700'],
   variable: '--font-serif',
   display: 'swap',
 });
 
-const sans = Plus_Jakarta_Sans({
+const sans = Manrope({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
-  display: 'swap',
-});
-
-const mono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-mono',
   display: 'swap',
 });
 
@@ -79,7 +72,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${serif.variable} ${sans.variable} ${mono.variable}`}
+      className={`${serif.variable} ${sans.variable}`}
     >
       <body className="bg-bg font-sans text-ink antialiased">
         <JsonLd id="ld-organization" data={organizationJsonLd()} />

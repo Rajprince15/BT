@@ -1,9 +1,60 @@
 'use client';
 
 import { Check, ChevronDown } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import type { ProductSort } from '@/services/product.service';
 import { cn } from '@/lib/utils';
 
-const options: { value: ProductSort; label: string }[] = [{ value: 'new', label: 'Newest first' }, { value: 'price_asc', label: 'Price: low to high' }, { value: 'price_desc', label: 'Price: high to low' }, { value: 'best_sellers', label: 'Best sellers' }, { value: 'rating', label: 'Top rated' }];
-export default function SortDropdown({ value, onChange, className }: { value: ProductSort; onChange: (value: ProductSort) => void; className?: string }) { const current = options.find((option) => option.value === value) ?? options[0]; return <DropdownMenu><DropdownMenuTrigger asChild><button type="button" data-testid="sort-dropdown-trigger" className={cn('inline-flex items-center gap-3 py-2 text-[10px] uppercase tracking-[0.16em] text-ink hover:text-gold-2', className)}><span className="text-ink-2">Sort:</span><span>{current.label}</span><ChevronDown size={14} strokeWidth={1.4} /></button></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-52 rounded-none border-border bg-bg">{options.map((option) => <DropdownMenuItem key={option.value} data-testid={`sort-option-${option.value}`} onSelect={() => onChange(option.value)} className="flex items-center justify-between rounded-none text-sm">{option.label}{value === option.value ? <Check size={14} className="text-gold-2" /> : null}</DropdownMenuItem>)}</DropdownMenuContent></DropdownMenu>; }
+const OPTIONS: { value: ProductSort; label: string }[] = [
+  { value: 'new', label: 'Newest first' },
+  { value: 'price_asc', label: 'Price: Low to High' },
+  { value: 'price_desc', label: 'Price: High to Low' },
+  { value: 'best_sellers', label: 'Best Sellers' },
+  { value: 'rating', label: 'Top Rated' },
+];
+
+interface SortDropdownProps {
+  value: ProductSort;
+  onChange: (value: ProductSort) => void;
+  className?: string;
+}
+
+export default function SortDropdown({ value, onChange, className }: SortDropdownProps) {
+  const current = OPTIONS.find((o) => o.value === value) ?? OPTIONS[0];
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          data-testid="sort-dropdown-trigger"
+          className={cn(
+            'inline-flex h-10 items-center justify-between gap-3 rounded-full border border-border bg-surface px-4 text-[12px] font-semibold uppercase tracking-wider2 text-ink transition-colors hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold',
+            className,
+          )}
+        >
+          <span className="text-ink-2">Sort:</span>
+          <span className="text-ink">{current.label}</span>
+          <ChevronDown className="size-4 text-gold" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        {OPTIONS.map((opt) => (
+          <DropdownMenuItem
+            key={opt.value}
+            data-testid={`sort-option-${opt.value}`}
+            onSelect={() => onChange(opt.value)}
+            className="flex items-center justify-between"
+          >
+            <span className={cn('text-sm', value === opt.value && 'text-gold')}>{opt.label}</span>
+            {value === opt.value ? <Check className="size-4 text-gold" /> : null}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

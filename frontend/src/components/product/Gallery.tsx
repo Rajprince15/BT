@@ -77,7 +77,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
   };
 
   return (
-    <div data-testid="product-gallery" className="grid gap-4 sm:grid-cols-[76px_1fr]">
+    <div data-testid="product-gallery" className="grid gap-3 sm:grid-cols-[76px_1fr]">
       <div className="order-2 flex gap-2 overflow-x-auto sm:order-1 sm:flex-col">
         {galleryImages.map((image, index) => (
           <button
@@ -90,7 +90,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
               setFailed(false);
             }}
             className={cn(
-              'relative size-16 shrink-0 overflow-hidden border transition-colors',
+              'relative size-16 shrink-0 overflow-hidden rounded border transition-colors',
               active === index ? 'border-gold ring-1 ring-gold' : 'border-border',
             )}
           >
@@ -110,7 +110,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
         data-testid="product-gallery-expand"
         aria-label={`Open fullscreen gallery for ${name}`}
         onClick={() => setExpanded(true)}
-        className="group relative order-1 aspect-[4/5] overflow-hidden bg-surface-2 sm:order-2"
+        className="group relative order-1 aspect-[4/5] overflow-hidden rounded-md bg-surface-2 sm:order-2"
       >
         <Image
           src={source}
@@ -125,7 +125,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
           aria-hidden
           className="absolute inset-0 bg-gradient-to-t from-ink/20 via-transparent to-transparent"
         />
-        <span className="absolute right-4 top-4 inline-flex size-11 items-center justify-center bg-bg/85 text-ink backdrop-blur-sm transition-colors group-hover:text-gold-2">
+        <span className="absolute right-4 top-4 inline-flex size-11 items-center justify-center rounded-full bg-bg/85 text-ink shadow-sm backdrop-blur-sm transition-colors group-hover:text-gold">
           <Maximize2 className="size-4" />
         </span>
       </button>
@@ -204,7 +204,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
                   aria-label={`Focus image ${index + 1}`}
                   onClick={() => move(index)}
                   className={cn(
-                    'relative size-16 shrink-0 overflow-hidden border transition-colors',
+                    'relative size-16 shrink-0 overflow-hidden rounded border transition-colors',
                     active === index ? 'border-gold ring-1 ring-gold' : 'border-border',
                   )}
                 >

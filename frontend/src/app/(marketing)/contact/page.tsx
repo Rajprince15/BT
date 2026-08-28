@@ -2,22 +2,493 @@
 
 import { Suspense, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle2, Clock3, Mail, MapPin, Package, Phone } from 'lucide-react';
+import {
+  CheckCircle2,
+  Clock3,
+  Mail,
+  MapPin,
+  Package,
+  Phone,
+} from 'lucide-react';
 import { toast } from 'sonner';
+
 import Container from '@/components/common/Container';
 import wholesaleService from '@/services/wholesale.service';
 import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
-const categories = ['Bedsheets', 'Blankets', 'Floor mats', 'Cushion covers', 'Curtains', 'Towels', 'Other'];
+const categories = [
+  'Bedsheets',
+  'Blankets',
+  'Floor mats',
+  'Cushion covers',
+  'Curtains',
+  'Towels',
+  'Other',
+];
+
 const moqOptions = ['300', '500', '1000', '2500', '5000+'];
+
 const timelines = ['Within 30 days', '30–60 days', '60+ days', 'Flexible'];
 
+// Inner component that reads URL search params. It must be rendered inside a
+// <Suspense> boundary — Next.js requires this so that `useSearchParams()` does
+// not force the whole page to bail out of static rendering at build time.
 function BulkEnquiryContent() {
-  const search = useSearchParams(); const prefill = useMemo(() => ({ productName: search.get('productName') ?? '', productSlug: search.get('product') ?? '', sku: search.get('sku') ?? '', qty: search.get('qty') ?? '' }), [search]); const [selected, setSelected] = useState<string[]>([]); const [submitted, setSubmitted] = useState(false); const [busy, setBusy] = useState(false); const [message, setMessage] = useState('');
-  useEffect(() => { if (prefill.productName) setMessage([`Enquiry for: ${prefill.productName}`, prefill.sku ? `SKU: ${prefill.sku}` : null, prefill.qty ? `Interested quantity: ${prefill.qty} pcs (indicative)` : null, '', 'Please share your best wholesale price, lead time, packaging options and MOQ details for this product.'].filter(Boolean).join('\n')); }, [prefill.productName, prefill.sku, prefill.qty]);
-  const toggle = (category: string) => setSelected((current) => current.includes(category) ? current.filter((item) => item !== category) : [...current, category]);
-  const submit = async (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const data = new FormData(event.currentTarget); const companyName = String(data.get('companyName') ?? ''); const contactPerson = String(data.get('contactPerson') ?? ''); const email = String(data.get('email') ?? ''); const phone = String(data.get('phone') ?? ''); const moq = String(data.get('moq') ?? ''); const timeline = String(data.get('timeline') ?? 'Flexible'); const brief = String(data.get('message') ?? ''); setBusy(true); try { await wholesaleService.submit({ companyName, contactPerson, email, phone, businessType: String(data.get('designation') ?? ''), productInterest: prefill.productName || selected.join(', ') || 'General textile enquiry', quantityRequirement: `${moq} pcs per SKU · ${timeline}` }); const whatsappMessage = ['Hello, I would like a wholesale quote from Bhavita Textiles.', '', `Company: ${companyName}`, `Contact: ${contactPerson}`, `Email: ${email}`, `Phone: ${phone}`, `Designation: ${String(data.get('designation') ?? 'Not specified')}`, `Country / City: ${String(data.get('country') ?? 'Not specified')}`, '', prefill.productName ? `Product: ${prefill.productName}${prefill.sku ? ` (SKU: ${prefill.sku})` : ''}` : `Product interest: ${selected.join(', ') || 'General textile enquiry'}`, prefill.qty ? `Interested quantity: ${prefill.qty} pcs` : null, `Estimated MOQ: ${moq} pcs per SKU`, `Delivery timeline: ${timeline}`, `Website: ${String(data.get('website') ?? 'Not specified') || 'Not specified'}`, '', `Brief: ${brief}`].filter(Boolean).join('\n'); window.open(whatsappUrl(whatsappMessage), '_blank', 'noopener,noreferrer'); setSubmitted(true); } catch (error) { toast.error(error instanceof Error ? error.message : 'Unable to submit enquiry'); } finally { setBusy(false); } };
-  return <main data-testid="contact-page" className="bg-bg text-ink"><section data-testid="contact-hero" className="grain bg-ink text-bg"><Container className="py-24 sm:py-32"><p className="text-[10px] uppercase tracking-[0.28em] text-gold">Wholesale program · B2B</p><h1 className="mt-6 max-w-5xl font-serif text-6xl leading-[0.88] tracking-[-0.045em] sm:text-8xl">Manufactured to your spec. Priced to your volume.</h1><p className="mt-7 max-w-2xl text-sm leading-7 text-bg/70">Share your brief with the mill. We will return with a clear quote, practical timeline and the right next step.</p><div className="mt-9 flex flex-wrap gap-6 text-[10px] uppercase tracking-[0.2em] text-bg/70"><span>24-hour quote</span><span>MOQ from 300 pcs</span></div></Container></section><Container className="grid gap-16 py-20 sm:py-28 lg:grid-cols-[.45fr_.55fr] lg:gap-24"><section><p className="text-[10px] uppercase tracking-[0.28em] text-gold-2">Talk to the mill</p><h2 className="mt-5 font-serif text-5xl leading-[0.95] tracking-[-0.035em]">A considered beginning to a dependable supply partnership.</h2><p className="mt-7 text-sm leading-7 text-ink-2">Hotels, furnishing buyers, retailers and designers can share quantities, specifications, packaging needs and delivery expectations here.</p><div className="mt-12 divide-y divide-border border-t border-border"><div data-testid="contact-info-factory-address" className="flex gap-4 py-6"><MapPin className="mt-1 size-5 text-gold-2" /><div><p className="text-[10px] uppercase tracking-[0.18em] text-ink-2">Factory address</p><p className="mt-2 text-sm">Panipat, Haryana, India</p></div></div><div data-testid="contact-info-phone-whatsapp" className="flex gap-4 py-6"><Phone className="mt-1 size-5 text-gold-2" /><div><p className="text-[10px] uppercase tracking-[0.18em] text-ink-2">Phone / WhatsApp</p><p className="mt-2 text-sm">+91 99999 99999</p></div></div><div data-testid="contact-info-email" className="flex gap-4 py-6"><Mail className="mt-1 size-5 text-gold-2" /><div><p className="text-[10px] uppercase tracking-[0.18em] text-ink-2">Email</p><p className="mt-2 text-sm">hello@bhavitatextiles.com</p></div></div><div className="flex gap-4 py-6"><Clock3 className="mt-1 size-5 text-gold-2" /><div><p className="text-[10px] uppercase tracking-[0.18em] text-ink-2">Business hours</p><p className="mt-2 text-sm">Mon–Sat · 10:00–18:00 IST</p></div></div></div></section><section data-testid="contact-form" className="border-t border-border pt-8 sm:pt-10">{submitted ? <div data-testid="contact-form-success" className="grid min-h-[560px] place-items-center text-center"><div><CheckCircle2 className="mx-auto size-12 text-gold-2" strokeWidth={1.2} /><h2 className="mt-7 font-serif text-4xl">Your brief is with the mill.</h2><p className="mt-4 text-sm leading-7 text-ink-2">WhatsApp has opened with your enquiry. Our team will reply within 24 hours.</p><a data-testid="contact-success-home" href="/" className="mt-8 inline-flex border-b border-border pb-2 text-[10px] uppercase tracking-[0.2em]">Return home</a></div></div> : <form data-testid="bulk-enquiry-form" onSubmit={submit} className="grid gap-6">{prefill.productName ? <div data-testid="contact-product-context" className="flex gap-3 border-y border-gold-2/50 py-4"><Package size={18} className="mt-1 shrink-0 text-gold-2" /><div><p className="text-[10px] uppercase tracking-[0.2em] text-gold-2">Enquiring about</p><p className="mt-2 font-serif text-xl">{prefill.productName}</p><p className="mt-1 text-xs text-ink-2">{prefill.sku ? `SKU ${prefill.sku}` : ''}{prefill.qty ? `${prefill.sku ? ' · ' : ''}Interested qty ${prefill.qty} pcs` : ''}</p></div></div> : null}<div><p className="text-[10px] uppercase tracking-[0.24em] text-gold-2">Company details</p><h2 className="mt-3 font-serif text-3xl">Tell us who you are.</h2></div><div className="grid gap-5 sm:grid-cols-2">{[['companyName', 'Company name', 'text', true], ['contactPerson', 'Contact person', 'text', true], ['designation', 'Designation', 'text', false], ['email', 'Email', 'email', true], ['phone', 'Phone with country code', 'tel', true], ['country', 'Country / City', 'text', false], ['website', 'Website', 'url', false]].map(([name, label, type, required]) => <label key={String(name)} className="grid gap-2 text-[10px] uppercase tracking-[0.14em] text-ink-2">{String(label)}<input data-testid={`contact-form-${name}`} name={String(name)} required={Boolean(required)} type={String(type)} className="h-11 border-b border-border bg-transparent px-1 text-sm normal-case tracking-normal text-ink outline-none focus:border-gold-2" /></label>)}</div>{!prefill.productName ? <div className="border-t border-border pt-7"><p className="font-serif text-2xl">Product interest</p><div className="mt-5 flex flex-wrap gap-x-5 gap-y-3">{categories.map((category) => { const active = selected.includes(category); return <button key={category} type="button" data-testid={`contact-category-${category.toLowerCase().replaceAll(' ', '-')}`} aria-pressed={active} onClick={() => toggle(category)} className={`border-b py-2 text-xs ${active ? 'border-gold-2 text-gold-2' : 'border-transparent text-ink-2 hover:border-border'}`}>{category}</button>; })}</div></div> : null}<label className="grid gap-2 border-t border-border pt-7 text-[10px] uppercase tracking-[0.14em] text-ink-2">Estimated MOQ per SKU<select data-testid="contact-form-moq" name="moq" required defaultValue={prefill.qty ? '500' : moqOptions[0]} className="h-11 border-b border-border bg-transparent text-sm normal-case tracking-normal text-ink outline-none focus:border-gold-2">{moqOptions.map((option) => <option key={option}>{option}</option>)}</select></label><div className="border-t border-border pt-7"><p className="font-serif text-2xl">Brief &amp; timeline</p><div className="mt-5 grid gap-3 sm:grid-cols-2">{timelines.map((timeline) => <label key={timeline} className="flex min-h-11 items-center gap-3 border-b border-border text-sm text-ink"><input data-testid={`contact-timeline-${timeline.toLowerCase().replaceAll(' ', '-')}`} type="radio" name="timeline" value={timeline} defaultChecked={timeline === 'Flexible'} className="size-4 accent-[var(--gold-2)]" />{timeline}</label>)}</div><textarea data-testid="contact-form-message" name="message" required value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Tell us about print styles, GSM, packaging or private-label needs…" className="mt-6 min-h-40 w-full border-b border-border bg-transparent p-1 text-sm text-ink outline-none focus:border-gold-2" /></div><label className="flex items-start gap-3 text-sm text-ink-2"><input data-testid="contact-form-consent" required type="checkbox" className="mt-1 size-4 accent-[var(--gold-2)]" />I agree to receive quotes and updates from Bhavita Textiles.</label><button data-testid="contact-form-submit" disabled={busy} type="submit" className="h-12 bg-ink text-[10px] uppercase tracking-[0.2em] text-bg hover:bg-gold-2 disabled:opacity-60">{busy ? 'Preparing WhatsApp…' : 'Send enquiry on WhatsApp'}</button><p className="text-center text-xs text-ink-2">Typical response within 24 hours.</p></form>}</section></Container><Container className="pb-24"><div data-testid="contact-map" className="overflow-hidden border-t border-border bg-surface"><iframe title="Bhavita Textiles factory location" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d111235.59384228835!2d76.80822447722554!3d29.396270499959137!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390dda457afbe651%3A0x41d3f6feacaa74d4!2sPanipat%2C%20Haryana!5e0!3m2!1sen!2sin!4v1787605821564!5m2!1sen!2sin" className="h-[360px] w-full border-0 sm:h-[440px]" loading="lazy" referrerPolicy="no-referrer-when-downgrade" /><div className="flex items-center gap-3 border-t border-border px-5 py-4"><MapPin className="size-5 text-gold-2" /><div><p className="text-sm">Bhavita Textiles</p><p className="text-xs text-ink-2">Panipat, Haryana, India</p></div></div></div></Container></main>;
+  const search = useSearchParams();
+  const prefill = useMemo(() => {
+    const productName = search.get('productName') ?? '';
+    const productSlug = search.get('product') ?? '';
+    const sku = search.get('sku') ?? '';
+    const qty = search.get('qty') ?? '';
+    return { productName, productSlug, sku, qty };
+  }, [search]);
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+
+  // Prefill the message when arriving from a product page.
+  useEffect(() => {
+    if (prefill.productName) {
+      setMessage(
+        [
+          `Enquiry for: ${prefill.productName}`,
+          prefill.sku ? `SKU: ${prefill.sku}` : null,
+          prefill.qty
+            ? `Interested quantity: ${prefill.qty} pcs (indicative)`
+            : null,
+          '',
+          'Please share your best wholesale price, lead time, packaging options and MOQ details for this product.',
+        ]
+          .filter(Boolean)
+          .join('\n'),
+      );
+    }
+  }, [prefill.productName, prefill.sku, prefill.qty]);
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((current) =>
+      current.includes(category)
+        ? current.filter((item) => item !== category)
+        : [...current, category],
+    );
+  };
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+
+    const companyName = String(data.get('companyName') ?? '');
+    const contactPerson = String(data.get('contactPerson') ?? '');
+    const email = String(data.get('email') ?? '');
+    const phone = String(data.get('phone') ?? '');
+    const moq = String(data.get('moq') ?? '');
+    const timeline = String(data.get('timeline') ?? 'Flexible');
+    const brief = String(data.get('message') ?? '');
+    
+
+    setBusy(true);
+
+    try {
+      await wholesaleService.submit({
+        companyName,
+        contactPerson,
+        email,
+        phone,
+        businessType: String(data.get('designation') ?? ''),
+        productInterest:
+          prefill.productName ||
+          selectedCategories.join(', ') ||
+          'General textile enquiry',
+        quantityRequirement: `${moq} pcs per SKU · ${timeline}`,
+        
+      });
+
+      const whatsappMessage = [
+        'Hello, I would like a wholesale quote from Bhavita Textiles.',
+        '',
+        `Company: ${companyName}`,
+        `Contact: ${contactPerson}`,
+        `Email: ${email}`,
+        `Phone: ${phone}`,
+        `Designation: ${String(data.get('designation') ?? 'Not specified')}`,
+        `Country / City: ${String(data.get('country') ?? 'Not specified')}`,
+        '',
+        prefill.productName
+          ? `Product: ${prefill.productName}${
+              prefill.sku ? ` (SKU: ${prefill.sku})` : ''
+            }`
+          : `Product interest: ${
+              selectedCategories.join(', ') || 'General textile enquiry'
+            }`,
+        prefill.qty ? `Interested quantity: ${prefill.qty} pcs` : null,
+        `Estimated MOQ: ${moq} pcs per SKU`,
+        `Delivery timeline: ${timeline}`,
+        `Website: ${
+          String(data.get('website') ?? 'Not specified') || 'Not specified'
+        }`,
+        '',
+        `Brief: ${brief}`,
+        
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      window.open(
+        whatsappUrl(whatsappMessage),
+        '_blank',
+        'noopener,noreferrer',
+      );
+
+      setSubmitted(true);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Unable to submit enquiry',
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <main data-testid="contact-page" className="bg-bg text-ink">
+      <section data-testid="contact-hero" className="bg-brand text-brand-ink">
+        <Container className="py-24 sm:py-32">
+          <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand-ink/70">
+            Wholesale program · B2B
+          </p>
+
+          <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-[.95] sm:text-7xl">
+            Manufactured to your spec. Priced to your volume.
+          </h1>
+
+          <p className="mt-6 max-w-2xl text-base leading-8 text-brand-ink/75">
+            Share your brief with the mill. We will return with a clear quote,
+            practical timeline and the right next step.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3 text-xs">
+            <span className="rounded-full border border-brand-ink/25 px-4 py-2">
+              24-hour quote
+            </span>
+            <span className="rounded-full border border-brand-ink/25 px-4 py-2">
+              MOQ from 300 pcs
+            </span>
+          </div>
+        </Container>
+      </section>
+
+      <Container className="grid gap-16 py-20 sm:py-28 lg:grid-cols-[.45fr_.55fr]">
+        <section>
+          <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
+            Talk to the mill
+          </p>
+
+          <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
+            A considered beginning to a dependable supply partnership.
+          </h2>
+
+          <p className="mt-6 text-sm leading-7 text-ink-2">
+            Hotels, furnishing buyers, retailers and designers can use this form
+            to share quantities, specifications, packaging needs and delivery
+            expectations.
+          </p>
+
+          <div className="mt-12 divide-y divide-border">
+            <div
+              data-testid="contact-info-factory-address"
+              className="flex gap-4 border-t border-border py-6"
+            >
+              <MapPin className="mt-1 size-5 text-brand" />
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Factory address
+                </p>
+                <p className="mt-2 text-sm text-ink">Panipat, Haryana, India</p>
+              </div>
+            </div>
+
+            <div
+              data-testid="contact-info-phone-whatsapp"
+              className="flex gap-4 py-6"
+            >
+              <Phone className="mt-1 size-5 text-brand" />
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Phone / WhatsApp
+                </p>
+                <p className="mt-2 text-sm text-ink">+91 99999 99999</p>
+              </div>
+            </div>
+
+            <div data-testid="contact-info-email" className="flex gap-4 py-6">
+              <Mail className="mt-1 size-5 text-brand" />
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Email
+                </p>
+                <p className="mt-2 text-sm text-ink">hello@bhavitatextiles.com</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 py-6">
+              <Clock3 className="mt-1 size-5 text-brand" />
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
+                  Business hours
+                </p>
+                <p className="mt-2 text-sm text-ink">
+                  Mon–Sat · 10:00–18:00 IST
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          data-testid="contact-form"
+          className="rounded-lg border border-border bg-surface p-6 sm:p-10"
+        >
+          {submitted ? (
+            <div
+              data-testid="contact-form-success"
+              className="grid min-h-[560px] place-items-center text-center"
+            >
+              <div>
+                <span className="inline-flex size-16 items-center justify-center rounded-full bg-brand-soft text-brand">
+                  <CheckCircle2 className="size-8" />
+                </span>
+                <h2 className="mt-6 font-serif text-4xl text-ink">
+                  Your brief is with the mill.
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-ink-2">
+                  WhatsApp has opened with your enquiry. Our team will reply
+                  within 24 hours.
+                </p>
+                <a
+                  data-testid="contact-success-home"
+                  href="/"
+                  className="mt-7 inline-flex h-11 items-center rounded-full border border-border px-6 text-[11px] font-semibold uppercase tracking-[.18em] text-ink hover:border-brand"
+                >
+                  Return home
+                </a>
+              </div>
+            </div>
+          ) : (
+            <form
+              data-testid="bulk-enquiry-form"
+              onSubmit={submit}
+              className="grid gap-5"
+            >
+              {/* Product context banner */}
+              {prefill.productName ? (
+                <div
+                  data-testid="contact-product-context"
+                  className="flex items-start gap-3 rounded-lg border border-brand/25 bg-brand-soft/50 p-4"
+                >
+                  <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink">
+                    <Package size={16} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider2 text-brand">
+                      Enquiring about
+                    </p>
+                    <p className="mt-1 line-clamp-2 font-serif text-lg text-ink">
+                      {prefill.productName}
+                    </p>
+                    <p className="mt-1 text-xs text-ink-2">
+                      {prefill.sku ? `SKU ${prefill.sku}` : null}
+                      {prefill.qty
+                        ? `${prefill.sku ? ' · ' : ''}Interested qty ${
+                            prefill.qty
+                          } pcs`
+                        : null}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
+                  Company details
+                </p>
+                <h2 className="mt-3 font-serif text-3xl text-ink">
+                  Tell us who you are.
+                </h2>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                {[
+                  ['companyName', 'Company name', 'text', true],
+                  ['contactPerson', 'Contact person', 'text', true],
+                  ['designation', 'Designation', 'text', false],
+                  ['email', 'Email', 'email', true],
+                  ['phone', 'Phone with country code', 'tel', true],
+                  ['country', 'Country / City', 'text', false],
+                  ['website', 'Website', 'url', false],
+                ].map(([name, label, type, required]) => (
+                  <label
+                    key={String(name)}
+                    className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2"
+                  >
+                    {label}
+                    <input
+                      data-testid={`contact-form-${name}`}
+                      name={String(name)}
+                      required={Boolean(required)}
+                      type={String(type)}
+                      className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                    />
+                  </label>
+                ))}
+              </div>
+
+              {!prefill.productName ? (
+                <div className="mt-8 border-t border-border pt-8">
+                  <p className="font-serif text-2xl text-ink">
+                    Product interest
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {categories.map((category) => {
+                      const active = selectedCategories.includes(category);
+                      return (
+                        <button
+                          key={category}
+                          type="button"
+                          data-testid={`contact-category-${category
+                            .toLowerCase()
+                            .replaceAll(' ', '-')}`}
+                          aria-pressed={active}
+                          onClick={() => toggleCategory(category)}
+                          className={`rounded-full border px-4 py-2 text-xs transition-colors ${
+                            active
+                              ? 'border-brand bg-brand text-brand-ink'
+                              : 'border-border text-ink-2 hover:border-brand'
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
+
+              <label className="mt-6 grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                Estimated MOQ per SKU
+                <select
+                  data-testid="contact-form-moq"
+                  name="moq"
+                  required
+                  defaultValue={prefill.qty ? '500' : moqOptions[0]}
+                  className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
+                >
+                  {moqOptions.map((option) => (
+                    <option key={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+
+              <div className="border-t border-border pt-8">
+                <p className="font-serif text-2xl text-ink">
+                  Brief &amp; timeline
+                </p>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {timelines.map((timeline) => (
+                    <label
+                      key={timeline}
+                      className="flex min-h-12 items-center gap-3 rounded-md border border-border bg-bg px-4 text-sm text-ink"
+                    >
+                      <input
+                        data-testid={`contact-timeline-${timeline
+                          .toLowerCase()
+                          .replaceAll(' ', '-')}`}
+                        type="radio"
+                        name="timeline"
+                        value={timeline}
+                        defaultChecked={timeline === 'Flexible'}
+                        className="size-4 accent-brand"
+                      />
+                      {timeline}
+                    </label>
+                  ))}
+                </div>
+
+                <textarea
+                  data-testid="contact-form-message"
+                  name="message"
+                  required
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="Tell us about print styles, GSM, packaging or private-label needs…"
+                  className="mt-5 min-h-40 w-full rounded-md border border-border bg-bg p-4 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                />
+              </div>
+
+              <label className="flex items-center gap-3 text-sm text-ink">
+                <input
+                  data-testid="contact-form-consent"
+                  required
+                  type="checkbox"
+                  className="size-4 accent-brand"
+                />
+                I agree to receive quotes and updates from Bhavita Textiles.
+              </label>
+
+              <button
+                data-testid="contact-form-submit"
+                disabled={busy}
+                type="submit"
+                className="h-12 rounded-full bg-brand text-[11px] font-semibold uppercase tracking-[.18em] text-brand-ink transition-colors hover:bg-brand-2 disabled:opacity-60"
+              >
+                {busy
+                  ? 'Preparing WhatsApp…'
+                  : 'Send enquiry on WhatsApp'}
+              </button>
+
+              <p className="text-center text-xs text-ink-2">
+                Typical response within 24 hours.
+              </p>
+            </form>
+          )}
+        </section>
+      </Container>
+
+      <Container className="pb-24">
+        <div
+          data-testid="contact-map"
+          className="overflow-hidden rounded-lg border border-border bg-surface"
+        >
+          <iframe
+            title="Bhavita Textiles factory location"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d111235.59384228835!2d76.80822447722554!3d29.396270499959137!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390dda457afbe651%3A0x41d3f6feacaa74d4!2sPanipat%2C%20Haryana!5e0!3m2!1sen!2sin!4v1787605821564!5m2!1sen!2sin"
+            className="h-[360px] w-full border-0 sm:h-[440px]"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+          <div className="flex items-center gap-3 border-t border-border px-5 py-4">
+            <MapPin className="size-5 shrink-0 text-brand" />
+            <div>
+              <p className="text-sm font-semibold text-ink">Bhavita Textiles</p>
+              <p className="text-xs text-ink-2">Panipat, Haryana, India</p>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </main>
+  );
 }
 
-export default function BulkEnquiryPage() { return <Suspense fallback={<main data-testid="contact-page-loading" className="min-h-[60vh] bg-bg" />}><BulkEnquiryContent /></Suspense>; }
+// The default export wraps the inner component in a <Suspense> boundary so
+// that `useSearchParams()` no longer causes the "should be wrapped in a
+// suspense boundary" prerender bailout during `next build`.
+export default function BulkEnquiryPage() {
+  return (
+    <Suspense fallback={<main data-testid="contact-page-loading" className="min-h-[60vh] bg-bg" />}>
+      <BulkEnquiryContent />
+    </Suspense>
+  );
+}
