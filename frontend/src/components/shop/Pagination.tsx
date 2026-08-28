@@ -26,7 +26,7 @@ export default function Pagination({ page, totalPages, onChange, className }: Pa
   if (totalPages <= 1) return null;
   const items = pageWindow(page, totalPages);
   const baseBtn =
-    'inline-flex size-10 items-center justify-center rounded-full border border-border bg-surface text-[12px] font-semibold tracking-wider2 text-ink transition-colors hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border';
+    'inline-flex size-10 items-center justify-center border border-border bg-transparent text-[11px] tracking-wider2 text-ink transition-colors hover:border-gold-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border';
 
   return (
     <nav
@@ -59,7 +59,7 @@ export default function Pagination({ page, totalPages, onChange, className }: Pa
             aria-current={item === page ? 'page' : undefined}
             className={cn(
               baseBtn,
-              item === page && 'border-gold bg-gold text-white hover:border-gold',
+              item === page && 'border-ink bg-ink text-bg hover:border-ink',
             )}
           >
             {item}
