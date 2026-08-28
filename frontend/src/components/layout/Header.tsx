@@ -14,16 +14,20 @@ import SearchCommand from '@/components/layout/SearchCommand';
 
 function Count({ value, testid }: { value: number; testid: string }) {
   return value > 0 ? (
-    <span data-testid={testid} className="absolute -right-1 -top-1 min-w-4 bg-ink px-1 text-center text-[9px] leading-4 text-bg">
+    <span
+      data-testid={testid}
+      className="absolute -right-0.5 -top-0.5 inline-flex min-w-[16px] items-center justify-center rounded-full bg-terracotta px-1 text-[9px] leading-[14px] text-bg"
+    >
       {value > 99 ? '99+' : value}
     </span>
   ) : null;
 }
 
 const links = [
-  { href: '/', label: 'Home', testid: 'nav-home-link' },
+  { href: '/', label: 'Lookbook', testid: 'nav-home-link' },
   { href: '/shop', label: 'Catalogue', testid: 'nav-catalogue-link' },
-  { href: '/about', label: 'Our Heritage', testid: 'nav-about-link' },
+  { href: '/about', label: 'Our Craft', testid: 'nav-about-link' },
+  { href: '/wholesale', label: 'Wholesale', testid: 'nav-wholesale-link' },
   { href: '/contact', label: 'Bulk Enquiry', testid: 'nav-contact-link' },
 ];
 
@@ -45,39 +49,109 @@ export default function Header() {
 
   return (
     <>
-      <div data-testid="site-announcement" className="hidden border-b border-ink/10 bg-ink px-4 py-2 text-center text-[9px] uppercase tracking-[0.28em] text-bg sm:block">
-        Made in Panipat · Crafted for considered spaces
+      <div
+        data-testid="site-announcement"
+        className="hidden border-b border-border bg-ink py-2.5 text-center font-mono text-[9px] uppercase tracking-[0.32em] text-bg sm:block"
+      >
+        Est. Panipat 2017 · Woven for considered interiors · Trade &amp; Retail
       </div>
-      <header data-testid="site-header" className={`sticky top-0 z-40 border-b ${scrolled ? 'border-border/80 bg-bg/95 backdrop-blur-xl' : 'border-transparent bg-bg/90 backdrop-blur-md'}`}>
-        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center gap-4 px-5 sm:px-8 lg:h-[92px] lg:px-14">
-          <button type="button" data-testid="nav-mobile-hamburger" aria-label="Open menu" onClick={() => setMobileNavOpen(true)} className="inline-flex size-10 items-center justify-center text-ink lg:hidden">
-            <Menu size={20} strokeWidth={1.5} />
+
+      <header
+        data-testid="site-header"
+        className={`sticky top-0 z-40 transition-colors duration-300 ${
+          scrolled
+            ? 'border-b border-border bg-bg/92 backdrop-blur-xl'
+            : 'border-b border-transparent bg-bg/85 backdrop-blur-md'
+        }`}
+      >
+        <div className="mx-auto flex h-[76px] max-w-[1560px] items-center gap-4 px-5 sm:px-8 lg:h-[92px] lg:px-14">
+          <button
+            type="button"
+            data-testid="nav-mobile-hamburger"
+            aria-label="Open menu"
+            onClick={() => setMobileNavOpen(true)}
+            className="inline-flex size-10 items-center justify-center text-ink lg:hidden"
+          >
+            <Menu size={20} strokeWidth={1.4} />
           </button>
 
-          <Link href="/" data-testid="site-logo" aria-label="Bhavita Textiles — home" className="group flex min-w-0 items-center gap-3 lg:w-[250px]">
-            <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden bg-[#eee6d8] ring-1 ring-gold/50 sm:size-12">
-              <Image src="/icons/logo.jpg" alt="" width={96} height={96} priority className="h-[170%] w-[170%] max-w-none object-cover" />
+          <Link
+            href="/"
+            data-testid="nav-logo"
+            aria-label="Bhavita Textiles — home"
+            className="group flex min-w-0 items-center gap-3 lg:w-[280px]"
+          >
+            <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eee6d8] ring-1 ring-border sm:size-11">
+              <Image
+                src="/icons/logo.jpg"
+                alt=""
+                width={96}
+                height={96}
+                priority
+                className="h-[170%] w-[170%] max-w-none object-cover"
+              />
             </span>
             <span className="min-w-0 leading-none">
-              <span className="block truncate font-serif text-[22px] text-ink transition-colors group-hover:text-gold-2 sm:text-[25px]">Bhavita Textiles</span>
-              <span className="mt-2 hidden text-[9px] uppercase tracking-[0.3em] text-ink-2 sm:block">Panipat · Est. 2017</span>
+              <span className="block truncate font-serif text-[22px] font-normal tracking-tight text-ink transition-colors group-hover:text-terracotta sm:text-[24px]">
+                Bhavita Textiles
+              </span>
+              <span className="mt-1.5 hidden font-mono text-[9px] uppercase tracking-[0.32em] text-ink-3 sm:block">
+                Panipat · Est. MMXVII
+              </span>
             </span>
           </Link>
 
-          <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex" aria-label="Primary navigation">
+          <nav
+            className="hidden flex-1 items-center justify-center gap-8 lg:flex"
+            aria-label="Primary navigation"
+          >
             {links.map((link) => (
-              <Link key={link.href} href={link.href} data-testid={link.testid} className="group relative py-3 text-[10px] uppercase tracking-[0.2em] text-ink-2 hover:text-ink">
+              <Link
+                key={link.href}
+                href={link.href}
+                data-testid={link.testid}
+                className="group relative py-3 font-mono text-[10px] uppercase tracking-[0.24em] text-ink-2 transition-colors hover:text-ink"
+              >
                 {link.label}
-                <span aria-hidden className="absolute inset-x-0 bottom-1 h-px origin-left scale-x-0 bg-gold-2 transition-transform duration-300 group-hover:scale-x-100" />
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-terracotta transition-transform duration-300 group-hover:scale-x-100"
+                />
               </Link>
             ))}
           </nav>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
-            <button type="button" data-testid="nav-search-button" aria-label="Search catalogue" onClick={() => setSearchOpen(true)} className="inline-flex size-10 items-center justify-center text-ink-2 hover:text-gold-2"><Search size={19} strokeWidth={1.5} /></button>
-            <Link href="/account/wishlist" data-testid="nav-wishlist-link" aria-label="Wishlist" className="relative inline-flex size-10 items-center justify-center text-ink-2 hover:text-gold-2"><Heart size={19} strokeWidth={1.5} /><Count value={wishlistCount} testid="nav-wishlist-count" /></Link>
-            <Link href="/cart" data-testid="nav-cart-link" aria-label="Shopping cart" className="relative inline-flex size-10 items-center justify-center text-ink-2 hover:text-gold-2"><ShoppingBag size={19} strokeWidth={1.5} /><Count value={cartCount} testid="nav-cart-count" /></Link>
-            <span className="hidden border-l border-border pl-2 sm:inline-flex"><ThemeToggle /></span>
+            <button
+              type="button"
+              data-testid="nav-search-button"
+              aria-label="Search catalogue"
+              onClick={() => setSearchOpen(true)}
+              className="inline-flex size-10 items-center justify-center text-ink-2 transition-colors hover:text-terracotta"
+            >
+              <Search size={18} strokeWidth={1.4} />
+            </button>
+            <Link
+              href="/account/wishlist"
+              data-testid="nav-wishlist-link"
+              aria-label="Wishlist"
+              className="relative inline-flex size-10 items-center justify-center text-ink-2 transition-colors hover:text-terracotta"
+            >
+              <Heart size={18} strokeWidth={1.4} />
+              <Count value={wishlistCount} testid="nav-wishlist-count" />
+            </Link>
+            <Link
+              href="/cart"
+              data-testid="nav-cart-link"
+              aria-label="Shopping cart"
+              className="relative inline-flex size-10 items-center justify-center text-ink-2 transition-colors hover:text-terracotta"
+            >
+              <ShoppingBag size={18} strokeWidth={1.4} />
+              <Count value={cartCount} testid="nav-cart-count" />
+            </Link>
+            <span className="hidden border-l border-border pl-2 sm:inline-flex">
+              <ThemeToggle />
+            </span>
           </div>
         </div>
       </header>

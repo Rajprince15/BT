@@ -1,47 +1,88 @@
+/* --------------------------------------------------------------- */
+/* BHAVITA TEXTILES — Editorial Design Tokens                       */
+/* Warm ivory / parchment / charcoal palette derived from natural   */
+/* fibres. NEVER use pure #000 backgrounds or synthetic gradients.  */
+/* --------------------------------------------------------------- */
+
 :root {
-  --bg: #f8f3ea;
-  --surface: #f1e7d7;
-  --surface-2: #e3d2b6;
-  --ink: #2b241d;
-  --ink-2: #675846;
-  --gold: #b58a3b;
-  --gold-2: #8d6725;
-  --gold-soft: #ead9b8;
-  --navy: #173a46;
-  --border: #d8c6a7;
-  --success: #3f6f61;
-  --danger: #9b554a;
-  --brand: #b58a3b;
-  --brand-2: #8d6725;
-  --brand-soft: #ead9b8;
-  --brand-ink: #251e16;
-  --popover: #f8f3ea;
-  --popover-foreground: #2b241d;
-  --accent: #e3d2b6;
-  --accent-foreground: #2b241d;
-  --destructive: #9b5f55;
+  /* Paper & surface — warm ivory lookbook */
+  --bg: #fbf9f5;              /* Warm Ivory */
+  --surface: #f4f1ea;         /* Warm Linen */
+  --surface-2: #efece6;       /* Parchment */
+  --paper: #f8f5ef;           /* Card paper */
+
+  /* Ink hierarchy */
+  --ink: #1c1b18;             /* Charcoal */
+  --ink-2: #635c52;           /* Warm taupe */
+  --ink-3: #8c8275;           /* Muted taupe */
+
+  /* Editorial accents — restrained earthy */
+  --terracotta: #a8583b;
+  --olive: #5c614a;
+  --ochre: #c28b46;
+  --slate-indigo: #3d4756;
+
+  /* Legacy aliases mapped to the new palette so existing components
+     continue to read without breaking. `gold` maps to ochre.          */
+  --gold: #c28b46;
+  --gold-2: #a8583b;          /* Primary hover accent is now terracotta */
+  --gold-soft: rgba(194, 139, 70, 0.18);
+  --navy: #1c1b18;            /* Navy replaced by charcoal — no blue */
+  --brand: #c28b46;
+  --brand-2: #a8583b;
+  --brand-soft: rgba(194, 139, 70, 0.18);
+  --brand-ink: #1c1b18;
+
+  /* Borders */
+  --border: rgba(28, 27, 24, 0.12);
+  --border-strong: rgba(28, 27, 24, 0.22);
+
+  /* Semantic */
+  --success: #5c614a;
+  --danger: #a8583b;
+
+  /* Shadcn shim */
+  --popover: #fbf9f5;
+  --popover-foreground: #1c1b18;
+  --accent: #efece6;
+  --accent-foreground: #1c1b18;
+  --destructive: #a8583b;
 }
 
 [data-theme="dark"] {
-  --bg: #1b2528;
-  --surface: #243337;
-  --surface-2: #304247;
-  --ink: #f4eee2;
-  --ink-2: #c8bca9;
-  --gold: #d3a451;
-  --gold-2: #e0bd72;
-  --gold-soft: #54452a;
-  --navy: #d3a451;
-  --border: #4b4b42;
-  --success: #8eb9a7;
+  /* Evening lookbook — deep charcoal, warm cream */
+  --bg: #141311;              /* Deep charcoal */
+  --surface: #1a1916;         /* Warm black surface */
+  --surface-2: #262420;       /* Elevated paper */
+  --paper: #1f1e1a;
+
+  --ink: #f3efea;             /* Soft sand cream */
+  --ink-2: #c0b8ad;
+  --ink-3: #9e968b;
+
+  --terracotta: #c46b4c;
+  --olive: #787e63;
+  --ochre: #d9a05b;
+  --slate-indigo: #58657a;
+
+  --gold: #d9a05b;
+  --gold-2: #c46b4c;
+  --gold-soft: rgba(217, 160, 91, 0.22);
+  --navy: #f3efea;
+  --brand: #d9a05b;
+  --brand-2: #c46b4c;
+  --brand-soft: rgba(217, 160, 91, 0.22);
+  --brand-ink: #141311;
+
+  --border: rgba(243, 239, 234, 0.1);
+  --border-strong: rgba(243, 239, 234, 0.22);
+
+  --success: #98a582;
   --danger: #d28e83;
-  --brand: #d3a451;
-  --brand-2: #e0bd72;
-  --brand-soft: #54452a;
-  --brand-ink: #1b2528;
-  --popover: #243337;
-  --popover-foreground: #f4eee2;
-  --accent: #304247;
-  --accent-foreground: #f4eee2;
+
+  --popover: #1a1916;
+  --popover-foreground: #f3efea;
+  --accent: #262420;
+  --accent-foreground: #f3efea;
   --destructive: #d28e83;
 }
