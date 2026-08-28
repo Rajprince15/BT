@@ -1,53 +1,47 @@
 :root {
-  --bg: #f9f6f0;
-  --surface: #ffffff;
-  --surface-2: #f0ebe2;
-  --ink: #1c1a17;
-  --ink-2: #655f56;
-  --gold: #c59b27;
-  --gold-2: #9b7415;
-  --gold-soft: #eadcb5;
-  --navy: #1c1a17;
-  --border: #e6dfd5;
-  --success: #47735c;
-  --danger: #9a4e46;
-
-  /* Brand burgundy — used sparingly for the primary brand identity */
-  --brand: #7d2c28;
-  --brand-2: #5a1e1b;
-  --brand-soft: #f1dede;
-  --brand-ink: #ffffff; /* text on brand fills */
-
-  /* Popover / menu / dropdown surfaces (opaque) */
-  --popover: #ffffff;
-  --popover-foreground: #1c1a17;
-  --accent: #f0ebe2;
-  --accent-foreground: #1c1a17;
-  --destructive: #9a4e46;
+  --bg: #f8f3ea;
+  --surface: #f1e7d7;
+  --surface-2: #e3d2b6;
+  --ink: #2b241d;
+  --ink-2: #675846;
+  --gold: #b58a3b;
+  --gold-2: #8d6725;
+  --gold-soft: #ead9b8;
+  --navy: #173a46;
+  --border: #d8c6a7;
+  --success: #3f6f61;
+  --danger: #9b554a;
+  --brand: #b58a3b;
+  --brand-2: #8d6725;
+  --brand-soft: #ead9b8;
+  --brand-ink: #251e16;
+  --popover: #f8f3ea;
+  --popover-foreground: #2b241d;
+  --accent: #e3d2b6;
+  --accent-foreground: #2b241d;
+  --destructive: #9b5f55;
 }
 
 [data-theme="dark"] {
-  --bg: #181514;
-  --surface: #24201e;
-  --surface-2: #2f2a26;
-  --ink: #f5f1eb;
-  --ink-2: #c9c0b4;
-  --gold: #d7b341;
-  --gold-2: #efcf70;
-  --gold-soft: #554a2d;
-  --navy: #f5f1eb;
-  --border: #3a332d;
-
-  /* Softer burgundy for dark surfaces so it stays warm and readable */
-  --brand: #b45852;
-  --brand-2: #d1746e;
-  --brand-soft: #3a1f1d;
-  --brand-ink: #1c1a17;
-
-  /* Popover / menu / dropdown surfaces (opaque) */
-  --popover: #24201e;
-  --popover-foreground: #f5f1eb;
-  --accent: #2f2a26;
-  --accent-foreground: #f5f1eb;
-  --destructive: #d1746e;
+  --bg: #1b2528;
+  --surface: #243337;
+  --surface-2: #304247;
+  --ink: #f4eee2;
+  --ink-2: #c8bca9;
+  --gold: #d3a451;
+  --gold-2: #e0bd72;
+  --gold-soft: #54452a;
+  --navy: #d3a451;
+  --border: #4b4b42;
+  --success: #8eb9a7;
+  --danger: #d28e83;
+  --brand: #d3a451;
+  --brand-2: #e0bd72;
+  --brand-soft: #54452a;
+  --brand-ink: #1b2528;
+  --popover: #243337;
+  --popover-foreground: #f4eee2;
+  --accent: #304247;
+  --accent-foreground: #f4eee2;
+  --destructive: #d28e83;
 }
