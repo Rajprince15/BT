@@ -24,7 +24,7 @@ function Count({ value, testid }: { value: number; testid: string }) {
 }
 
 const links = [
-  { href: '/', label: 'Lookbook', testid: 'nav-home-link' },
+  { href: '/', label: 'home', testid: 'nav-home-link' },
   { href: '/shop', label: 'Catalogue', testid: 'nav-catalogue-link' },
   { href: '/about', label: 'Our Craft', testid: 'nav-about-link' },
   { href: '/wholesale', label: 'Wholesale', testid: 'nav-wholesale-link' },

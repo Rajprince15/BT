@@ -41,7 +41,7 @@ const config: Config = {
       letterSpacing: {
         tightest: '-0.04em',
         wider2: '0.08em',
-        lookbook: '0.28em',
+        home: '0.28em',
       },
       boxShadow: {
         paper: '0 20px 60px -40px rgba(28, 27, 24, 0.35)',

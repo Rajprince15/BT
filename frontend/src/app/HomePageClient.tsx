@@ -131,7 +131,7 @@ export default function HomePageClient() {
             <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface-2">
               <Image
                 src={images.hero}
-                alt="Bhavita Textiles editorial lookbook"
+                alt="Bhavita Textiles editorial home"
                 fill
                 priority
                 sizes="(min-width: 1024px) 42vw, 100vw"

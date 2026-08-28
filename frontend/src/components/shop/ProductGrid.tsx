@@ -16,7 +16,7 @@ interface ProductGridProps {
   emptyTitle?: string;
   emptyDescription?: string;
   emptyAction?: { label: string; onClick: () => void };
-  /** editorial → asymmetric lookbook rhythm, compact → dense uniform grid */
+  /** editorial → asymmetric home rhythm, compact → dense uniform grid */
   layout?: 'editorial' | 'compact';
   className?: string;
 }
@@ -24,7 +24,7 @@ interface ProductGridProps {
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * Asymmetric editorial lookbook rhythm.
+ * Asymmetric editorial home rhythm.
  * The pattern repeats every 6 tiles across a 12-col grid, producing an
  * intentionally art-directed cadence (large, standard, standard, wide-featured,
  * standard, standard) that varies with breakpoint.

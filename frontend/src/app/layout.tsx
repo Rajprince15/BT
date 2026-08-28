@@ -79,7 +79,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      lassName={`${serif.variable} ${sans.variable} ${mono.variable}`}
+      className={`${serif.variable} ${sans.variable} ${mono.variable}`}
     >
       <body className="bg-bg font-sans text-ink antialiased">
         <JsonLd id="ld-organization" data={organizationJsonLd()} />

@@ -5,7 +5,7 @@
 /* --------------------------------------------------------------- */
 
 :root {
-  /* Paper & surface — warm ivory lookbook */
+  /* Paper & surface — warm ivory home */
   --bg: #fbf9f5;              /* Warm Ivory */
   --surface: #f4f1ea;         /* Warm Linen */
   --surface-2: #efece6;       /* Parchment */
@@ -50,7 +50,7 @@
 }
 
 [data-theme="dark"] {
-  /* Evening lookbook — deep charcoal, warm cream */
+  /* Evening home — deep charcoal, warm cream */
   --bg: #141311;              /* Deep charcoal */
   --surface: #1a1916;         /* Warm black surface */
   --surface-2: #262420;       /* Elevated paper */

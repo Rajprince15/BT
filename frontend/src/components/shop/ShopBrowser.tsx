@@ -322,7 +322,7 @@ export default function ShopBrowser({
             <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface-2 md:aspect-[3/4] lg:aspect-[4/5]">
               <Image
                 src={EDITORIAL_HERO}
-                alt="Textile lookbook editorial"
+                alt="Textile home editorial"
                 fill
                 priority
                 sizes="(min-width: 1024px) 45vw, (min-width: 768px) 40vw, 90vw"
@@ -532,7 +532,7 @@ export default function ShopBrowser({
             )}
           >
             {isLoading
-              ? 'Curating the lookbook…'
+              ? 'Curating the home…'
               : total === 0
                 ? 'No pieces'
                 : `Plate ${(page - 1) * limit + 1}–${Math.min(page * limit, total)} · of ${total}`}

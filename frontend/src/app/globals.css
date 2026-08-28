@@ -186,7 +186,7 @@ h1, h2, h3, h4, h5, h6 {
 .hover-lift:hover { transform: translateY(-3px); }
 
 .tracking-wider2 { letter-spacing: 0.18em; }
-.tracking-lookbook { letter-spacing: 0.28em; }
+.tracking-home { letter-spacing: 0.28em; }
 
 :where(button, a, input, select, textarea):focus-visible {
   outline: 1px solid var(--terracotta);

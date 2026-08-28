@@ -1,11 +1,11 @@
 {
-  "project_title": "Bhavita Textiles - Luxury Editorial Textile Lookbook & B2B Catalogue Redesign",
-  "design_archetype": "Luxury Editorial Lookbook & Architectural Craft Magazine (Archetype 5: Luxury & Organic Craft)",
+  "project_title": "Bhavita Textiles - Luxury Editorial Textile home & B2B Catalogue Redesign",
+  "design_archetype": "Luxury Editorial home & Architectural Craft Magazine (Archetype 5: Luxury & Organic Craft)",
   "context_type": "e-commerce",
   "theme_strategy": {
     "default_mode": "light",
-    "light_mode_description": "Warm Ivory (#FBF9F5), Parchment (#EFECE6), Warm Linen (#F4F1EA), Charcoal (#1C1B18), Muted Earthy Accents. Soft, tactile, natural paper lookbook atmosphere.",
-    "dark_mode_description": "Evening Lookbook Atmosphere: Deep Charcoal (#181715), Warm Black (#0F0E0D), Soft Sand Cream (#F3EFEA), Muted Taupe (#9E968B). High-end evening showroom feel, never a harsh inverted blue/black."
+    "light_mode_description": "Warm Ivory (#FBF9F5), Parchment (#EFECE6), Warm Linen (#F4F1EA), Charcoal (#1C1B18), Muted Earthy Accents. Soft, tactile, natural paper home atmosphere.",
+    "dark_mode_description": "Evening home Atmosphere: Deep Charcoal (#181715), Warm Black (#0F0E0D), Soft Sand Cream (#F3EFEA), Muted Taupe (#9E968B). High-end evening showroom feel, never a harsh inverted blue/black."
   },
   "typography": {
     "font_family_serif": "Cormorant Garamond, Playfair Display, serif",
@@ -67,7 +67,7 @@
     ]
   },
   "layout_and_grids": {
-    "lookbook_layout_mode": "Asymmetric Editorial Lookbook with Story Spreads",
+    "home_layout_mode": "Asymmetric Editorial home with Story Spreads",
     "spread_patterns": [
       "Spread Pattern 1 (Alternating 2-Column Hero Story): Left 7 cols full-height hero lifestyle image, Right 5 cols editorial story description + floating product buy button + subtle story index 'N° 01 / CRAFT & HERITAGE'.",
       "Spread Pattern 2 (Single Featured Hero Banner): 12-column wide layout with negative space margin, large quiet image, caption offset on bottom left.",
@@ -86,13 +86,13 @@
     }
   },
   "whole_website_propagation": {
-    "header": "Minimal luxury navigation bar. Brand wordmark 'BHAVITA TEXTILES' in refined serif, links ('LOOKBOOK', 'COLLECTIONS', 'SWATCHES', 'WHOLESALE B2B', 'OUR CRAFT'), search bar trigger, wishlist count, cart drawer trigger with subtle count badge. Semi-solid paper blur background.",
-    "homepage": "Editorial Showroom Experience: Hero Carousel/Video Spread, Curated Lookbook Story Spreads, Weaving Heritage Section, Tiered B2B Textile Inquiries Banner, Natural Materials Accordion, Artisan Press & Testimonials.",
-    "catalogue_shop": "Asymmetric Editorial Lookbook layout. Refined horizontal filter triggers + expandable luxury drawer. Sort dropdown ('Curated Editorial', 'Newest Looms', 'Weight: Light to Heavy', 'B2B Wholesale Popularity'). Seamless view mode switcher (Editorial Spread vs Compact Grid).",
+    "header": "Minimal luxury navigation bar. Brand wordmark 'BHAVITA TEXTILES' in refined serif, links ('home', 'COLLECTIONS', 'SWATCHES', 'WHOLESALE B2B', 'OUR CRAFT'), search bar trigger, wishlist count, cart drawer trigger with subtle count badge. Semi-solid paper blur background.",
+    "homepage": "Editorial Showroom Experience: Hero Carousel/Video Spread, Curated home Story Spreads, Weaving Heritage Section, Tiered B2B Textile Inquiries Banner, Natural Materials Accordion, Artisan Press & Testimonials.",
+    "catalogue_shop": "Asymmetric Editorial home layout. Refined horizontal filter triggers + expandable luxury drawer. Sort dropdown ('Curated Editorial', 'Newest Looms', 'Weight: Light to Heavy', 'B2B Wholesale Popularity'). Seamless view mode switcher (Editorial Spread vs Compact Grid).",
     "product_detail_page": "Split Editorial Layout: Sticky high-resolution gallery grid on left, elegant details & technical specs panel on right (Fiber Composition, GSM, Thread Count, Roll Width, MOQ, Sample Swatch request modal, Tiered B2B pricing table, Download Spec Sheet PDF button).",
     "cart": "Slide-out luxury Cart Drawer + Full Cart Page with B2B MOQ progress bar ('Add 5 more meters for Tier 2 Wholesale Discount'), Swatch add-on trigger, estimated shipping date, inquiry note box.",
     "checkout": "Clean 3-step luxury checkout flow with order summary accordion, GST/Business Tax ID input for B2B wholesale orders, Razorpay/Card/Bank Transfer mock options.",
-    "wholesale_b2b": "Dedicated B2B Portal page with sample kit request, trade application form, customizable volume MOQ inquiry form, downloadable digital lookbook PDF catalog.",
+    "wholesale_b2b": "Dedicated B2B Portal page with sample kit request, trade application form, customizable volume MOQ inquiry form, downloadable digital home PDF catalog.",
     "wishlist": "Editorial moodboard view where saved textiles can be organized into 'Projects' or 'Client Rooms'.",
     "about_and_contact": "Story of handloom looms, artisan cooperatives in Varanasi & Maheshwar, organic cotton/linen sourcing, interactive contact form with inquiry type selector.",
     "footer": "Dark charcoal ground footer with large serif branding ('BHAVITA TEXTILES'), newsletter signup ('Join the Trade Journal'), sustainability certifications, copyright and navigation."
@@ -120,7 +120,7 @@
     "rule": "ALL interactive and key informational elements MUST contain a data-testid attribute in kebab-case.",
     "examples": [
       "data-testid=\"nav-logo\"",
-      "data-testid=\"nav-lookbook-link\"",
+      "data-testid=\"nav-home-link\"",
       "data-testid=\"nav-wholesale-link\"",
       "data-testid=\"theme-toggle-button\"",
       "data-testid=\"filter-trigger-button\"",
@@ -136,7 +136,7 @@
     ]
   },
   "instructions_to_main_agent": [
-    "Execute a complete visual transformation from standard boxy ecommerce into an Asymmetric Editorial Lookbook.",
+    "Execute a complete visual transformation from standard boxy ecommerce into an Asymmetric Editorial home.",
     "Import Cormorant Garamond / Playfair Display font via Google Fonts in index.css / layout.tsx if not already imported.",
     "Eliminate all heavy card outlines and shadows around product images. Product cards must be borderless paper-floating assets.",
     "Ensure dark mode uses deep charcoal (#141311) and warm parchment tones, NOT harsh dark blue or inverted white.",
