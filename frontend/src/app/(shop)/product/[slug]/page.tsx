@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
-  Award,
   Factory,
   Minus,
   Package,
   Plus,
   ShieldCheck,
+  ShoppingBag,
   Truck,
 } from 'lucide-react';
 
@@ -22,9 +23,9 @@ import PriceTag from '@/components/common/PriceTag';
 import AddToCartButton from '@/components/product/AddToCartButton';
 import WishlistButton from '@/components/product/WishlistButton';
 import RelatedProducts from '@/components/product/RelatedProducts';
-import ReviewList from '@/components/product/ReviewList';
 import JsonLdProduct from '@/components/product/JsonLdProduct';
 import ProductShare from '@/components/product/ProductShare';
+import { useCart } from '@/hooks/useCart';
 import { useCategories } from '@/hooks/useCategories';
 import { useProduct } from '@/hooks/useProduct';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -98,9 +99,13 @@ export default function ProductPage() {
   const params = useParams<{ slug: string }>();
   const { data: product, isLoading, isError } = useProduct(params.slug);
   const { data: categories } = useCategories();
+  const { data: cart } = useCart();
   const [variant, setVariant] = useState<ProductVariant>();
   const [quantity, setQuantity] = useState(1);
   const reduce = useReducedMotion();
+
+  const cartCount =
+    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   const price = variant?.price ?? product?.price ?? 0;
   const stock = variant?.stock ?? product?.stock ?? 0;
@@ -165,7 +170,7 @@ export default function ProductPage() {
   const specs: Array<[string, string | undefined]> = [
     ['Specification', product.specification],
     ['Size', product.sizeLabel],
-  
+
     ['Best for', product.buyerSegments?.join(' · ')],
   ];
   const hasSpecs = specs.some(([, value]) => Boolean(value));
@@ -217,16 +222,6 @@ export default function ProductPage() {
             >
               {product.name}
             </h1>
-
-            {product.ratingCount > 0 ? (
-              <div className="mt-3 flex items-center gap-2 text-xs text-ink-2">
-                <Award size={14} className="text-gold-2" />
-                <span className="font-semibold text-ink">
-                  {product.ratingAvg.toFixed(1)}
-                </span>
-                <span>· {product.ratingCount} reviews</span>
-              </div>
-            ) : null}
 
             <p className="mt-5 max-w-xl text-[15px] leading-7 text-ink-2">
               {product.shortDescription ?? product.description}
@@ -285,7 +280,7 @@ export default function ProductPage() {
                     </dd>
                   </div>
                 ) : null}
-                
+
               </dl>
             ) : null}
 
@@ -482,12 +477,6 @@ export default function ProductPage() {
           </div>
         </motion.section>
 
-        <ReviewList
-          productId={product.id}
-          rating={product.ratingAvg}
-          count={product.ratingCount}
-        />
-
         <RelatedProducts productId={product.id} />
       </Container>
 
@@ -505,17 +494,28 @@ export default function ProductPage() {
               className="mt-1"
             />
           </div>
-          <AddToCartButton
-            productId={product.id}
-            variantId={variant?.id}
-            quantity={quantity}
-            disabled={!canAddToCart}
-          />
+          <Link
+            href="/cart"
+            data-testid="product-go-to-cart"
+            aria-label={`Go to cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
+            className="relative inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold"
+          >
+            <span className="relative inline-flex">
+              <ShoppingBag className="size-4" />
+              {cartCount > 0 ? (
+                <span
+                  data-testid="product-go-to-cart-count"
+                  className="absolute -right-2 -top-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold leading-none text-ink ring-2 ring-ink"
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              ) : null}
+            </span>
+            Go to cart
+          </Link>
         </div>
       </div>
     </main>
   );
 }
-
-
 

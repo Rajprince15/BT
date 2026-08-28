@@ -9,6 +9,8 @@ import {
   Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from "next/image";
+
 
 import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
@@ -48,12 +50,14 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div>
-            <Link
-              href="/"
-              data-testid="footer-logo"
-              className="font-serif text-3xl tracking-[.18em]"
-            >
-              BHAVITA
+            <Link href="/" className="inline-block">
+              <Image
+                src="/icons/logo.svg"
+                alt="Bhavita Textiles"
+                width={200}
+                height={50}
+                className="h-auto w-[200px]"
+              />
             </Link>
 
             <p

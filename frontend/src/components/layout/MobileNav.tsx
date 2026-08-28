@@ -119,58 +119,7 @@ export default function MobileNav() {
             ))}
           </nav>
 
-          {/* Categories */}
-          <div className="px-3 py-2 sm:px-4">
-            <p className="px-2 pb-2 pt-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-2">
-              Shop by category
-            </p>
-            <Accordion type="multiple" className="px-0">
-              {top.map((parent) => {
-                const children = all
-                  .filter((c) => c.parentId === parent.id && c.isActive)
-                  .sort((a, b) => a.sortOrder - b.sortOrder);
-                return (
-                  <AccordionItem
-                    key={parent.id}
-                    value={parent.slug}
-                    className="border-b border-border last:border-b-0"
-                  >
-                    <AccordionTrigger
-                      data-testid={`mobile-nav-cat-${parent.slug}`}
-                      className="py-4 text-left font-serif text-[17px] text-ink hover:no-underline"
-                    >
-                      {parent.name}
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-4">
-                      <ul className="space-y-1 pl-2">
-                        <li>
-                          <Link
-                            href={`/shop/${parent.slug}`}
-                            onClick={close}
-                            className="inline-flex items-center gap-1.5 py-1.5 text-[13px] font-semibold uppercase tracking-[0.14em] text-brand hover:text-brand-2"
-                          >
-                            View all {parent.name}
-                            <ChevronRight size={13} />
-                          </Link>
-                        </li>
-                        {children.map((child) => (
-                          <li key={child.id}>
-                            <Link
-                              href={`/shop/${child.slug}`}
-                              onClick={close}
-                              className="block py-1.5 text-[13px] text-ink-2 transition-colors hover:text-ink"
-                            >
-                              {child.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
-          </div>
+          
 
           {/* Secondary Links */}
           <div className="mt-2 border-t border-border px-5 py-4 sm:px-6">

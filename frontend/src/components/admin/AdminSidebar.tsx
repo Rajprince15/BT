@@ -10,7 +10,6 @@ import {
   Users,
   Briefcase,
   Image as ImageIcon,
-  MessageSquare,
   History,
   Settings,
 } from 'lucide-react';
@@ -32,7 +31,6 @@ const LINKS: AdminLink[] = [
   { href: '/admin/customers', label: 'Customers', icon: <Users className="size-4" /> },
   { href: '/admin/wholesale-inquiries', label: 'Wholesale', icon: <Briefcase className="size-4" /> },
   { href: '/admin/banners', label: 'Banners', icon: <ImageIcon className="size-4" /> },
-  { href: '/admin/reviews', label: 'Reviews', icon: <MessageSquare className="size-4" /> },
   { href: '/admin/audit-logs', label: 'Audit', icon: <History className="size-4" />, superAdminOnly: true },
   { href: '/admin/settings', label: 'Settings', icon: <Settings className="size-4" />, superAdminOnly: true },
 ];
