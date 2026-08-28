@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, Menu, ShoppingBag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -80,30 +81,40 @@ export default function Header() {
             <Menu size={22} />
           </button>
 
-          {/* Logo lockup — allowed to shrink/truncate on very small screens */}
+          {/* Logo lockup */}
           <Link
             href="/"
             data-testid="site-logo"
             aria-label="Bhavita Textiles — home"
             className="group flex min-w-0 flex-1 items-center gap-2.5 sm:gap-4 lg:flex-none"
           >
-            <div className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink shadow-sm ring-1 ring-brand-2/40 transition-transform duration-500 group-hover:scale-[1.04] sm:size-11 lg:size-[52px]">
-              <span className="font-serif text-[19px] leading-none sm:text-[22px] lg:text-[26px]">
-                B
-              </span>
+            {/* Real logo mark inside a cream disc — visible in both themes */}
+            <span
+              className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f5efe0] shadow-sm ring-1 ring-gold/40 transition-transform duration-500 group-hover:scale-[1.04] sm:size-12 lg:size-[56px]"
+              aria-hidden
+            >
+              <Image
+                src="/icons/logo.jpg"
+                alt=""
+                width={112}
+                height={112}
+                priority
+                className="h-[170%] w-[170%] max-w-none object-cover object-center"
+              />
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 rounded-full opacity-0 ring-2 ring-gold transition-opacity duration-300 group-hover:opacity-100"
               />
-            </div>
-            <div className="flex min-w-0 flex-col justify-center leading-none">
-              <span className="truncate font-serif text-[18px] font-medium tracking-[0.01em] text-ink transition-colors group-hover:text-brand sm:text-[22px] lg:text-[26px]">
+            </span>
+
+            <span className="flex min-w-0 flex-col justify-center leading-none">
+              <span className="truncate font-serif text-[18px] font-medium tracking-[0.01em] text-ink transition-colors group-hover:text-gold sm:text-[22px] lg:text-[26px]">
                 Bhavita Textiles
               </span>
-              <span className="mt-1.5 hidden text-[9px] font-medium uppercase tracking-[0.32em] text-ink-2 sm:block sm:text-[10px]">
+              <span className="mt-1.5 hidden text-[9px] font-medium uppercase tracking-[0.32em] text-gold sm:block sm:text-[10px]">
                 Panipat · Est. 2017
               </span>
-            </div>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -116,12 +127,12 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 data-testid={link.testid}
-                className="group relative whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-ink-2 transition-colors hover:text-ink xl:px-5"
+                className="group relative whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-ink-2 transition-colors hover:text-gold xl:px-5"
               >
                 {link.label}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute inset-x-4 -bottom-0.5 h-px origin-center scale-x-0 bg-gradient-to-r from-transparent via-brand to-transparent transition-transform duration-300 group-hover:scale-x-100"
+                  className="pointer-events-none absolute inset-x-4 -bottom-0.5 h-px origin-center scale-x-0 bg-gradient-to-r from-transparent via-gold to-transparent transition-transform duration-300 group-hover:scale-x-100"
                 />
               </Link>
             ))}
@@ -133,7 +144,7 @@ export default function Header() {
               href="/account/wishlist"
               data-testid="nav-wishlist-link"
               aria-label="Wishlist"
-              className="relative inline-flex size-10 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand sm:size-11"
+              className="relative inline-flex size-10 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-gold sm:size-11"
             >
               <Heart size={20} />
               <CountPill value={wishlistCount} testid="nav-wishlist-count" />
@@ -143,7 +154,7 @@ export default function Header() {
               href="/cart"
               data-testid="nav-cart-link"
               aria-label="Shopping cart"
-              className="relative inline-flex size-10 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-brand sm:size-11"
+              className="relative inline-flex size-10 items-center justify-center rounded-full text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-surface-2 hover:text-gold sm:size-11"
             >
               <ShoppingBag size={20} />
               <CountPill value={cartCount} testid="nav-cart-count" />

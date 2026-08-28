@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, Heart, X, ChevronRight, Home, LayoutGrid } from 'lucide-react';
 import {
   Sheet,
@@ -64,11 +65,22 @@ export default function MobileNav() {
         {/* Header */}
         <SheetHeader className="flex flex-row items-center justify-between gap-3 border-b border-border bg-surface px-5 py-4 sm:px-6 sm:py-5">
           <SheetTitle className="flex min-w-0 items-center gap-3">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink font-serif text-lg">
-              B
+            <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f5efe0] shadow-sm ring-1 ring-gold/40">
+              <Image
+                src="/icons/logo.jpg"
+                alt=""
+                width={96}
+                height={96}
+                className="h-[170%] w-[170%] max-w-none object-cover object-center"
+              />
             </span>
-            <span className="truncate font-serif text-lg tracking-[0.02em] text-ink sm:text-xl">
-              Bhavita Textiles
+            <span className="flex flex-col min-w-0 leading-none">
+              <span className="truncate font-serif text-lg tracking-[0.02em] text-ink sm:text-xl">
+                Bhavita Textiles
+              </span>
+              <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.28em] text-gold">
+                Panipat · Est. 2017
+              </span>
             </span>
           </SheetTitle>
           <button
@@ -76,7 +88,7 @@ export default function MobileNav() {
             data-testid="mobile-nav-close"
             onClick={close}
             aria-label="Close menu"
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-brand hover:text-brand"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-gold hover:text-gold"
           >
             <X size={18} />
           </button>
@@ -89,7 +101,7 @@ export default function MobileNav() {
               href="/cart"
               onClick={close}
               data-testid="mobile-nav-cart"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-bg transition-colors hover:bg-brand"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-bg transition-colors hover:bg-gold hover:text-ink"
             >
               <ShoppingBag size={14} /> Cart
             </Link>
@@ -97,7 +109,7 @@ export default function MobileNav() {
               href="/account/wishlist"
               onClick={close}
               data-testid="mobile-nav-wishlist"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink transition-colors hover:border-brand hover:text-brand"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink transition-colors hover:border-gold hover:bg-gold-soft hover:text-gold"
             >
               <Heart size={14} /> Wishlist
             </Link>
@@ -111,15 +123,13 @@ export default function MobileNav() {
                 href={link.href}
                 onClick={close}
                 data-testid={`mobile-nav-primary-${link.label.toLowerCase()}`}
-                className="flex items-center gap-3 rounded-lg px-3 py-3 font-serif text-[17px] text-ink transition-colors hover:bg-surface-2 hover:text-brand"
+                className="flex items-center gap-3 rounded-lg px-3 py-3 font-serif text-[17px] text-ink transition-colors hover:bg-surface-2 hover:text-gold"
               >
-                <span className="text-brand">{link.icon}</span>
+                <span className="text-gold">{link.icon}</span>
                 {link.label}
               </Link>
             ))}
           </nav>
-
-          
 
           {/* Secondary Links */}
           <div className="mt-2 border-t border-border px-5 py-4 sm:px-6">
@@ -135,7 +145,7 @@ export default function MobileNav() {
                     data-testid={`mobile-nav-link-${link.label
                       .toLowerCase()
                       .replace(/\s+/g, '-')}`}
-                    className="flex items-center justify-between py-2.5 text-[13px] text-ink transition-colors hover:text-brand"
+                    className="flex items-center justify-between py-2.5 text-[13px] text-ink transition-colors hover:text-gold"
                   >
                     {link.label}
                     <ChevronRight size={14} className="text-ink-2" />

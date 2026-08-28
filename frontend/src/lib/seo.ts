@@ -62,7 +62,7 @@ export function organizationJsonLd() {
     '@type': 'Organization',
     name: SITE_NAME,
     url: SITE_URL,
-    logo: `${SITE_URL}/icons/logo.svg`,
+    logo: `${SITE_URL}/icons/logo.jpg`,
     description: 'Handcrafted luxury textiles and home furnishings from India.',
     sameAs: [
       'https://instagram.com/bhavitatextiles',

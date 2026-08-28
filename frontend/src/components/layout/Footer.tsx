@@ -9,19 +9,15 @@ import {
   Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from "next/image";
-
+import Image from 'next/image';
 
 import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 export default function Footer() {
-  const columns = [
+  const columns: Array<{ name: string; links: [string, string][] }> = [
     {
       name: 'Shop',
-      links: [
-        ['/shop', 'Full catalogue'],
-       
-      ],
+      links: [['/shop', 'Full catalogue']],
     },
     {
       name: 'Company',
@@ -44,28 +40,43 @@ export default function Footer() {
   return (
     <footer
       data-testid="footer"
-      className="border-t border-bg/10 bg-ink text-bg"
+      className="border-t border-border bg-surface text-ink"
     >
       <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
-          <div>
-            <Link href="/" className="inline-block">
-              <Image
-                src="/icons/logo.svg"
-                alt="Bhavita Textiles"
-                width={200}
-                height={50}
-                className="h-auto w-[200px]"
-              />
+          <div className="lg:col-span-2">
+            <Link
+              href="/"
+              data-testid="footer-logo"
+              aria-label="Bhavita Textiles — home"
+              className="group inline-flex items-center gap-4"
+            >
+              <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f5efe0] shadow-sm ring-1 ring-gold/40 transition-transform duration-500 group-hover:scale-[1.04]">
+                <Image
+                  src="/icons/logo.jpg"
+                  alt=""
+                  width={140}
+                  height={140}
+                  className="h-[170%] w-[170%] max-w-none object-cover object-center"
+                />
+              </span>
+              <span className="flex flex-col leading-none">
+                <span className="font-serif text-[24px] font-medium tracking-[0.01em] text-ink transition-colors group-hover:text-gold">
+                  Bhavita Textiles
+                </span>
+                <span className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.32em] text-gold">
+                  Panipat · Est. 2017
+                </span>
+              </span>
             </Link>
 
             <p
               data-testid="footer-description"
-              className="mt-5 text-sm leading-7 text-bg/60"
+              className="mt-6 max-w-md text-sm leading-7 text-ink-2"
             >
-              A family-run textile manufacturer from Panipat, built for
-              hospitality and export buyers.
+              A family-run textile manufacturer from Panipat, weaving heritage
+              and craft for hospitality and export buyers across the world.
             </p>
 
             <div className="mt-6 flex gap-2">
@@ -73,7 +84,7 @@ export default function Footer() {
                 data-testid="footer-social-instagram"
                 href="#"
                 aria-label="Instagram"
-                className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-gold hover:bg-gold-soft hover:text-gold"
               >
                 <Instagram className="size-4" />
               </a>
@@ -82,7 +93,7 @@ export default function Footer() {
                 data-testid="footer-social-linkedin"
                 href="#"
                 aria-label="LinkedIn"
-                className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-gold hover:bg-gold-soft hover:text-gold"
               >
                 <Linkedin className="size-4" />
               </a>
@@ -91,7 +102,7 @@ export default function Footer() {
                 data-testid="footer-social-youtube"
                 href="#"
                 aria-label="YouTube"
-                className="inline-flex size-9 items-center justify-center rounded-full border border-bg/20 text-bg/70 transition-colors hover:border-gold hover:text-gold"
+                className="inline-flex size-9 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-gold hover:bg-gold-soft hover:text-gold"
               >
                 <Youtube className="size-4" />
               </a>
@@ -108,12 +119,12 @@ export default function Footer() {
                 {column.name}
               </p>
 
-              <div className="mt-5 grid gap-3 text-sm text-bg/70">
+              <div className="mt-5 grid gap-3 text-sm text-ink-2">
                 {column.links.map(([href, label]) => (
                   <Link
                     key={href}
                     href={href}
-                    className="transition-colors hover:text-gold"
+                    className="w-fit transition-colors hover:text-gold"
                   >
                     {label}
                   </Link>
@@ -128,9 +139,9 @@ export default function Footer() {
               Contact
             </p>
 
-            <div className="mt-5 grid gap-4 text-sm leading-6 text-bg/70">
+            <div className="mt-5 grid gap-4 text-sm leading-6 text-ink-2">
               <span className="flex gap-3">
-                <MapPin className="mt-1 size-4 shrink-0" />
+                <MapPin className="mt-1 size-4 shrink-0 text-gold" />
                 Panipat, Haryana, India
               </span>
 
@@ -139,7 +150,7 @@ export default function Footer() {
                 href="mailto:hello@bhavitatextiles.com"
                 className="flex gap-3 transition-colors hover:text-gold"
               >
-                <Mail className="mt-1 size-4 shrink-0" />
+                <Mail className="mt-1 size-4 shrink-0 text-gold" />
                 hello@bhavitatextiles.com
               </a>
 
@@ -148,7 +159,7 @@ export default function Footer() {
                 href={whatsappUrl()}
                 className="flex gap-3 transition-colors hover:text-gold"
               >
-                <ArrowUpRight className="mt-1 size-4 shrink-0" />
+                <ArrowUpRight className="mt-1 size-4 shrink-0 text-gold" />
                 WhatsApp enquiry
               </a>
             </div>
@@ -157,16 +168,16 @@ export default function Footer() {
       </div>
 
       {/* Copyright */}
-      <div className="border-t border-bg/10">
+      <div className="border-t border-border bg-surface-2">
         <div
           data-testid="footer-copyright"
-          className="mx-auto flex max-w-[1440px] flex-col gap-2 px-6 py-6 text-xs text-bg/50 sm:px-10 md:flex-row md:justify-between lg:px-16"
+          className="mx-auto flex max-w-[1440px] flex-col gap-2 px-6 py-6 text-xs text-ink-2 sm:px-10 md:flex-row md:justify-between lg:px-16"
         >
           <span>
             © {new Date().getFullYear()} Bhavita Textiles · Panipat, India
           </span>
 
-          <span>Direct from the loom · Export ready</span>
+          <span className="text-gold">Direct from the loom · Export ready</span>
         </div>
       </div>
     </footer>
