@@ -1,53 +1,61 @@
 :root {
-  --bg: #f9f6f0;
+  --bg: #faf8f5;
   --surface: #ffffff;
-  --surface-2: #f0ebe2;
-  --ink: #1c1a17;
-  --ink-2: #655f56;
+  --surface-2: #f3efea;
+  --ink: #1e1a18;
+  --ink-2: #5a524c;
   --gold: #c59b27;
-  --gold-2: #9b7415;
-  --gold-soft: #eadcb5;
-  --navy: #1c1a17;
-  --border: #e6dfd5;
-  --success: #47735c;
-  --danger: #9a4e46;
+  --gold-2: #9e7a1b;
+  --gold-soft: #fbf5e8;
+  --navy: #1e1a18;
+  --border: #e5dfda;
+  --success: #2c7455;
+  --danger: #a74e44;
+  --brand: #1b3b2b;
+  --brand-2: #143022;
+  --brand-soft: #e8f0ec;
+  --brand-ink: #ffffff;
 
-  /* Brand burgundy — used sparingly for the primary brand identity */
-  --brand: #7d2c28;
-  --brand-2: #5a1e1b;
-  --brand-soft: #f1dede;
-  --brand-ink: #ffffff; /* text on brand fills */
+  --whatsapp-green: #25d366;
+  --whatsapp-green-hover: #1ebe57;
 
-  /* Popover / menu / dropdown surfaces (opaque) */
+  /* subtle grid */
+  --grid-line: rgba(229, 223, 218, 0.22);
+
   --popover: #ffffff;
-  --popover-foreground: #1c1a17;
-  --accent: #f0ebe2;
-  --accent-foreground: #1c1a17;
-  --destructive: #9a4e46;
+  --popover-foreground: #1e1a18;
+  --accent: #f3efea;
+  --accent-foreground: #1e1a18;
+  --destructive: #a74e44;
 }
 
 [data-theme="dark"] {
-  --bg: #181514;
-  --surface: #24201e;
-  --surface-2: #2f2a26;
-  --ink: #f5f1eb;
-  --ink-2: #c9c0b4;
-  --gold: #d7b341;
-  --gold-2: #efcf70;
-  --gold-soft: #554a2d;
-  --navy: #f5f1eb;
-  --border: #3a332d;
+  --bg: #12100e;
+  --surface: #1a1715;
+  --surface-2: #24201d;
+  --ink: #f5f2ee;
+  --ink-2: #a8a099;
+  --gold: #d4ac3a;
+  --gold-2: #e2bd52;
+  --gold-soft: #2a2318;
+  --navy: #f5f2ee;
+  --border: #2e2824;
+  --success: #6db18b;
+  --danger: #e08b7f;
+  --brand: #2d5a42;
+  --brand-2: #397354;
+  --brand-soft: #192820;
+  --brand-ink: #f5f2ee;
 
-  /* Softer burgundy for dark surfaces so it stays warm and readable */
-  --brand: #b45852;
-  --brand-2: #d1746e;
-  --brand-soft: #3a1f1d;
-  --brand-ink: #1c1a17;
+  --whatsapp-green: #25d366;
+  --whatsapp-green-hover: #1ebe57;
 
-  /* Popover / menu / dropdown surfaces (opaque) */
-  --popover: #24201e;
-  --popover-foreground: #f5f1eb;
-  --accent: #2f2a26;
-  --accent-foreground: #f5f1eb;
-  --destructive: #d1746e;
+  /* subtle dark grid */
+  --grid-line: rgba(46, 40, 36, 0.28);
+
+  --popover: #1a1715;
+  --popover-foreground: #f5f2ee;
+  --accent: #24201d;
+  --accent-foreground: #f5f2ee;
+  --destructive: #e08b7f;
 }

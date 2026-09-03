@@ -48,24 +48,25 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.985 0.008 90);
+  --foreground: oklch(0.22 0.02 65);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.29 0.06 155);
+  --card-foreground: oklch(0.22 0.02 65);
+  --primary: oklch(0.28 0.06 155);
   --primary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.96 0.01 150);
-  --muted-foreground: oklch(0.48 0.02 150);
-  --border: oklch(0.88 0.015 150);
+  --muted: oklch(0.95 0.012 90);
+  --muted-foreground: oklch(0.48 0.025 70);
+  --border: #e5dfda;
   --input: var(--border);
-  --ring: var(--navy);
-  --radius: 0.75rem;
+  --ring: var(--gold);
+  --radius: 0.65rem;
 }
 
 * { @apply border-border outline-ring/50; }
 
 html {
   scroll-behavior: smooth;
+  background: var(--bg);
   transition: background-color 280ms ease, color 280ms ease;
 }
 
@@ -75,57 +76,66 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-html, body { overflow-x: hidden; max-width: 100%; }
 
-/* Responsiveness safety nets — stop any single element from forcing the page
-   wider than the viewport (the classic "content cut off on the right" bug). */
+html, body { overflow-x: hidden; max-width: 100%; }
 img, video, iframe, canvas, svg, object, embed { max-width: 100%; }
 img, video { height: auto; }
 h1, h2, h3, h4, h5, h6, p, a, span, li, dd, dt { overflow-wrap: break-word; }
 
-html { font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, sans-serif; }
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif; letter-spacing: -0.03em; }
+html { font-family: var(--font-sans), 'Manrope', system-ui, sans-serif; }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -0.03em;
+}
 ::selection { background: var(--gold-soft); color: var(--ink); }
-
 .text-balance { text-wrap: balance; }
-.grain { position: relative; }
-.grain::after { content: ''; pointer-events: none; position: absolute; inset: 0; opacity: .08; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); mix-blend-mode: multiply; }
 
-/* --------------------------------------------------------------- */
-/* Animations                                                       */
-/* --------------------------------------------------------------- */
+/* One restrained grid treatment anchors the visual system across every route. */
+.page-grid {
+  min-height: 60vh;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.page-grid > .bg-bg,
+.page-grid > main.bg-bg,
+.page-grid > div.bg-bg { background-color: transparent !important; }
+/* Keep the reference's generous breathing room, but remove oversized voids. */
+.page-grid .py-20 { padding-block: 3.5rem; }
+.page-grid .py-24 { padding-block: 4rem; }
+.page-grid .py-28 { padding-block: 4.5rem; }
+.page-grid .py-32 { padding-block: 5rem; }
+
+@media (min-width: 640px) {
+  .page-grid .sm\:py-24 { padding-block: 4.5rem; }
+  .page-grid .sm\:py-28 { padding-block: 5rem; }
+  .page-grid .sm\:py-32 { padding-block: 5.5rem; }
+}
 
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
 @keyframes scale-in {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
-
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes grain-drift {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(1%, -1%, 0); }
 }
 
 .fade-up { animation: fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .fade-in { animation: fade-in 400ms ease-out both; }
 .scale-in { animation: scale-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .slide-up { animation: slide-up 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-/* Staggered reveal: apply .stagger to a parent then children get delays */
 .stagger > * { animation: fade-up 600ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .stagger > *:nth-child(1) { animation-delay: 40ms; }
 .stagger > *:nth-child(2) { animation-delay: 120ms; }
@@ -133,32 +143,26 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), 'Cormorant Garamond', G
 .stagger > *:nth-child(4) { animation-delay: 280ms; }
 .stagger > *:nth-child(5) { animation-delay: 360ms; }
 .stagger > *:nth-child(6) { animation-delay: 440ms; }
-.stagger > *:nth-child(7) { animation-delay: 520ms; }
-.stagger > *:nth-child(8) { animation-delay: 600ms; }
 
-/* Subtle interactive helpers */
 .hover-lift {
   transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hover-lift:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 40px -18px rgba(43, 37, 35, 0.28);
+  box-shadow: 0 18px 40px -18px rgba(30, 26, 24, 0.28);
 }
-
 .tracking-wider2 { letter-spacing: 0.18em; }
 
-/* Focus ring — accessible and consistent */
 :where(button, a, input, select, textarea):focus-visible {
   outline: 2px solid var(--gold);
-  outline-offset: 2px;
+  outline-offset: 3px;
   border-radius: 6px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .fade-up, .fade-in, .scale-in, .slide-up,
-  .stagger > * { animation: none !important; }
+  .fade-up, .fade-in, .scale-in, .slide-up, .stagger > * { animation: none !important; }
   .hover-lift:hover { transform: none; box-shadow: none; }
   *, *::before, *::after {
     transition-duration: 0.01ms !important;

@@ -15,13 +15,11 @@ import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 export default function Footer() {
   const columns: Array<{ name: string; links: [string, string][] }> = [
-    {
-      name: 'Shop',
-      links: [['/shop', 'Full catalogue']],
-    },
+    
     {
       name: 'Company',
       links: [
+        ['/shop', 'Full catalogue'],
         ['/about', 'Our story'],
         ['/wholesale', 'Wholesale'],
         ['/contact', 'Contact'],

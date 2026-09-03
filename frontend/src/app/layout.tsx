@@ -60,7 +60,9 @@ export const metadata: Metadata = {
     description:
       'Royal · Classic · Timeless. Premium luxury textiles & home furnishings.',
   },
-  icons: { icon: '/favicon.ico' },
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -79,7 +81,6 @@ export default function RootLayout({
         <JsonLd id="ld-website" data={websiteJsonLd()} />
 
         <Providers>
-          {/* Skip to content */}
           <a
             href="#main-content"
             className="sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:not-sr-only focus:rounded-md focus:bg-ink focus:px-3 focus:py-1.5 focus:text-bg"
@@ -87,10 +88,9 @@ export default function RootLayout({
             Skip to content
           </a>
 
-          {/* Sticky Header (takes natural document flow — no spacer needed) */}
           <Header />
 
-          <main id="main-content" className="min-h-[60vh]">
+          <main id="main-content" className="page-grid min-h-[60vh]">
             {children}
           </main>
 

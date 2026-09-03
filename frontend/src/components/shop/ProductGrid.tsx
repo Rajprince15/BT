@@ -2,7 +2,9 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 
-import ProductCard, { ProductCardSkeleton } from '@/components/product/ProductCard';
+import ProductCard, {
+  ProductCardSkeleton,
+} from '@/components/product/ProductCard';
 import EmptyState from '@/components/common/EmptyState';
 import type { Product } from '@/types/Product';
 
@@ -23,7 +25,8 @@ export default function ProductGrid({
   loading,
   skeletonCount = 8,
   emptyTitle = 'No pieces match your filters',
-  emptyDescription = 'Try widening the price range or removing a colour / size to see more.',
+  emptyDescription =
+    'Try widening the price range or removing a colour / size to see more.',
   emptyAction,
 }: ProductGridProps) {
   const reduce = useReducedMotion();
@@ -32,10 +35,10 @@ export default function ProductGrid({
     return (
       <div
         data-testid="product-grid-loading"
-        className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-10"
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-8"
       >
-        {Array.from({ length: skeletonCount }).map((_, i) => (
-          <ProductCardSkeleton key={i} />
+        {Array.from({ length: skeletonCount }).map((_, index) => (
+          <ProductCardSkeleton key={index} />
         ))}
       </div>
     );
@@ -58,19 +61,28 @@ export default function ProductGrid({
       animate="show"
       variants={{
         hidden: {},
-        show: { transition: { staggerChildren: reduce ? 0 : 0.06 } },
+        show: {
+          transition: { staggerChildren: reduce ? 0 : 0.06 },
+        },
       }}
-      className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-10"
+      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-8"
     >
-      {items.map((p) => (
+      {items.map((product) => (
         <motion.div
-          key={p.id}
+          key={product.id}
           variants={{
             hidden: { opacity: 0, y: reduce ? 0 : 18 },
-            show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+            show: {
+              opacity: 1,
+              y: 0,
+              transition: {
+                duration: 0.5,
+                ease: EASE,
+              },
+            },
           }}
         >
-          <ProductCard product={p} />
+          <ProductCard product={product} />
         </motion.div>
       ))}
     </motion.div>

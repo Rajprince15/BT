@@ -25,6 +25,7 @@ import WishlistButton from '@/components/product/WishlistButton';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import JsonLdProduct from '@/components/product/JsonLdProduct';
 import ProductShare from '@/components/product/ProductShare';
+import OrderSampleButton from '@/components/product/OrderSampleButton';
 import { useCart } from '@/hooks/useCart';
 import { useCategories } from '@/hooks/useCategories';
 import { useProduct } from '@/hooks/useProduct';
@@ -41,12 +42,23 @@ function buildBreadcrumbs(
   categoryId?: number,
 ): BreadcrumbItem[] {
   const crumbs: BreadcrumbItem[] = [
-    { label: 'Home', href: '/' },
-    { label: 'Shop', href: '/shop' },
+    {
+      label: 'Home',
+      href: '/',
+    },
+    {
+      label: 'Shop',
+      href: '/shop',
+    },
   ];
 
   if (!categories || !categoryId) {
-    if (productName) crumbs.push({ label: productName });
+    if (productName) {
+      crumbs.push({
+        label: productName,
+      });
+    }
+
     return crumbs;
   }
 
@@ -62,9 +74,14 @@ function buildBreadcrumbs(
   }
 
   let path = '/shop';
+
   for (const category of lineage.reverse()) {
     path += `/${category.slug}`;
-    crumbs.push({ label: category.name, href: path });
+
+    crumbs.push({
+      label: category.name,
+      href: path,
+    });
   }
 
   if (productName) {
@@ -97,9 +114,14 @@ const TRUST_ITEMS = [
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
-  const { data: product, isLoading, isError } = useProduct(params.slug);
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useProduct(params.slug);
   const { data: categories } = useCategories();
   const { data: cart } = useCart();
+
   const [variant, setVariant] = useState<ProductVariant>();
   const [quantity, setQuantity] = useState(1);
   const reduce = useReducedMotion();
@@ -135,6 +157,7 @@ export default function ProductPage() {
         <Container className="py-10">
           <div className="grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
             <Skeleton className="aspect-square w-full rounded-lg" />
+
             <div className="space-y-5">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-10 w-3/4" />
@@ -156,7 +179,10 @@ export default function ProductPage() {
         data-testid="product-error"
         className="mx-auto min-h-[50vh] max-w-3xl px-6 py-24 text-center"
       >
-        <h1 className="font-serif text-4xl text-ink">This piece has moved on</h1>
+        <h1 className="font-serif text-4xl text-ink">
+          This piece has moved on
+        </h1>
+
         <p className="mt-3 text-ink-2">
           Return to the atelier to discover another story.
         </p>
@@ -165,50 +191,60 @@ export default function ProductPage() {
   }
 
   const canAddToCart =
-    Boolean(stock) && (product.variants.length === 0 || Boolean(variant));
+    Boolean(stock) &&
+    (product.variants.length === 0 || Boolean(variant));
 
   const specs: Array<[string, string | undefined]> = [
     ['Specification', product.specification],
     ['Size', product.sizeLabel],
-
     ['Best for', product.buyerSegments?.join(' · ')],
   ];
+
   const hasSpecs = specs.some(([, value]) => Boolean(value));
 
   return (
-    <main data-testid="product-detail-page" className="bg-bg pb-28 md:pb-0">
+    <main
+      data-testid="product-detail-page"
+      className="bg-bg pb-28 md:pb-0"
+    >
       <JsonLdProduct product={product} />
 
       <Container className="py-4">
         <Breadcrumbs items={breadcrumbs} />
 
         <div className="grid gap-8 py-6 md:grid-cols-2 md:gap-8 md:py-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)] lg:gap-16 lg:py-12">
-          {/* ---------- Gallery ---------- */}
           <motion.div
             initial={{ opacity: 0, y: reduce ? 0 : 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE }}
           >
-            <Gallery images={product.images} name={product.name} />
+            <Gallery
+              images={product.images}
+              name={product.name}
+            />
           </motion.div>
 
-          {/* ---------- Buy panel ---------- */}
           <motion.div
             initial={{ opacity: 0, y: reduce ? 0 : 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.55, ease: EASE }}
+            transition={{
+              delay: 0.1,
+              duration: 0.55,
+              ease: EASE,
+            }}
             className="flex flex-col"
           >
-            {/* SKU + badges */}
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand">
                 {product.sku}
               </p>
+
               {product.bestSeller ? (
                 <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider2 text-brand">
                   Bestseller
                 </span>
               ) : null}
+
               {product.newArrival ? (
                 <span className="rounded-full border border-gold/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider2 text-gold-2">
                   New
@@ -227,13 +263,11 @@ export default function ProductPage() {
               {product.shortDescription ?? product.description}
             </p>
 
-            {/* Divider */}
             <span
               aria-hidden
               className="mt-7 block h-px w-full bg-border"
             />
 
-            {/* Price block */}
             <div className="mt-6">
               <PriceBlock
                 price={price}
@@ -254,7 +288,6 @@ export default function ProductPage() {
                 : 'Currently unavailable'}
             </p>
 
-            {/* Key specs summary — B2B priority */}
             {(product.sizeLabel || product.specification) ? (
               <dl
                 data-testid="product-key-specs"
@@ -265,26 +298,27 @@ export default function ProductPage() {
                     <dt className="text-[10px] font-semibold uppercase tracking-wider2 text-ink-2">
                       Material
                     </dt>
+
                     <dd className="mt-1 text-sm font-semibold text-ink">
                       {product.specification}
                     </dd>
                   </div>
                 ) : null}
+
                 {product.sizeLabel ? (
                   <div>
                     <dt className="text-[10px] font-semibold uppercase tracking-wider2 text-ink-2">
                       Size
                     </dt>
+
                     <dd className="mt-1 text-sm font-semibold text-ink">
                       {product.sizeLabel}
                     </dd>
                   </div>
                 ) : null}
-
               </dl>
             ) : null}
 
-            {/* Variant picker */}
             <div className="mt-7">
               <VariantPicker
                 variants={product.variants}
@@ -293,7 +327,6 @@ export default function ProductPage() {
               />
             </div>
 
-                        {/* Quantity + primary CTA */}
             <div className="mt-7 space-y-3">
               <p className="text-[10px] font-semibold uppercase tracking-wider2 text-ink-2">
                 Quantity
@@ -331,7 +364,9 @@ export default function ProductPage() {
 
                       const parsed = Number.parseInt(raw, 10);
 
-                      if (Number.isNaN(parsed)) return;
+                      if (Number.isNaN(parsed)) {
+                        return;
+                      }
 
                       const clamped = Math.max(
                         1,
@@ -385,7 +420,12 @@ export default function ProductPage() {
               </p>
             </div>
 
-            {/* Bulk enquiry accent CTA */}
+            <OrderSampleButton
+              product={product}
+              variant={variant}
+              quantity={quantity}
+            />
+
             <a
               href={`/wholesale?product=${encodeURIComponent(
                 product.slug,
@@ -393,21 +433,27 @@ export default function ProductPage() {
                 product.name,
               )}&sku=${encodeURIComponent(product.sku)}&qty=${quantity}`}
               data-testid="product-bulk-cta"
-              className="group mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-brand/25 bg-brand-soft/40 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand transition-all duration-300 hover:border-brand/60 hover:bg-brand-soft"
+              className="group mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-brand/25 bg-brand-soft/40 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:bg-brand-soft"
             >
               <Package size={14} />
               Request bulk quote for this product
             </a>
 
-            {/* Trust row */}
             <div className="mt-8 grid gap-4 border-t border-border pt-6 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
               {TRUST_ITEMS.map(({ Icon, title, body }) => (
-                <div key={title} className="flex items-start gap-3">
+                <div
+                  key={title}
+                  className="flex items-start gap-3"
+                >
                   <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
                     <Icon size={16} />
                   </span>
+
                   <div>
-                    <p className="text-xs font-semibold text-ink">{title}</p>
+                    <p className="text-xs font-semibold text-ink">
+                      {title}
+                    </p>
+
                     <p className="mt-0.5 text-xs leading-5 text-ink-2">
                       {body}
                     </p>
@@ -420,7 +466,6 @@ export default function ProductPage() {
           </motion.div>
         </div>
 
-        {/* ---------- Long description + specs ---------- */}
         <motion.section
           initial={{ opacity: 0, y: reduce ? 0 : 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -433,11 +478,17 @@ export default function ProductPage() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand">
                 The details
               </p>
+
               <h2 className="mt-3 font-serif text-3xl text-ink sm:text-4xl">
                 Craft &amp; construction
               </h2>
-              <span aria-hidden className="mt-5 block h-px w-14 bg-gold" />
+
+              <span
+                aria-hidden
+                className="mt-5 block h-px w-14 bg-gold"
+              />
             </div>
+
             <div>
               <p
                 data-testid="product-description"
@@ -460,6 +511,7 @@ export default function ProductPage() {
                         <dt className="text-[10px] font-semibold uppercase tracking-wider2 text-gold-2">
                           {label}
                         </dt>
+
                         <dd
                           data-testid={`product-spec-${label
                             .toLowerCase()
@@ -480,13 +532,13 @@ export default function ProductPage() {
         <RelatedProducts productId={product.id} />
       </Container>
 
-      {/* Mobile sticky purchase bar */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg/95 px-4 py-3 shadow-[0_-8px_24px_-16px_rgba(0,0,0,0.25)] backdrop-blur-md md:hidden">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="truncate text-[11px] font-semibold uppercase tracking-wider2 text-brand">
               {product.name}
             </p>
+
             <PriceTag
               price={price}
               salePrice={variant ? undefined : product.salePrice}
@@ -494,14 +546,18 @@ export default function ProductPage() {
               className="mt-1"
             />
           </div>
+
           <Link
             href="/cart"
             data-testid="product-go-to-cart"
-            aria-label={`Go to cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
+            aria-label={`Go to cart, ${cartCount} ${
+              cartCount === 1 ? 'item' : 'items'
+            }`}
             className="relative inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold"
           >
             <span className="relative inline-flex">
               <ShoppingBag className="size-4" />
+
               {cartCount > 0 ? (
                 <span
                   data-testid="product-go-to-cart-count"
@@ -511,6 +567,7 @@ export default function ProductPage() {
                 </span>
               ) : null}
             </span>
+
             Go to cart
           </Link>
         </div>
@@ -518,4 +575,3 @@ export default function ProductPage() {
     </main>
   );
 }
-
