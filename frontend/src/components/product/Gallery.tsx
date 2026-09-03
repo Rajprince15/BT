@@ -1,8 +1,15 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
-import { ChevronLeft, ChevronRight, Maximize2, X } from 'lucide-react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+} from 'react';
+import { ChevronLeft, ChevronRight, Maximize2, X, ZoomIn } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -34,12 +41,18 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
   const [active, setActive] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
+  const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     setActive(0);
     setFailed(false);
   }, [galleryImages]);
+
+  useEffect(() => {
+    if (!expanded) setZoomed(false);
+  }, [expanded]);
 
   const current = galleryImages[active] ?? galleryImages[0];
   const source = failed ? FALLBACK : current?.imageUrl ?? FALLBACK;
@@ -49,6 +62,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
     if (total <= 1) return;
     setActive(((next % total) + total) % total);
     setFailed(false);
+    setZoomed(false);
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -76,8 +90,16 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
     touchStartX.current = null;
   };
 
+  const handleZoomMove = (event: MouseEvent<HTMLDivElement>) => {
+    if (!zoomed) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    setOrigin({ x, y });
+  };
+
   return (
-    <div data-testid="product-gallery" className="grid gap-3 sm:grid-cols-[76px_1fr]">
+    <div data-testid="product-gallery" className="mx-auto grid w-full max-w-[460px] gap-3 sm:grid-cols-[64px_1fr] lg:mx-0">
       <div className="order-2 flex gap-2 overflow-x-auto sm:order-1 sm:flex-col">
         {galleryImages.map((image, index) => (
           <button
@@ -110,55 +132,62 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
         data-testid="product-gallery-expand"
         aria-label={`Open fullscreen gallery for ${name}`}
         onClick={() => setExpanded(true)}
-        className="group relative order-1 aspect-[4/5] overflow-hidden rounded-md bg-surface-2 sm:order-2"
+        className="group relative order-1 aspect-[3/4] overflow-hidden rounded-md bg-surface-2 sm:order-2"
       >
         <Image
           src={source}
           alt={current?.altText ?? name}
           fill
           priority
-          sizes="(min-width: 1024px) 45vw, 100vw"
+          sizes="(min-width: 1024px) 400px, 90vw"
           onError={() => setFailed(true)}
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         />
         <span
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-ink/20 via-transparent to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-ink/25 via-transparent to-transparent"
         />
-        <span className="absolute right-4 top-4 inline-flex size-11 items-center justify-center rounded-full bg-bg/85 text-ink shadow-sm backdrop-blur-sm transition-colors group-hover:text-gold">
-          <Maximize2 className="size-4" />
+        <span className="absolute right-3 top-3 inline-flex h-8 items-center gap-1.5 rounded-full bg-bg/85 px-3 text-[10px] font-semibold uppercase tracking-wider2 text-ink shadow-sm backdrop-blur-sm transition-colors group-hover:text-gold">
+          <Maximize2 className="size-3.5" />
+          Click to zoom
         </span>
       </button>
 
       <Dialog open={expanded} onOpenChange={setExpanded}>
         <DialogContent
           showCloseButton={false}
-          className="max-h-[calc(100vh-1rem)] w-[min(96vw,1100px)] overflow-hidden border border-border bg-bg p-0 text-ink shadow-2xl"
+          className="!w-[min(96vw,1080px)] !max-w-[min(96vw,1080px)] max-h-[calc(100vh-1.5rem)] overflow-hidden border border-border bg-bg !p-0 text-ink shadow-2xl sm:!max-w-[1080px]"
           data-testid="product-gallery-modal"
           onKeyDown={onKeyDown}
         >
           <DialogHeader className="sr-only">
             <DialogTitle>{name}</DialogTitle>
-            <DialogDescription>Fullscreen product gallery</DialogDescription>
+            <DialogDescription>Fullscreen product gallery with zoom</DialogDescription>
           </DialogHeader>
 
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <p className="text-[11px] font-semibold uppercase tracking-wider2 text-gold">
               {active + 1} / {galleryImages.length}
             </p>
-            <button
-              type="button"
-              data-testid="product-gallery-modal-close"
-              aria-label="Close fullscreen gallery"
-              onClick={() => setExpanded(false)}
-              className="inline-flex size-10 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-gold hover:text-gold"
-            >
-              <X className="size-4" />
-            </button>
+            <div className="flex items-center gap-3">
+              <span className="hidden items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider2 text-ink-2 sm:inline-flex">
+                <ZoomIn className="size-3.5" />
+                {zoomed ? 'Click image to zoom out' : 'Click image to zoom in'}
+              </span>
+              <button
+                type="button"
+                data-testid="product-gallery-modal-close"
+                aria-label="Close fullscreen gallery"
+                onClick={() => setExpanded(false)}
+                className="inline-flex size-10 items-center justify-center rounded-full border border-border text-ink-2 transition-colors hover:border-gold hover:text-gold"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
           </div>
 
           <div
-            className="relative flex min-h-[60vh] items-center justify-center bg-[var(--surface-2)] px-4 py-6"
+            className="relative flex min-h-[58vh] items-center justify-center overflow-hidden bg-[var(--surface-2)] px-4 py-6"
             onTouchStart={(event) => onTouchStart(event.touches[0]?.clientX ?? 0)}
             onTouchEnd={(event) => onTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
           >
@@ -167,19 +196,32 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
               data-testid="product-gallery-modal-prev"
               aria-label="Previous image"
               onClick={() => move(active - 1)}
-              className="absolute left-3 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-bg/90 text-ink transition-colors hover:border-gold hover:text-gold"
+              className="absolute left-3 top-1/2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-bg/90 text-ink shadow-sm transition-colors hover:border-gold hover:text-gold"
             >
               <ChevronLeft className="size-5" />
             </button>
 
-            <div className="relative h-[62vh] w-full max-w-5xl">
+            <div
+              data-testid="product-gallery-zoom-area"
+              onClick={() => setZoomed((value) => !value)}
+              onMouseMove={handleZoomMove}
+              onMouseLeave={() => setZoomed(false)}
+              className={cn(
+                'relative h-[64vh] w-full max-w-3xl overflow-hidden',
+                zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in',
+              )}
+            >
               <Image
                 src={source}
                 alt={current?.altText ?? name}
                 fill
-                sizes="(min-width: 1024px) 80vw, 100vw"
+                sizes="(min-width: 1024px) 70vw, 100vw"
                 onError={() => setFailed(true)}
-                className="object-contain"
+                style={{
+                  transformOrigin: `${origin.x}% ${origin.y}%`,
+                  transform: zoomed ? 'scale(2.4)' : 'scale(1)',
+                }}
+                className="object-contain transition-transform duration-200 ease-out"
               />
             </div>
 
@@ -188,14 +230,14 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
               data-testid="product-gallery-modal-next"
               aria-label="Next image"
               onClick={() => move(active + 1)}
-              className="absolute right-3 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-bg/90 text-ink transition-colors hover:border-gold hover:text-gold"
+              className="absolute right-3 top-1/2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-bg/90 text-ink shadow-sm transition-colors hover:border-gold hover:text-gold"
             >
               <ChevronRight className="size-5" />
             </button>
           </div>
 
           <div className="border-t border-border px-4 py-4">
-            <div className="flex gap-2 overflow-x-auto">
+            <div className="flex justify-center gap-2 overflow-x-auto">
               {galleryImages.map((image, index) => (
                 <button
                   key={`modal-${image.id ?? image.imageUrl}-${index}`}

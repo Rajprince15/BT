@@ -78,7 +78,7 @@ export default function WishlistPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gold">
               Saved pieces
             </p>
-            <h1 className="mt-2 font-serif text-4xl tracking-tight text-ink sm:text-5xl">
+            <h1 className="mt-2 font-serif text-2xl tracking-tight text-ink sm:text-3xl">
               Wishlist
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-6 text-ink-2">

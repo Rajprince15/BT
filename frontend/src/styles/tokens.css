@@ -20,7 +20,7 @@
   --whatsapp-green-hover: #1ebe57;
 
   /* subtle grid */
-  --grid-line: rgba(229, 223, 218, 0.22);
+  --grid-line: rgba(210, 200, 190, 0.05);
 
   --popover: #ffffff;
   --popover-foreground: #1e1a18;
@@ -51,7 +51,7 @@
   --whatsapp-green-hover: #1ebe57;
 
   /* subtle dark grid */
-  --grid-line: rgba(46, 40, 36, 0.28);
+  --grid-line: rgba(120, 110, 100, 0.01);
 
   --popover: #1a1715;
   --popover-foreground: #f5f2ee;

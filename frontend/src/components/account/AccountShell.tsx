@@ -31,7 +31,9 @@ export default function AccountShell({ children }: { children: React.ReactNode }
   if (env.NEXT_PUBLIC_USE_MOCKS) {
     return (
       <main data-testid="local-account-content" className="bg-bg">
-        {children}
+        <div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 md:py-10 lg:px-8">
+          {children}
+        </div>
       </main>
     );
   }
@@ -84,3 +86,4 @@ export default function AccountShell({ children }: { children: React.ReactNode }
     </main>
   );
 }
+

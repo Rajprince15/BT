@@ -17,7 +17,7 @@ import {
 import ProductImageFallback from '@/components/common/ProductImageFallback';
 
 const images = {
-  hero: 'https://bhavitatextiles.lovable.app/assets/hero-loom-factory-yO9x27s4.jpg',
+  hero: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=80',
   bedsheets:
     'https://bhavitatextiles.lovable.app/assets/product-bedsheet-styled-B1ras_mT.jpg',
   blankets:
@@ -138,7 +138,7 @@ export default function HomePageClient() {
       {/* ─────────────────────────── HERO ─────────────────────────── */}
       <section
         data-testid="hero-section"
-        className="grain relative isolate min-h-[560px] overflow-hidden bg-ink text-bg lg:min-h-[calc(100vh-80px)]"
+        className="grain relative isolate min-h-[440px] overflow-hidden bg-neutral-900 text-white lg:min-h-[520px]"
       >
         <Image
           src={images.hero}
@@ -146,21 +146,20 @@ export default function HomePageClient() {
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-55"
+          className="object-cover"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent" />
 
-        <div className="relative z-10 mx-auto flex min-h-[560px] max-w-7xl items-center px-4 py-16 sm:px-6 lg:min-h-[calc(100vh-80px)] lg:px-8">
-          <div className="max-w-3xl">
+        <div className="relative z-10 mx-auto flex min-h-[440px] max-w-7xl items-center px-4 py-12 pb-24 sm:px-6 lg:min-h-[520px] lg:px-8">
+          <div className="max-w-2xl">
             <motion.p
               variants={fadeUp}
               initial="hidden"
               animate="show"
               custom={0}
               data-testid="hero-eyebrow"
-              className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-ink/40 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold backdrop-blur-sm"
+              className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-black/40 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold backdrop-blur-sm"
             >
               <span className="size-1.5 rounded-full bg-gold" />
               Panipat · India&apos;s Home-Textile Capital
@@ -172,7 +171,7 @@ export default function HomePageClient() {
               animate="show"
               custom={1}
               data-testid="hero-heading"
-              className="text-balance mt-6 font-serif text-4xl leading-[0.96] sm:text-5xl lg:text-6xl"
+              className="text-balance mt-5 font-serif text-3xl leading-[1] text-white sm:text-4xl lg:text-5xl"
             >
               Eight years of loom-woven trust, shipped in bulk.
             </motion.h1>
@@ -183,7 +182,7 @@ export default function HomePageClient() {
               animate="show"
               custom={2}
               data-testid="hero-description"
-              className="mt-6 max-w-xl text-sm leading-6 text-bg/80 sm:text-[15px]"
+              className="mt-4 max-w-xl text-sm leading-6 text-white/85 sm:text-[15px]"
             >
               Bhavita Textiles is a family-run manufacturer of printed
               bedsheets, mink blankets and floor mats — built for hospitality
@@ -196,12 +195,12 @@ export default function HomePageClient() {
               initial="hidden"
               animate="show"
               custom={3}
-              className="mt-7 flex flex-wrap gap-3"
+              className="mt-6 flex flex-wrap gap-3"
             >
               <Link
                 href="/shop"
                 data-testid="hero-catalogue-link"
-                className="group inline-flex items-center gap-3 rounded-full bg-brand px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-ink shadow-lg shadow-brand/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-2 hover:shadow-xl"
+                className="group inline-flex items-center gap-3 rounded-full bg-brand px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-ink shadow-lg shadow-black/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-2 hover:shadow-xl"
               >
                 View Full Catalogue
                 <ArrowRight
@@ -213,7 +212,7 @@ export default function HomePageClient() {
               <Link
                 href="/wholesale"
                 data-testid="hero-quote-link"
-                className="inline-flex items-center rounded-full border border-bg/30 bg-ink/20 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] backdrop-blur-sm transition-colors duration-300 hover:border-gold hover:text-gold"
+                className="inline-flex items-center rounded-full border border-white/40 bg-black/25 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-sm transition-colors duration-300 hover:border-gold hover:text-gold"
               >
                 Request Bulk Quote
               </Link>
@@ -225,13 +224,13 @@ export default function HomePageClient() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: reduce ? 0 : 0.6, duration: 0.6 }}
-          className="absolute bottom-0 left-0 right-0 z-10 border-t border-bg/15 bg-ink/40 backdrop-blur-md"
+          className="absolute inset-x-0 bottom-5 z-10 sm:bottom-7"
         >
-          <div className="mx-auto flex max-w-7xl flex-wrap gap-x-8 gap-y-3 px-4 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-bg/75 sm:px-6 lg:px-8">
-            <span data-testid="hero-stat-years">8+ Years in Panipat</span>
-            <span data-testid="hero-stat-skus">30+ Active SKUs</span>
-            <span data-testid="hero-stat-capacity">50K Units / month</span>
-            <span data-testid="hero-stat-markets">12+ Export markets</span>
+          <div className="mx-auto flex max-w-7xl flex-wrap gap-2 px-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/90 sm:gap-3 sm:px-6 lg:px-8">
+            <span data-testid="hero-stat-years" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">8+ Years in Panipat</span>
+            <span data-testid="hero-stat-skus" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">30+ Active SKUs</span>
+            <span data-testid="hero-stat-capacity" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">50K Units / month</span>
+            <span data-testid="hero-stat-markets" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">12+ Export markets</span>
           </div>
         </motion.div>
       </section>
@@ -247,7 +246,7 @@ export default function HomePageClient() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="max-w-2xl"
+            className="mx-auto max-w-2xl text-center"
           >
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand">
@@ -256,13 +255,13 @@ export default function HomePageClient() {
 
               <h2
                 data-testid="featured-heading"
-                className="mt-2 max-w-2xl text-balance font-serif text-2xl leading-[1.08] sm:text-[2rem]"
+                className="mt-2 mx-auto max-w-2xl text-balance font-serif text-2xl leading-[1.08] sm:text-[2rem]"
               >
                 Categories our buyers reorder every season.
               </h2>
             </div>
 
-            <p className="mt-3 max-w-xl font-serif text-lg italic leading-6 text-ink-2">
+            <p className="mt-3 mx-auto max-w-xl font-serif text-lg italic leading-6 text-ink-2">
               A curated look at three of our seven categories. Full technical
               specifications, GSM options and MOQ tiers are in the catalogue.
             </p>
@@ -280,7 +279,7 @@ export default function HomePageClient() {
                 },
               },
             }}
-            className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+            className="mx-auto mt-8 grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-3"
           >
             {range.map((item, index) => (
               <motion.div
@@ -382,7 +381,7 @@ export default function HomePageClient() {
         data-testid="plant-scale-section"
         className="bg-surface-2 py-14 sm:py-20"
       >
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:items-center lg:gap-12 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-12 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: reduce ? 0 : 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -448,7 +447,7 @@ export default function HomePageClient() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7, ease: EASE }}
-            className="relative aspect-[1.3] overflow-hidden rounded-md"
+            className="relative aspect-[4/3] w-full overflow-hidden rounded-md lg:ml-auto lg:max-w-[440px]"
           >
             <Image
               src={images.factory}
@@ -587,3 +586,4 @@ export default function HomePageClient() {
     </div>
   );
 }
+

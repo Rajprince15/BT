@@ -65,6 +65,7 @@
 * { @apply border-border outline-ring/50; }
 
 html {
+  font-size: 90%;
   scroll-behavior: smooth;
   background: var(--bg);
   transition: background-color 280ms ease, color 280ms ease;
@@ -97,12 +98,16 @@ h1, h2, h3, h4, h5, h6 {
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-size: 8px 8px;
 }
 
 .page-grid > .bg-bg,
 .page-grid > main.bg-bg,
 .page-grid > div.bg-bg { background-color: transparent !important; }
+
+/* Reveal the grid behind the home page's light sections */
+[data-testid="home-page"],
+[data-testid="home-page"] > section.bg-bg { background-color: transparent !important; }
 /* Keep the reference's generous breathing room, but remove oversized voids. */
 .page-grid .py-20 { padding-block: 3.5rem; }
 .page-grid .py-24 { padding-block: 4rem; }

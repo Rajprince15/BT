@@ -212,7 +212,7 @@ export default function ProductPage() {
       <Container className="py-4">
         <Breadcrumbs items={breadcrumbs} />
 
-        <div className="grid gap-8 py-6 md:grid-cols-2 md:gap-8 md:py-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,.95fr)] lg:gap-16 lg:py-12">
+        <div className="grid gap-8 py-6 md:grid-cols-2 md:gap-8 md:py-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(400px,1.2fr)] lg:gap-12 lg:py-8">
           <motion.div
             initial={{ opacity: 0, y: reduce ? 0 : 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -254,7 +254,7 @@ export default function ProductPage() {
 
             <h1
               data-testid="product-title"
-              className="mt-3 font-serif text-3xl leading-tight text-ink sm:text-4xl lg:text-5xl"
+              className="mt-3 font-serif text-2xl leading-tight text-ink sm:text-3xl lg:text-4xl"
             >
               {product.name}
             </h1>
@@ -319,7 +319,7 @@ export default function ProductPage() {
               </dl>
             ) : null}
 
-            <div className="mt-7">
+            <div className="mt-6">
               <VariantPicker
                 variants={product.variants}
                 selected={variant}
@@ -327,7 +327,7 @@ export default function ProductPage() {
               />
             </div>
 
-            <div className="mt-7 space-y-3">
+            <div className="mt-6 space-y-3">
               <p className="text-[10px] font-semibold uppercase tracking-wider2 text-ink-2">
                 Quantity
               </p>
@@ -439,7 +439,7 @@ export default function ProductPage() {
               Request bulk quote for this product
             </a>
 
-            <div className="mt-8 grid gap-4 border-t border-border pt-6 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
+            <div className="mt-6 grid gap-4 border-t border-border pt-5 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
               {TRUST_ITEMS.map(({ Icon, title, body }) => (
                 <div
                   key={title}
@@ -471,7 +471,7 @@ export default function ProductPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.55, ease: EASE }}
-          className="mt-10 border-t border-border pt-12"
+          className="mt-8 border-t border-border pt-10"
         >
           <div className="grid gap-10 lg:grid-cols-[.4fr_.6fr] lg:gap-16">
             <div>
@@ -479,7 +479,7 @@ export default function ProductPage() {
                 The details
               </p>
 
-              <h2 className="mt-3 font-serif text-3xl text-ink sm:text-4xl">
+              <h2 className="mt-3 font-serif text-2xl text-ink sm:text-3xl">
                 Craft &amp; construction
               </h2>
 
@@ -575,3 +575,4 @@ export default function ProductPage() {
     </main>
   );
 }
+
