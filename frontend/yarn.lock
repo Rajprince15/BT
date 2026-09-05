@@ -147,7 +147,7 @@
 
 "@babel/helper-optimise-call-expression@^7.29.7":
   version "7.29.7"
-  resolved "https://registry.yarnpkg.com/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.29.7.tgz#77b0b5b94f1997fa9d6e3125f445227b1faf9d85"
+  resolved "https://registry.yarnpkg.com/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.29.7.tgz#77b0b5b94f1979fa9d6e3125f445227b1faf9d85"
   integrity sha512-+kmGVjcT9RGYzoDwdwEqEvGgKe3BYq+O1iGzjFubaNgZHwYHP6lsF2Yghf4kEuv9BV7tYDZ913aBW9am6YKong==
   dependencies:
     "@babel/types" "^7.29.7"

@@ -62,7 +62,6 @@ function ProductCard({
       data-product-slug={product.slug}
       className={cn(
         'group relative flex flex-col',
-        'transition-transform duration-300',
         className,
       )}
     >
@@ -221,3 +220,5 @@ ProductCard.Skeleton = ProductCardSkeleton;
 
 export default ProductCard;
 export { ProductCardSkeleton };
+
+

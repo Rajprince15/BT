@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Manrope } from 'next/font/google';
+import { Cinzel, Cormorant_Garamond, Montserrat } from 'next/font/google';
 
 import './globals.css';
 
@@ -10,14 +10,22 @@ import JsonLd from '@/components/common/JsonLd';
 import { organizationJsonLd, websiteJsonLd } from '@/lib/seo';
 import WhatsAppWidget from '@/components/layout/WhatsAppWidget';
 
-const serif = Cormorant_Garamond({
+const serif = Cinzel({
   subsets: ['latin'],
   weight: ['500', '600', '700'],
   variable: '--font-serif',
   display: 'swap',
 });
 
-const sans = Manrope({
+const accent = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  style: ['italic', 'normal'],
+  variable: '--font-accent',
+  display: 'swap',
+});
+
+const sans = Montserrat({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
@@ -74,7 +82,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${serif.variable} ${sans.variable}`}
+      className={`${serif.variable} ${sans.variable} ${accent.variable}`}
     >
       <body className="bg-bg font-sans text-ink antialiased">
         <JsonLd id="ld-organization" data={organizationJsonLd()} />
@@ -101,3 +109,4 @@ export default function RootLayout({
     </html>
   );
 }
+

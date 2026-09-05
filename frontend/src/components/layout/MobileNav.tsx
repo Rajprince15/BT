@@ -79,7 +79,7 @@ export default function MobileNav() {
                 Bhavita Textiles
               </span>
               <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.28em] text-gold">
-                Panipat · Est. 2017
+                Panipat · Est. 1979
               </span>
             </span>
           </SheetTitle>

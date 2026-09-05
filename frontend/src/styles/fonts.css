@@ -12,16 +12,15 @@
  */
 
 :root {
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Cinzel', Georgia, serif;
+  --font-body: 'Montserrat', system-ui, sans-serif;
 }
 
-.font-display {
+.font-display, .font-serif {
   font-family: var(--font-serif, var(--font-display));
   font-feature-settings: 'liga' 1, 'kern' 1;
-  letter-spacing: -0.02em;
 }
 
-.font-body {
+.font-body, .font-sans {
   font-family: var(--font-sans, var(--font-body));
 }

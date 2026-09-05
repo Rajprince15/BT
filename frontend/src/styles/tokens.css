@@ -1,61 +1,21 @@
 :root {
-  --bg: #faf8f5;
-  --surface: #ffffff;
-  --surface-2: #f3efea;
-  --ink: #1e1a18;
-  --ink-2: #5a524c;
-  --gold: #c59b27;
-  --gold-2: #9e7a1b;
-  --gold-soft: #fbf5e8;
-  --navy: #1e1a18;
-  --border: #e5dfda;
-  --success: #2c7455;
-  --danger: #a74e44;
-  --brand: #1b3b2b;
-  --brand-2: #143022;
-  --brand-soft: #e8f0ec;
-  --brand-ink: #ffffff;
-
-  --whatsapp-green: #25d366;
-  --whatsapp-green-hover: #1ebe57;
-
-  /* subtle grid */
-  --grid-line: rgba(210, 200, 190, 0.05);
-
-  --popover: #ffffff;
-  --popover-foreground: #1e1a18;
-  --accent: #f3efea;
-  --accent-foreground: #1e1a18;
-  --destructive: #a74e44;
+  --bg-primary: #FAF8F4; --bg-white: #FFFFFF; --bg-muted: #F3EFE6; --text-main: #332F24; --text-muted: #706958;
+  --gold-dark: #7A5F2D; --gold-medium: #A48348; --gold-light: #D5B97A; --gold-pale: #F0E6CD;
+  --gold-gradient: linear-gradient(135deg, #7A5F2D 0%, #D5B97A 50%, #7A5F2D 100%);
+  --peacock-teal: #015C65; --peacock-teal-dark: #00454C; --peacock-teal-light: #028A97; --peacock-teal-bg: #EAF3F4; --peacock-blue: #024873;
+  --success: #127A4E; --success-bg: #E8F5E9; --warning: #B96B07; --warning-bg: #FFF3E0; --danger: #B92525; --danger-bg: #FFEBEE;
+  --bg: var(--bg-primary); --surface: var(--bg-white); --surface-2: var(--bg-muted); --ink: var(--text-main); --ink-2: var(--text-muted);
+  --gold: var(--gold-medium); --gold-2: var(--gold-dark); --gold-soft: var(--gold-pale); --navy: var(--text-main);
+  --brand: var(--peacock-teal); --brand-2: var(--peacock-teal-dark); --brand-soft: var(--peacock-teal-bg); --brand-ink: #FFFFFF;
+  --border: rgba(164, 131, 72, 0.2); --grid-line: rgba(164, 131, 72, 0.02); --popover: var(--bg-white); --popover-foreground: var(--text-main); --accent: var(--bg-muted); --accent-foreground: var(--text-main); --destructive: var(--danger);
+  --max-width: 1200px; --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); --transition-fast: all 0.15s ease-out; --whatsapp-green: #25d366; --whatsapp-green-hover: #1ebe57;
 }
 
 [data-theme="dark"] {
-  --bg: #12100e;
-  --surface: #1a1715;
-  --surface-2: #24201d;
-  --ink: #f5f2ee;
-  --ink-2: #a8a099;
-  --gold: #d4ac3a;
-  --gold-2: #e2bd52;
-  --gold-soft: #2a2318;
-  --navy: #f5f2ee;
-  --border: #2e2824;
-  --success: #6db18b;
-  --danger: #e08b7f;
-  --brand: #2d5a42;
-  --brand-2: #397354;
-  --brand-soft: #192820;
-  --brand-ink: #f5f2ee;
-
-  --whatsapp-green: #25d366;
-  --whatsapp-green-hover: #1ebe57;
-
-  /* subtle dark grid */
-  --grid-line: rgba(120, 110, 100, 0.01);
-
-  --popover: #1a1715;
-  --popover-foreground: #f5f2ee;
-  --accent: #24201d;
-  --accent-foreground: #f5f2ee;
-  --destructive: #e08b7f;
+  --bg-primary: #12100E; --bg-white: #1A1715; --bg-muted: #24201D; --text-main: #F5F2EE; --text-muted: #A8A099;
+  --gold-dark: #E2BD52; --gold-medium: #D4AC3A; --gold-light: #E8C878; --gold-pale: #3A2E1B;
+  --peacock-teal: #2D8B91; --peacock-teal-dark: #1F686F; --peacock-teal-light: #50B6BB; --peacock-teal-bg: #193337;
+  --success: #6DB18B; --success-bg: #193126; --warning: #E0A04A; --warning-bg: #3A2B18; --danger: #E08B7F; --danger-bg: #3A2020;
+  --bg: var(--bg-primary); --surface: var(--bg-white); --surface-2: var(--bg-muted); --ink: var(--text-main); --ink-2: var(--text-muted); --gold: var(--gold-medium); --gold-2: var(--gold-dark); --gold-soft: var(--gold-pale); --navy: var(--text-main); --brand: var(--peacock-teal); --brand-2: var(--peacock-teal-dark); --brand-soft: var(--peacock-teal-bg); --brand-ink: #F5F2EE; --border: #40372F; --grid-line: rgba(120, 110, 100, 0.01); --popover: var(--bg-white); --popover-foreground: var(--text-main); --accent: var(--bg-muted); --accent-foreground: var(--text-main); --destructive: var(--danger);
 }
+
