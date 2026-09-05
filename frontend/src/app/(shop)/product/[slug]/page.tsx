@@ -212,7 +212,7 @@ export default function ProductPage() {
       <Container className="py-4">
         <Breadcrumbs items={breadcrumbs} />
 
-        <div className="grid gap-8 py-6 md:grid-cols-2 md:gap-8 md:py-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(400px,1.2fr)] lg:gap-12 lg:py-8">
+        <div className="grid gap-8 py-6 md:grid-cols-2 md:gap-10 md:py-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:gap-14 lg:py-8">
           <motion.div
             initial={{ opacity: 0, y: reduce ? 0 : 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -254,21 +254,21 @@ export default function ProductPage() {
 
             <h1
               data-testid="product-title"
-              className="mt-3 font-serif text-2xl leading-tight text-ink sm:text-3xl lg:text-4xl"
+              className="mt-3 font-serif text-2xl leading-tight text-ink sm:text-[1.75rem] lg:text-3xl"
             >
               {product.name}
             </h1>
 
-            <p className="mt-5 max-w-xl text-[15px] leading-7 text-ink-2">
+            <p className="mt-4 max-w-xl text-sm leading-6 text-ink-2">
               {product.shortDescription ?? product.description}
             </p>
 
             <span
               aria-hidden
-              className="mt-7 block h-px w-full bg-border"
+              className="mt-5 block h-px w-full bg-border"
             />
 
-            <div className="mt-6">
+            <div className="mt-5">
               <PriceBlock
                 price={price}
                 salePrice={variant ? undefined : product.salePrice}
@@ -277,7 +277,7 @@ export default function ProductPage() {
 
             <p
               data-testid="product-stock-status"
-              className={`mt-3 text-[11px] font-semibold uppercase tracking-wider2 ${
+              className={`mt-2.5 text-[11px] font-semibold uppercase tracking-wider2 ${
                 stock > 0 ? 'text-success' : 'text-danger'
               }`}
             >
@@ -291,7 +291,7 @@ export default function ProductPage() {
             {(product.sizeLabel || product.specification) ? (
               <dl
                 data-testid="product-key-specs"
-                className="mt-7 grid grid-cols-2 gap-x-6 gap-y-4 rounded-lg border border-border bg-surface p-5 sm:grid-cols-2"
+                className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 rounded-lg border border-border bg-surface p-4 sm:grid-cols-2"
               >
                 {product.specification ? (
                   <div>
@@ -319,7 +319,7 @@ export default function ProductPage() {
               </dl>
             ) : null}
 
-            <div className="mt-6">
+            <div className="mt-5">
               <VariantPicker
                 variants={product.variants}
                 selected={variant}
@@ -327,7 +327,7 @@ export default function ProductPage() {
               />
             </div>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-5 space-y-2.5">
               <p className="text-[10px] font-semibold uppercase tracking-wider2 text-ink-2">
                 Quantity
               </p>
@@ -433,13 +433,13 @@ export default function ProductPage() {
                 product.name,
               )}&sku=${encodeURIComponent(product.sku)}&qty=${quantity}`}
               data-testid="product-bulk-cta"
-              className="group mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-brand/25 bg-brand-soft/40 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:bg-brand-soft"
+              className="group mt-3 inline-flex items-center justify-center gap-2 rounded-full border border-brand/25 bg-brand-soft/40 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:bg-brand-soft"
             >
               <Package size={14} />
               Request bulk quote for this product
             </a>
 
-            <div className="mt-6 grid gap-4 border-t border-border pt-5 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
+            <div className="mt-5 grid gap-4 border-t border-border pt-5 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
               {TRUST_ITEMS.map(({ Icon, title, body }) => (
                 <div
                   key={title}
@@ -575,4 +575,3 @@ export default function ProductPage() {
     </main>
   );
 }
-

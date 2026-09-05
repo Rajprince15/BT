@@ -24,6 +24,7 @@ export const carts: Cart[] = [
         price: 9499,
         productName: 'Imperial Gold Jacquard Bedsheet Set',
         productSku: 'BT-PB-001',
+        productSlug: 'imperial-gold-jacquard-bedsheet',
         imageUrl: mockImage('imperial-gold-jacquard-bedsheet'),
       },
       {
@@ -35,6 +36,7 @@ export const carts: Cart[] = [
         price: 999,
         productName: 'Velvet Royal Cushion Cover (Set of 2)',
         productSku: 'BT-CC-001',
+        productSlug: 'velvet-royal-cushion-cover-set',
         imageUrl: mockImage('velvet-royal-cushion-cover-set'),
       },
     ],

@@ -41,8 +41,10 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
   const [active, setActive] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [zoomed, setZoomed] = useState(false);
-  const [origin, setOrigin] = useState({ x: 50, y: 50 });
+  const [hoverZoom, setHoverZoom] = useState(false);
+  const [hoverOrigin, setHoverOrigin] = useState({ x: 50, y: 50 });
+  const [modalZoomed, setModalZoomed] = useState(false);
+  const [modalOrigin, setModalOrigin] = useState({ x: 50, y: 50 });
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
   }, [galleryImages]);
 
   useEffect(() => {
-    if (!expanded) setZoomed(false);
+    if (!expanded) setModalZoomed(false);
   }, [expanded]);
 
   const current = galleryImages[active] ?? galleryImages[0];
@@ -62,7 +64,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
     if (total <= 1) return;
     setActive(((next % total) + total) % total);
     setFailed(false);
-    setZoomed(false);
+    setModalZoomed(false);
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -90,16 +92,26 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
     touchStartX.current = null;
   };
 
-  const handleZoomMove = (event: MouseEvent<HTMLDivElement>) => {
-    if (!zoomed) return;
+  const handleHoverMove = (event: MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
-    setOrigin({ x, y });
+    setHoverOrigin({ x, y });
+  };
+
+  const handleModalZoomMove = (event: MouseEvent<HTMLDivElement>) => {
+    if (!modalZoomed) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    setModalOrigin({ x, y });
   };
 
   return (
-    <div data-testid="product-gallery" className="mx-auto grid w-full max-w-[460px] gap-3 sm:grid-cols-[64px_1fr] lg:mx-0">
+    <div
+      data-testid="product-gallery"
+      className="mx-auto grid w-full max-w-[560px] gap-3 sm:grid-cols-[72px_1fr] lg:mx-0 lg:max-w-none"
+    >
       <div className="order-2 flex gap-2 overflow-x-auto sm:order-1 sm:flex-col">
         {galleryImages.map((image, index) => (
           <button
@@ -112,7 +124,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
               setFailed(false);
             }}
             className={cn(
-              'relative size-16 shrink-0 overflow-hidden rounded border transition-colors',
+              'relative size-16 shrink-0 overflow-hidden rounded border transition-colors sm:size-[72px]',
               active === index ? 'border-gold ring-1 ring-gold' : 'border-border',
             )}
           >
@@ -120,38 +132,74 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
               src={image.imageUrl || FALLBACK}
               alt={image.altText ?? `${name} image ${index + 1}`}
               fill
-              sizes="64px"
+              sizes="72px"
               className="object-cover"
             />
           </button>
         ))}
       </div>
 
-      <button
-        type="button"
-        data-testid="product-gallery-expand"
-        aria-label={`Open fullscreen gallery for ${name}`}
-        onClick={() => setExpanded(true)}
-        className="group relative order-1 aspect-[3/4] overflow-hidden rounded-md bg-surface-2 sm:order-2"
+      <div
+        data-testid="product-gallery-main"
+        className="order-1 sm:order-2"
       >
-        <Image
-          src={source}
-          alt={current?.altText ?? name}
-          fill
-          priority
-          sizes="(min-width: 1024px) 400px, 90vw"
-          onError={() => setFailed(true)}
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-        />
-        <span
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-ink/25 via-transparent to-transparent"
-        />
-        <span className="absolute right-3 top-3 inline-flex h-8 items-center gap-1.5 rounded-full bg-bg/85 px-3 text-[10px] font-semibold uppercase tracking-wider2 text-ink shadow-sm backdrop-blur-sm transition-colors group-hover:text-gold">
-          <Maximize2 className="size-3.5" />
-          Click to zoom
-        </span>
-      </button>
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label={`Open fullscreen gallery for ${name}`}
+          onClick={() => setExpanded(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setExpanded(true);
+            }
+          }}
+          onMouseEnter={() => setHoverZoom(true)}
+          onMouseLeave={() => setHoverZoom(false)}
+          onMouseMove={handleHoverMove}
+          data-testid="product-gallery-expand"
+          className={cn(
+            'group relative aspect-[4/5] overflow-hidden rounded-md bg-surface-2 shadow-sm',
+            hoverZoom ? 'cursor-zoom-in' : 'cursor-pointer',
+          )}
+        >
+          <Image
+            src={source}
+            alt={current?.altText ?? name}
+            fill
+            priority
+            sizes="(min-width: 1024px) 560px, 90vw"
+            onError={() => setFailed(true)}
+            style={{
+              transformOrigin: `${hoverOrigin.x}% ${hoverOrigin.y}%`,
+              transform: hoverZoom ? 'scale(1.8)' : 'scale(1)',
+            }}
+            className="object-cover transition-transform duration-300 ease-out"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/20 via-transparent to-transparent opacity-100 transition-opacity duration-300 group-hover:opacity-0"
+          />
+          <span
+            className={cn(
+              'pointer-events-none absolute right-3 top-3 inline-flex h-8 items-center gap-1.5 rounded-full bg-bg/90 px-3 text-[10px] font-semibold uppercase tracking-wider2 text-ink shadow-sm backdrop-blur-sm transition-opacity duration-200',
+              hoverZoom ? 'opacity-0' : 'opacity-100',
+            )}
+          >
+            <ZoomIn className="size-3.5" />
+            Hover to zoom
+          </span>
+          <span
+            className={cn(
+              'pointer-events-none absolute bottom-3 right-3 inline-flex h-8 items-center gap-1.5 rounded-full bg-bg/90 px-3 text-[10px] font-semibold uppercase tracking-wider2 text-ink shadow-sm backdrop-blur-sm transition-opacity duration-200',
+              hoverZoom ? 'opacity-100' : 'opacity-0',
+            )}
+          >
+            <Maximize2 className="size-3.5" />
+            Click for fullscreen
+          </span>
+        </div>
+      </div>
 
       <Dialog open={expanded} onOpenChange={setExpanded}>
         <DialogContent
@@ -172,7 +220,7 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
             <div className="flex items-center gap-3">
               <span className="hidden items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider2 text-ink-2 sm:inline-flex">
                 <ZoomIn className="size-3.5" />
-                {zoomed ? 'Click image to zoom out' : 'Click image to zoom in'}
+                {modalZoomed ? 'Click image to zoom out' : 'Click image to zoom in'}
               </span>
               <button
                 type="button"
@@ -203,12 +251,12 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
 
             <div
               data-testid="product-gallery-zoom-area"
-              onClick={() => setZoomed((value) => !value)}
-              onMouseMove={handleZoomMove}
-              onMouseLeave={() => setZoomed(false)}
+              onClick={() => setModalZoomed((value) => !value)}
+              onMouseMove={handleModalZoomMove}
+              onMouseLeave={() => setModalZoomed(false)}
               className={cn(
                 'relative h-[64vh] w-full max-w-3xl overflow-hidden',
-                zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in',
+                modalZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in',
               )}
             >
               <Image
@@ -218,8 +266,8 @@ export default function Gallery({ images, name }: { images: ProductImage[]; name
                 sizes="(min-width: 1024px) 70vw, 100vw"
                 onError={() => setFailed(true)}
                 style={{
-                  transformOrigin: `${origin.x}% ${origin.y}%`,
-                  transform: zoomed ? 'scale(2.4)' : 'scale(1)',
+                  transformOrigin: `${modalOrigin.x}% ${modalOrigin.y}%`,
+                  transform: modalZoomed ? 'scale(2.4)' : 'scale(1)',
                 }}
                 className="object-contain transition-transform duration-200 ease-out"
               />

@@ -362,17 +362,19 @@ export default function HomePageClient() {
             ))}
           </motion.div>
 
-          <Link
-            href="/shop"
-            data-testid="browse-all-categories-link"
-            className="group mt-8 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink transition-colors hover:text-brand"
-          >
-            Browse all 7 categories
-            <ArrowUpRight
-              size={15}
-              className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            />
-          </Link>
+          <div className="mt-10 flex justify-center">
+            <Link
+              href="/shop"
+              data-testid="browse-all-categories-link"
+              className="group inline-flex items-center gap-3 rounded-full border border-ink/15 bg-surface px-7 py-3.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-ink shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-brand hover:text-brand-ink hover:shadow-lg"
+            >
+              Browse all 7 categories
+              <ArrowUpRight
+                size={15}
+                className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </Link>
+          </div>
         </div>
       </section>
 

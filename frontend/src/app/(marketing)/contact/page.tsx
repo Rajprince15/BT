@@ -4,7 +4,6 @@ import { Suspense, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
-  Clock3,
   Mail,
   MapPin,
   Package,
@@ -26,21 +25,23 @@ const categories = [
   'Other',
 ];
 
-const moqOptions = ['300', '500', '1000', '2500', '5000+'];
-
-const timelines = ['Within 30 days', '30–60 days', '60+ days', 'Flexible'];
-
-// Inner component that reads URL search params. It must be rendered inside a
-// <Suspense> boundary — Next.js requires this so that `useSearchParams()` does
-// not force the whole page to bail out of static rendering at build time.
+// Inner component that reads URL search params.
+// It must be rendered inside a <Suspense> boundary.
 function BulkEnquiryContent() {
   const search = useSearchParams();
+
   const prefill = useMemo(() => {
     const productName = search.get('productName') ?? '';
     const productSlug = search.get('product') ?? '';
     const sku = search.get('sku') ?? '';
     const qty = search.get('qty') ?? '';
-    return { productName, productSlug, sku, qty };
+
+    return {
+      productName,
+      productSlug,
+      sku,
+      qty,
+    };
   }, [search]);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -80,58 +81,53 @@ function BulkEnquiryContent() {
 
     const data = new FormData(event.currentTarget);
 
-    const companyName = String(data.get('companyName') ?? '');
-    const contactPerson = String(data.get('contactPerson') ?? '');
+    const name = String(data.get('name') ?? '');
     const email = String(data.get('email') ?? '');
     const phone = String(data.get('phone') ?? '');
-    const moq = String(data.get('moq') ?? '');
-    const timeline = String(data.get('timeline') ?? 'Flexible');
     const brief = String(data.get('message') ?? '');
-    
+
+    const productCategories =
+      selectedCategories.join(', ') || 'Not specified';
 
     setBusy(true);
 
     try {
+      /*
+       * Keep the existing wholesale service structure so your
+       * current backend/service continues to work.
+       *
+       * The user's name is stored as the contact person.
+       */
       await wholesaleService.submit({
-        companyName,
-        contactPerson,
+        companyName: name,
+        contactPerson: name,
         email,
         phone,
-        businessType: String(data.get('designation') ?? ''),
+        businessType: '',
         productInterest:
           prefill.productName ||
-          selectedCategories.join(', ') ||
+          productCategories ||
           'General textile enquiry',
-        quantityRequirement: `${moq} pcs per SKU · ${timeline}`,
-        
+        quantityRequirement: 'Not specified',
       });
 
       const whatsappMessage = [
-        'Hello, I would like a wholesale quote from Bhavita Textiles.',
+        'Hello, I would like to enquire about Bhavita Textiles.',
         '',
-        `Company: ${companyName}`,
-        `Contact: ${contactPerson}`,
+        `Name: ${name}`,
         `Email: ${email}`,
         `Phone: ${phone}`,
-        `Designation: ${String(data.get('designation') ?? 'Not specified')}`,
-        `Country / City: ${String(data.get('country') ?? 'Not specified')}`,
         '',
         prefill.productName
           ? `Product: ${prefill.productName}${
               prefill.sku ? ` (SKU: ${prefill.sku})` : ''
             }`
-          : `Product interest: ${
-              selectedCategories.join(', ') || 'General textile enquiry'
-            }`,
-        prefill.qty ? `Interested quantity: ${prefill.qty} pcs` : null,
-        `Estimated MOQ: ${moq} pcs per SKU`,
-        `Delivery timeline: ${timeline}`,
-        `Website: ${
-          String(data.get('website') ?? 'Not specified') || 'Not specified'
-        }`,
+          : `Product categories: ${productCategories}`,
+        prefill.qty
+          ? `Interested quantity: ${prefill.qty} pcs`
+          : null,
         '',
-        `Brief: ${brief}`,
-        
+        `Brief message: ${brief}`,
       ]
         .filter(Boolean)
         .join('\n');
@@ -145,7 +141,9 @@ function BulkEnquiryContent() {
       setSubmitted(true);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : 'Unable to submit enquiry',
+        error instanceof Error
+          ? error.message
+          : 'Unable to submit enquiry',
       );
     } finally {
       setBusy(false);
@@ -154,119 +152,137 @@ function BulkEnquiryContent() {
 
   return (
     <main data-testid="contact-page" className="bg-bg text-ink">
-      <section data-testid="contact-hero" className="bg-brand text-brand-ink">
+      {/* HERO */}
+      <section
+        data-testid="contact-hero"
+        className="bg-brand text-brand-ink"
+      >
         <Container className="py-24 sm:py-32">
           <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand-ink/70">
             Wholesale program · B2B
           </p>
 
           <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-[.95] sm:text-7xl">
-            Manufactured to your spec. Priced to your volume.
+            Let&apos;s build something together.
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-8 text-brand-ink/75">
-            Share your brief with the mill. We will return with a clear quote,
-            practical timeline and the right next step.
+            Tell us what you are looking for and our team will get back to you
+            with the right products, pricing and options.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3 text-xs">
             <span className="rounded-full border border-brand-ink/25 px-4 py-2">
-              24-hour quote
+              24-hour response
             </span>
+
             <span className="rounded-full border border-brand-ink/25 px-4 py-2">
-              MOQ from 300 pcs
+              Direct WhatsApp support
             </span>
           </div>
         </Container>
       </section>
 
+      {/* MAIN CONTENT */}
       <Container className="grid gap-16 py-20 sm:py-28 lg:grid-cols-[.45fr_.55fr]">
+        {/* LEFT INFORMATION */}
         <section>
           <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
-            Talk to the mill
+            Talk to us
           </p>
 
           <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
-            A considered beginning to a dependable supply partnership.
+            Tell us what you need.
           </h2>
 
           <p className="mt-6 text-sm leading-7 text-ink-2">
-            Hotels, furnishing buyers, retailers and designers can use this form
-            to share quantities, specifications, packaging needs and delivery
-            expectations.
+            Whether you are looking for bedsheets, blankets, curtains,
+            towels or other textile products, share your requirements with us.
+            Our team will help you find the right options.
           </p>
 
           <div className="mt-12 divide-y divide-border">
+            {/* ADDRESS */}
             <div
               data-testid="contact-info-factory-address"
               className="flex gap-4 border-t border-border py-6"
             >
               <MapPin className="mt-1 size-5 text-brand" />
+
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
                   Factory address
                 </p>
-                <p className="mt-2 text-sm text-ink">Panipat, Haryana, India</p>
+
+                <p className="mt-2 text-sm text-ink">
+                  Panipat, Haryana, India
+                </p>
               </div>
             </div>
 
+            {/* PHONE */}
             <div
               data-testid="contact-info-phone-whatsapp"
               className="flex gap-4 py-6"
             >
               <Phone className="mt-1 size-5 text-brand" />
+
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
                   Phone / WhatsApp
                 </p>
-                <p className="mt-2 text-sm text-ink">+91 99999 99999</p>
+
+                <p className="mt-2 text-sm text-ink">
+                  +91 99999 99999
+                </p>
               </div>
             </div>
 
-            <div data-testid="contact-info-email" className="flex gap-4 py-6">
+            {/* EMAIL */}
+            <div
+              data-testid="contact-info-email"
+              className="flex gap-4 py-6"
+            >
               <Mail className="mt-1 size-5 text-brand" />
+
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
                   Email
                 </p>
-                <p className="mt-2 text-sm text-ink">hello@bhavitatextiles.com</p>
-              </div>
-            </div>
 
-            <div className="flex gap-4 py-6">
-              <Clock3 className="mt-1 size-5 text-brand" />
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-ink-2">
-                  Business hours
-                </p>
                 <p className="mt-2 text-sm text-ink">
-                  Mon–Sat · 10:00–18:00 IST
+                  hello@bhavitatextiles.com
                 </p>
               </div>
             </div>
           </div>
         </section>
 
+        {/* FORM */}
         <section
           data-testid="contact-form"
           className="rounded-lg border border-border bg-surface p-6 sm:p-10"
         >
           {submitted ? (
+            /* SUCCESS STATE */
             <div
               data-testid="contact-form-success"
-              className="grid min-h-[560px] place-items-center text-center"
+              className="grid min-h-[500px] place-items-center text-center"
             >
               <div>
                 <span className="inline-flex size-16 items-center justify-center rounded-full bg-brand-soft text-brand">
                   <CheckCircle2 className="size-8" />
                 </span>
+
                 <h2 className="mt-6 font-serif text-4xl text-ink">
-                  Your brief is with the mill.
+                  Your enquiry has been sent.
                 </h2>
+
                 <p className="mt-4 text-sm leading-7 text-ink-2">
-                  WhatsApp has opened with your enquiry. Our team will reply
-                  within 24 hours.
+                  WhatsApp has opened with your enquiry. Our team will get
+                  back to you within 24 hours.
                 </p>
+
                 <a
                   data-testid="contact-success-home"
                   href="/"
@@ -280,9 +296,25 @@ function BulkEnquiryContent() {
             <form
               data-testid="bulk-enquiry-form"
               onSubmit={submit}
-              className="grid gap-5"
+              className="grid gap-6"
             >
-              {/* Product context banner */}
+              {/* FORM HEADING */}
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
+                  Get in touch
+                </p>
+
+                <h2 className="mt-3 font-serif text-3xl text-ink">
+                  Tell us what you are looking for.
+                </h2>
+
+                <p className="mt-3 text-sm leading-6 text-ink-2">
+                  Fill in your details and select the products you are
+                  interested in.
+                </p>
+              </div>
+
+              {/* PRODUCT CONTEXT */}
               {prefill.productName ? (
                 <div
                   data-testid="contact-product-context"
@@ -291,15 +323,21 @@ function BulkEnquiryContent() {
                   <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-brand-ink">
                     <Package size={16} />
                   </span>
+
                   <div className="min-w-0">
                     <p className="text-[10px] font-semibold uppercase tracking-wider2 text-brand">
                       Enquiring about
                     </p>
+
                     <p className="mt-1 line-clamp-2 font-serif text-lg text-ink">
                       {prefill.productName}
                     </p>
+
                     <p className="mt-1 text-xs text-ink-2">
-                      {prefill.sku ? `SKU ${prefill.sku}` : null}
+                      {prefill.sku
+                        ? `SKU ${prefill.sku}`
+                        : null}
+
                       {prefill.qty
                         ? `${prefill.sku ? ' · ' : ''}Interested qty ${
                             prefill.qty
@@ -310,139 +348,114 @@ function BulkEnquiryContent() {
                 </div>
               ) : null}
 
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand">
-                  Company details
-                </p>
-                <h2 className="mt-3 font-serif text-3xl text-ink">
-                  Tell us who you are.
-                </h2>
-              </div>
+              {/* NAME */}
+              <label className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                Name
 
-              <div className="grid gap-5 sm:grid-cols-2">
-                {[
-                  ['companyName', 'Company name', 'text', true],
-                  ['contactPerson', 'Contact person', 'text', true],
-                  ['designation', 'Designation', 'text', false],
-                  ['email', 'Email', 'email', true],
-                  ['phone', 'Phone with country code', 'tel', true],
-                  ['country', 'Country / City', 'text', false],
-                  ['website', 'Website', 'url', false],
-                ].map(([name, label, type, required]) => (
-                  <label
-                    key={String(name)}
-                    className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2"
-                  >
-                    {label}
-                    <input
-                      data-testid={`contact-form-${name}`}
-                      name={String(name)}
-                      required={Boolean(required)}
-                      type={String(type)}
-                      className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                    />
-                  </label>
-                ))}
-              </div>
-
-              {!prefill.productName ? (
-                <div className="mt-8 border-t border-border pt-8">
-                  <p className="font-serif text-2xl text-ink">
-                    Product interest
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {categories.map((category) => {
-                      const active = selectedCategories.includes(category);
-                      return (
-                        <button
-                          key={category}
-                          type="button"
-                          data-testid={`contact-category-${category
-                            .toLowerCase()
-                            .replaceAll(' ', '-')}`}
-                          aria-pressed={active}
-                          onClick={() => toggleCategory(category)}
-                          className={`rounded-full border px-4 py-2 text-xs transition-colors ${
-                            active
-                              ? 'border-brand bg-brand text-brand-ink'
-                              : 'border-border text-ink-2 hover:border-brand'
-                          }`}
-                        >
-                          {category}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : null}
-
-              <label className="mt-6 grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
-                Estimated MOQ per SKU
-                <select
-                  data-testid="contact-form-moq"
-                  name="moq"
+                <input
+                  data-testid="contact-form-name"
+                  name="name"
                   required
-                  defaultValue={prefill.qty ? '500' : moqOptions[0]}
-                  className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand"
-                >
-                  {moqOptions.map((option) => (
-                    <option key={option}>{option}</option>
-                  ))}
-                </select>
+                  type="text"
+                  autoComplete="name"
+                  placeholder="Your name"
+                  className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none placeholder:text-ink-2/60 focus:border-brand focus:ring-2 focus:ring-brand/20"
+                />
               </label>
 
-              <div className="border-t border-border pt-8">
+              {/* EMAIL + PHONE */}
+              <div className="grid gap-5 sm:grid-cols-2">
+                {/* EMAIL */}
+                <label className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                  Email
+
+                  <input
+                    data-testid="contact-form-email"
+                    name="email"
+                    required
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none placeholder:text-ink-2/60 focus:border-brand focus:ring-2 focus:ring-brand/20"
+                  />
+                </label>
+
+                {/* PHONE */}
+                <label className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                  Phone
+
+                  <input
+                    data-testid="contact-form-phone"
+                    name="phone"
+                    required
+                    type="tel"
+                    autoComplete="tel"
+                    placeholder="+91 98765 43210"
+                    className="h-12 rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none placeholder:text-ink-2/60 focus:border-brand focus:ring-2 focus:ring-brand/20"
+                  />
+                </label>
+              </div>
+
+              {/* PRODUCT CATEGORIES */}
+              <div className="border-t border-border pt-7">
+                <label className="grid gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-ink-2">
+                  Product category
+
+                  <select
+                    name="productCategory"
+                    required
+                    value={selectedCategories[0] ?? ''}
+                    onChange={(event) =>
+                      setSelectedCategories(
+                        event.target.value ? [event.target.value] : [],
+                      )
+                    }
+                    className="h-12 w-full rounded-md border border-border bg-bg px-4 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                  >
+                    <option value="" disabled>
+                      Select a product category
+                    </option>
+
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              {/* BRIEF MESSAGE */}
+              <div className="border-t border-border pt-7">
                 <p className="font-serif text-2xl text-ink">
-                  Brief &amp; timeline
+                  Brief message
                 </p>
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {timelines.map((timeline) => (
-                    <label
-                      key={timeline}
-                      className="flex min-h-12 items-center gap-3 rounded-md border border-border bg-bg px-4 text-sm text-ink"
-                    >
-                      <input
-                        data-testid={`contact-timeline-${timeline
-                          .toLowerCase()
-                          .replaceAll(' ', '-')}`}
-                        type="radio"
-                        name="timeline"
-                        value={timeline}
-                        defaultChecked={timeline === 'Flexible'}
-                        className="size-4 accent-brand"
-                      />
-                      {timeline}
-                    </label>
-                  ))}
-                </div>
+                <p className="mt-2 text-sm text-ink-2">
+                  Tell us anything else about your requirements.
+                </p>
 
                 <textarea
                   data-testid="contact-form-message"
                   name="message"
                   required
                   value={message}
-                  onChange={(event) => setMessage(event.target.value)}
-                  placeholder="Tell us about print styles, GSM, packaging or private-label needs…"
-                  className="mt-5 min-h-40 w-full rounded-md border border-border bg-bg p-4 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                  onChange={(event) =>
+                    setMessage(event.target.value)
+                  }
+                  placeholder="Tell us about the products, quantity, specifications or anything else you need..."
+                  className="mt-5 min-h-40 w-full rounded-md border border-border bg-bg p-4 text-sm leading-6 text-ink outline-none placeholder:text-ink-2/60 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
               </div>
 
-              <label className="flex items-center gap-3 text-sm text-ink">
-                <input
-                  data-testid="contact-form-consent"
-                  required
-                  type="checkbox"
-                  className="size-4 accent-brand"
-                />
-                I agree to receive quotes and updates from Bhavita Textiles.
-              </label>
+              
 
+              {/* SUBMIT */}
               <button
                 data-testid="contact-form-submit"
                 disabled={busy}
                 type="submit"
-                className="h-12 rounded-full bg-brand text-[11px] font-semibold uppercase tracking-[.18em] text-brand-ink transition-colors hover:bg-brand-2 disabled:opacity-60"
+                className="h-12 rounded-full bg-brand text-[11px] font-semibold uppercase tracking-[.18em] text-brand-ink transition-colors hover:bg-brand-2 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {busy
                   ? 'Preparing WhatsApp…'
@@ -457,6 +470,7 @@ function BulkEnquiryContent() {
         </section>
       </Container>
 
+      {/* MAP */}
       <Container className="pb-24">
         <div
           data-testid="contact-map"
@@ -469,11 +483,18 @@ function BulkEnquiryContent() {
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
+
           <div className="flex items-center gap-3 border-t border-border px-5 py-4">
             <MapPin className="size-5 shrink-0 text-brand" />
+
             <div>
-              <p className="text-sm font-semibold text-ink">Bhavita Textiles</p>
-              <p className="text-xs text-ink-2">Panipat, Haryana, India</p>
+              <p className="text-sm font-semibold text-ink">
+                Bhavita Textiles
+              </p>
+
+              <p className="text-xs text-ink-2">
+                Panipat, Haryana, India
+              </p>
             </div>
           </div>
         </div>
@@ -482,12 +503,17 @@ function BulkEnquiryContent() {
   );
 }
 
-// The default export wraps the inner component in a <Suspense> boundary so
-// that `useSearchParams()` no longer causes the "should be wrapped in a
-// suspense boundary" prerender bailout during `next build`.
+// Suspense wrapper required because the page uses useSearchParams().
 export default function BulkEnquiryPage() {
   return (
-    <Suspense fallback={<main data-testid="contact-page-loading" className="min-h-[60vh] bg-bg" />}>
+    <Suspense
+      fallback={
+        <main
+          data-testid="contact-page-loading"
+          className="min-h-[60vh] bg-bg"
+        />
+      }
+    >
       <BulkEnquiryContent />
     </Suspense>
   );

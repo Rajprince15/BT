@@ -86,6 +86,7 @@ export const cartService = {
           price: product.salePrice ?? product.price,
           productName: product.name,
           productSku: product.sku,
+          productSlug: product.slug,
           imageUrl: product.images[0]?.imageUrl,
         });
       }
@@ -144,6 +145,7 @@ export const cartService = {
             price: product.salePrice ?? product.price,
             productName: product.name,
             productSku: product.sku,
+            productSlug: product.slug,
             imageUrl: product.images[0]?.imageUrl,
           });
         }
