@@ -227,7 +227,7 @@ export default function HomePageClient() {
           className="absolute inset-x-0 bottom-5 z-10 sm:bottom-7"
         >
           <div className="mx-auto flex max-w-7xl flex-wrap gap-2 px-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/90 sm:gap-3 sm:px-6 lg:px-8">
-            <span data-testid="hero-stat-years" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">8+ Years in Panipat</span>
+            <span data-testid="hero-stat-years" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">45+ Years in Panipat</span>
             <span data-testid="hero-stat-skus" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">30+ Active SKUs</span>
             <span data-testid="hero-stat-capacity" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">50K Units / month</span>
             <span data-testid="hero-stat-markets" className="rounded-full bg-black/45 px-3 py-1.5 backdrop-blur-sm">12+ Export markets</span>
