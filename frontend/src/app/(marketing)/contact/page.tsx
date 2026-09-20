@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useMemo, useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle2,
@@ -283,13 +284,13 @@ function BulkEnquiryContent() {
                   back to you within 24 hours.
                 </p>
 
-                <a
+                <Link
                   data-testid="contact-success-home"
                   href="/"
                   className="mt-7 inline-flex h-11 items-center rounded-full border border-border px-6 text-[11px] font-semibold uppercase tracking-[.18em] text-ink hover:border-brand"
                 >
                   Return home
-                </a>
+                </Link>
               </div>
             </div>
           ) : (
@@ -447,8 +448,6 @@ function BulkEnquiryContent() {
                   className="mt-5 min-h-40 w-full rounded-md border border-border bg-bg p-4 text-sm leading-6 text-ink outline-none placeholder:text-ink-2/60 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
               </div>
-
-              
 
               {/* SUBMIT */}
               <button

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -71,12 +72,12 @@ export default function CheckoutPage() {
         <Container className="grid place-items-center py-24 text-center">
           <p className="text-xs font-semibold uppercase tracking-wider2 text-gold">Checkout</p>
           <h1 className="mt-3 font-serif text-4xl text-ink">Your cart is empty</h1>
-          <a
+          <Link
             href="/shop"
             className="mt-6 inline-flex h-12 items-center rounded-full bg-ink px-6 text-xs font-semibold uppercase tracking-wider2 text-bg transition-colors hover:bg-gold hover:text-ink"
           >
             Continue shopping
-          </a>
+          </Link>
         </Container>
       </main>
     );

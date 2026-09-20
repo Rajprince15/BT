@@ -27,6 +27,12 @@ export interface Testimonial {
   createdAt: string;
 }
 
+/** Lookup maps the admin reviews page uses to label reviews. */
+export interface AdminReviewLabels {
+  products: Record<number, string>;
+  authors: Record<number, string>;
+}
+
 const submittedReviewProductIds = new Set<number>();
 
 async function callApi<T>(path: string, payload?: unknown, method: 'get' | 'post' = 'get') {
@@ -184,6 +190,23 @@ export const reviewService = {
       });
     }
     return (await callApi<Testimonial[]>(`/reviews/testimonials`, undefined, 'get')).slice(0, limit);
+  },
+
+  /**
+   * Lookup maps used by the admin reviews page to label reviews with
+   * product and author names. Keeps the mock fixtures inside the service
+   * layer. Backend can either return names on the admin review list or
+   * expose a lookup endpoint; until then non-mock mode returns empty maps.
+   */
+  async getAdminLabels(): Promise<AdminReviewLabels> {
+    if (useMockService) {
+      await mockDelay();
+      return {
+        products: Object.fromEntries(products.map((p) => [p.id, p.name])),
+        authors: Object.fromEntries(users.map((u) => [u.id, u.name])),
+      };
+    }
+    return { products: {}, authors: {} };
   },
 };
 

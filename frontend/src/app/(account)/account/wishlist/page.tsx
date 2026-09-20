@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import wishlistService from '@/services/wishlist.service';
-import { products } from '@/mocks/products.mock';
+import productService from '@/services/product.service';
 import PriceTag from '@/components/common/PriceTag';
 import { useAddToCart } from '@/hooks/useCart';
 import { useToggleWishlist } from '@/hooks/useWishlist';
@@ -38,18 +38,36 @@ export default function WishlistPage() {
 
   const {
     data: wishlistItems = [],
-    isLoading,
-    isError,
+    isLoading: wishlistLoading,
+    isError: wishlistError,
   } = useQuery({
     queryKey: ['wishlist'],
     queryFn: wishlistService.get,
   });
 
+  const productIds = wishlistItems.map((item) => item.productId);
+
+  const {
+    data: wishlistProducts = [],
+    isLoading: productsQueryLoading,
+    isError: productsError,
+  } = useQuery({
+    queryKey: ['wishlist', 'products', productIds],
+    queryFn: () => productService.byIds(productIds),
+    enabled: productIds.length > 0,
+  });
+
+  // A disabled query can report isLoading in some react-query versions,
+  // so only count it as loading when there is something to fetch.
+  const productsLoading = productIds.length > 0 && productsQueryLoading;
+  const isLoading = wishlistLoading || productsLoading;
+  const isError = wishlistError || productsError;
+
   const addToCart = useAddToCart();
   const toggleWishlist = useToggleWishlist();
 
-  const items = wishlistItems
-    .map((item) => products.find((product) => product.id === item.productId))
+  const items = productIds
+    .map((id) => wishlistProducts.find((product) => product.id === id))
     .filter((product): product is Product => Boolean(product));
 
   const handleMove = (product: Product) => {

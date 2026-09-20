@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import ReviewModerationRow from '@/components/admin/ReviewModerationRow';
 import adminReviewService from '@/services/admin/review.service';
-import { products } from '@/mocks/products.mock';
-import { users } from '@/mocks/users.mock';
+import reviewService from '@/services/review.service';
 import type { ReviewStatus } from '@/types/Review';
 
 const TABS: Array<{ label: string; value: ReviewStatus | 'all' }> = [
@@ -21,6 +20,12 @@ export default function AdminReviewsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'reviews', status],
     queryFn: () => adminReviewService.list({ status: status === 'all' ? undefined : status, pageSize: 50 }),
+  });
+
+  const { data: labels } = useQuery({
+    queryKey: ['admin', 'reviews', 'labels'],
+    queryFn: () => reviewService.getAdminLabels(),
+    staleTime: 5 * 60 * 1000,
   });
 
   return (
@@ -49,18 +54,14 @@ export default function AdminReviewsPage() {
         <div className="h-40 animate-pulse rounded-2xl bg-surface-2" data-testid="admin-reviews-loading" />
       ) : (
         <div className="grid gap-4">
-          {(data?.items ?? []).map((review) => {
-            const product = products.find((p) => p.id === review.productId);
-            const author = users.find((u) => u.id === review.userId);
-            return (
-              <ReviewModerationRow
-                key={review.id}
-                review={review}
-                productName={product?.name}
-                authorName={author?.name}
-              />
-            );
-          })}
+          {(data?.items ?? []).map((review) => (
+            <ReviewModerationRow
+              key={review.id}
+              review={review}
+              productName={labels?.products[review.productId]}
+              authorName={labels?.authors[review.userId]}
+            />
+          ))}
           {data && data.items.length === 0 ? (
             <p data-testid="admin-reviews-empty" className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-ink-2">
               No reviews match this filter.

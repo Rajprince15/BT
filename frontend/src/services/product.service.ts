@@ -194,6 +194,22 @@ export const productService = {
     return callApi<Product>(`/products/${encodeURIComponent(slug)}`);
   },
 
+  /**
+   * Fetch several products by id in one call (used by the wishlist page).
+   * Mock: filters the fixtures. Backend: no batch endpoint yet, so it
+   * loads the catalogue and filters client-side.
+   */
+  async byIds(ids: number[]): Promise<Product[]> {
+    if (ids.length === 0) return [];
+    const wanted = new Set(ids);
+    if (useMockService) {
+      await mockDelay();
+      return products.filter((item) => wanted.has(item.id));
+    }
+    const { items } = await this.list({ limit: 1000 });
+    return items.filter((item) => wanted.has(item.id));
+  },
+
   async related(productId: number): Promise<Product[]> {
     if (useMockService) {
       await mockDelay();
@@ -217,7 +233,7 @@ export const productService = {
   ): Promise<ListResponse<Product>> {
     return this.list({ ...params, q: query, sort: params.sort ?? 'new' });
   },
-  
+
   async allSlugs(): Promise<string[]> {
     if (useMockService) {
       await mockDelay();
