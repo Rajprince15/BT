@@ -19,6 +19,8 @@ import mediaRoutes from '../modules/media/routes';
 import adminRoutes from '../modules/admin/routes';
 import webhookRoutes from '../modules/payments/routes';
 import seoRoutes from '../modules/seo/routes';
+import usersRoutes from '../modules/users/routes';
+import notificationsRoutes from '../modules/notifications/routes';
 
 const router = Router();
 
@@ -38,6 +40,9 @@ router.use('/collections', productsRoutes);
 router.use('/cart', cartRoutes);
 router.use('/wishlist', wishlistRoutes);
 router.use('/me/addresses', addressesRoutes);
+router.use('/users/addresses', addressesRoutes);
+router.use('/users', usersRoutes);
+router.use('/notifications', notificationsRoutes);
 router.use('/checkout', checkoutRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/reviews', reviewsRoutes);

@@ -5,6 +5,7 @@ import { session } from '@/mocks/_session';
 import type { Cart, CartItem } from '@/types/Cart';
 import type { ApiResponse } from '@/types/api';
 import { mockDelay, useMockService } from '@/services/_mock-runtime';
+import { productUnitPrice } from '@/lib/pricing';
 
 async function callApi<T>(path: string, payload?: unknown, method: 'get' | 'post' | 'patch' | 'delete' = 'post') {
   const response = await api.request<ApiResponse<T>>({
@@ -20,7 +21,7 @@ async function callApi<T>(path: string, payload?: unknown, method: 'get' | 'post
 
 function computeTotals(cart: Cart) {
   const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 150;
+  const shipping = subtotal >= 5000 || subtotal === 0 ? 0 : 150;
   const tax = Math.round(subtotal * 0.05 * 100) / 100;
   const total = subtotal + shipping + tax;
 
@@ -75,7 +76,7 @@ export const cartService = {
       const existing = cart.items.find((item) => item.productId === payload.productId && item.variantId === payload.variantId);
       if (existing) {
         existing.quantity += payload.quantity;
-        existing.price = product.salePrice ?? product.price;
+          existing.price = productUnitPrice(product, product.variants.find((v) => v.id === payload.variantId));
       } else {
         cart.items.push({
           id: Math.max(0, ...cart.items.map((item) => item.id)) + 1,
@@ -83,7 +84,7 @@ export const cartService = {
           productId: product.id,
           variantId: payload.variantId,
           quantity: payload.quantity,
-          price: product.salePrice ?? product.price,
+          price: productUnitPrice(product, product.variants.find((v) => v.id === payload.variantId)),
           productName: product.name,
           productSku: product.sku,
           productSlug: product.slug,
@@ -142,7 +143,7 @@ export const cartService = {
             productId: product.id,
             variantId: payload.variantId,
             quantity: payload.quantity,
-            price: product.salePrice ?? product.price,
+            price: productUnitPrice(product, product.variants.find((v) => v.id === payload.variantId)),
             productName: product.name,
             productSku: product.sku,
             productSlug: product.slug,

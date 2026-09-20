@@ -1,0 +1,6 @@
+ALTER TABLE product_variants
+  ADD COLUMN weight VARCHAR(40) NULL AFTER color,
+  ADD COLUMN bed_type VARCHAR(40) NULL AFTER weight;
+
+ALTER TABLE products MODIFY sku VARCHAR(80) NULL;
+ALTER TABLE product_variants MODIFY sku VARCHAR(80) NULL;

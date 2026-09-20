@@ -13,7 +13,7 @@ interface CartItemRow {
   id: number; cart_id: number; product_id: number; variant_id: number | null; quantity: number;
   product_name: string; product_slug: string; product_sku: string;
   unit_price: number; sale_price: number | null; stock: number; image_url: string | null; variant_sku: string | null;
-  variant_size: string | null; variant_color: string | null; variant_price: number | null;
+  variant_size: string | null; variant_color: string | null; variant_weight: string | null; variant_bed_type: string | null; variant_price: number | null;
 }
 
 const SHIPPING_FLAT = 150;
@@ -40,7 +40,7 @@ async function fetchCartItems(cartId: number): Promise<CartItemRow[]> {
             p.name AS product_name, p.slug AS product_slug, p.sku AS product_sku,
             p.price AS unit_price, p.sale_price AS sale_price, p.stock AS stock,
             (SELECT image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY sort_order, id LIMIT 1) AS image_url,
-            v.sku AS variant_sku, v.size AS variant_size, v.color AS variant_color, v.price AS variant_price
+            v.sku AS variant_sku, v.size AS variant_size, v.color AS variant_color, v.weight AS variant_weight, v.bed_type AS variant_bed_type, v.price AS variant_price
      FROM cart_items ci
      JOIN products p ON p.id = ci.product_id AND p.deleted_at IS NULL
      LEFT JOIN product_variants v ON v.id = ci.variant_id
@@ -51,7 +51,10 @@ async function fetchCartItems(cartId: number): Promise<CartItemRow[]> {
 }
 
 function priceOf(item: CartItemRow): number {
-  const base = Number(item.variant_price ?? item.sale_price ?? item.unit_price);
+  const basePrice = Number(item.variant_price ?? item.sale_price ?? item.unit_price);
+  const weight = Number.parseFloat(item.variant_weight ?? '');
+  const perKg = ['Gulliver Super Soft', 'Mink Blanket', 'Mink Cloudy'].includes(item.product_name);
+  const base = perKg && Number.isFinite(weight) ? basePrice * weight : basePrice;
   return Number.isFinite(base) ? base : 0;
 }
 
@@ -84,7 +87,7 @@ function computeCart(userId: number, cartId: number, items: CartItemRow[]) {
   return {
     id: cartId, userId, items: cartItems,
     subtotal: Math.round(subtotal * 100) / 100,
-    shippingAmount, taxAmount, total,
+    shipping: shippingAmount, tax: taxAmount, total,
     currency: 'INR' as const,
     itemsCount: cartItems.reduce((sum, item) => sum + item.quantity, 0),
   };

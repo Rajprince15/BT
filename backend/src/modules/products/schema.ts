@@ -8,7 +8,7 @@ export const productListQuerySchema = z.object({
   color: z.string().optional(),
   size: z.string().optional(),
   flag: z.enum(['featured', 'best_seller', 'new_arrival']).optional(),
-  sort: z.enum(['newest', 'price_asc', 'price_desc', 'rating', 'popular']).default('newest'),
+  sort: z.enum(['new', 'newest', 'price_asc', 'price_desc', 'rating', 'popular', 'best_sellers']).default('new'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(24),
 });
@@ -21,7 +21,7 @@ export const collectionParamSchema = z.object({
 export const upsertProductSchema = z.object({
   name: z.string().trim().min(2).max(200),
   slug: z.string().trim().max(220).regex(/^[a-z0-9-]+$/).optional(),
-  sku: z.string().trim().min(1).max(80),
+  sku: z.string().trim().max(80).optional().nullable(),
   categoryId: z.coerce.number().int().positive(),
   shortDescription: z.string().max(500).optional(),
   description: z.string().max(20000).optional(),
@@ -39,9 +39,11 @@ export const upsertProductSchema = z.object({
 export type UpsertProductInput = z.infer<typeof upsertProductSchema>;
 
 export const variantSchema = z.object({
-  sku: z.string().trim().min(1).max(80),
+  sku: z.string().trim().max(80).optional().nullable(),
   size: z.string().max(40).optional(),
   color: z.string().max(40).optional(),
+  weight: z.string().max(40).optional(),
+  bedType: z.enum(['Single Bed', 'Double Bed']).optional(),
   price: z.coerce.number().min(0).optional(),
   stock: z.coerce.number().int().min(0).default(0),
   isActive: z.coerce.boolean().default(true),

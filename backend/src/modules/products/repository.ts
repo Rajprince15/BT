@@ -5,7 +5,7 @@ export interface ProductRow {
   category_id: number;
   name: string;
   slug: string;
-  sku: string;
+  sku: string | null;
   short_description: string | null;
   description: string | null;
   price: number;
@@ -38,9 +38,11 @@ export interface ProductImageRow {
 export interface ProductVariantRow {
   id: number;
   product_id: number;
-  sku: string;
+  sku: string | null;
   size: string | null;
   color: string | null;
+  weight: string | null;
+  bed_type: string | null;
   price: number | null;
   stock: number;
   is_active: 0 | 1;
@@ -154,8 +156,8 @@ export const productRepo = {
   },
   async createVariant(productId: number, input: Omit<ProductVariantRow, 'id' | 'product_id' | 'created_at' | 'updated_at'>): Promise<number> {
     const result = await exec(
-      `INSERT INTO product_variants (product_id, sku, size, color, price, stock, is_active)
-       VALUES (:productId, :sku, :size, :color, :price, :stock, :isActive)`,
+      `INSERT INTO product_variants (product_id, sku, size, color, weight, bed_type, price, stock, is_active)
+       VALUES (:productId, :sku, :size, :color, :weight, :bedType, :price, :stock, :isActive)`,
       { productId, ...input },
     );
     return result.insertId;

@@ -28,7 +28,7 @@ interface ProductDetail extends ProductSummary {
   description: string | null;
   metaTitle: string | null;
   metaDescription: string | null;
-  variants: Array<{ id: number; sku: string; size: string | null; color: string | null; price: number | null; stock: number }>;
+  variants: Array<{ id: number; sku: string; size: string | null; color: string | null; weight: string | null; bedType: string | null; price: number | null; stock: number; isActive: boolean }>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,7 +42,7 @@ function toSummary(row: ProductRow, images: ProductImageRow[]): ProductSummary {
     categoryId: row.category_id,
     name: row.name,
     slug: row.slug,
-    sku: row.sku,
+    sku: row.sku ?? '',
     price: Number(row.price),
     salePrice: row.sale_price == null ? null : Number(row.sale_price),
     stock: row.stock,
@@ -67,11 +67,14 @@ function toDetail(row: ProductRow, images: ProductImageRow[], variants: ProductV
       .filter((variant) => variant.product_id === row.id)
       .map((variant) => ({
         id: variant.id,
-        sku: variant.sku,
+        sku: variant.sku ?? '',
         size: variant.size,
         color: variant.color,
+        weight: variant.weight,
+        bedType: variant.bed_type,
         price: variant.price == null ? null : Number(variant.price),
         stock: variant.stock,
+        isActive: true,
       })),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -83,7 +86,8 @@ function orderByClause(sort: ProductListQuery['sort']): string {
     case 'price_asc': return 'ORDER BY COALESCE(sale_price, price) ASC, id DESC';
     case 'price_desc': return 'ORDER BY COALESCE(sale_price, price) DESC, id DESC';
     case 'rating': return 'ORDER BY rating_avg DESC, rating_count DESC, id DESC';
-    case 'popular': return 'ORDER BY rating_count DESC, id DESC';
+    case 'popular':
+    case 'best_sellers': return 'ORDER BY rating_count DESC, id DESC';
     default: return 'ORDER BY created_at DESC, id DESC';
   }
 }
@@ -258,6 +262,8 @@ export const productService = {
       sku: input.sku,
       size: input.size ?? null,
       color: input.color ?? null,
+      weight: input.weight ?? null,
+      bedType: input.bedType ?? null,
       price: input.price ?? null,
       stock: input.stock,
       is_active: input.isActive ? 1 : 0,
@@ -269,6 +275,8 @@ export const productService = {
     if (patch.sku != null) mapped.sku = patch.sku;
     if ('size' in patch) mapped.size = patch.size ?? null;
     if ('color' in patch) mapped.color = patch.color ?? null;
+    if ('weight' in patch) mapped.weight = patch.weight ?? null;
+    if ('bedType' in patch) mapped.bed_type = patch.bedType ?? null;
     if ('price' in patch) mapped.price = patch.price ?? null;
     if (patch.stock != null) mapped.stock = patch.stock;
     if (patch.isActive != null) mapped.is_active = patch.isActive ? 1 : 0;

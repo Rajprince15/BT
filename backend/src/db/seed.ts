@@ -41,7 +41,7 @@ const PRODUCTS = [
   ['Gulliver Super Soft', 270, 'Rs 270/KG + GST + BAG EXTRA'], ['Mink Blanket', 230, 'Rs 230/KG + GST + BAG EXTRA'], ['Mink Cloudy', 300, 'Rs 300/KG + GST + BAG EXTRA'],
   ['A Grade Towels', 455, 'Rs 455/kg. GST included.'], ['A Grade Bath Towel 500 gm', 230, '500 gm. Rs 230/pc. GST included.'], ['A Grade Bath Towel 650 gm', 300, '650 gm. Rs 300/pc. GST included.'], ["A Grade Women's / Baby Towel", 150, '24 x 48 inches approximately; average weight 330 gm. Rs 150/pc. GST included.'], ['A Grade Hand Towel', 78, '170 gm. Rs 78/pc. GST included.'], ['A Grade Face Towel', 23, '50 gm. Rs 23/pc. GST included.'], ['A Grade Beach Towel', 360, '800 gm. Rs 360/pc. GST included.'],
   ['B+ Grade Towels', 335, 'Rs 335/kg. GST included.'], ['B+ Grade Bath Towel 500 gm', 168, '500 gm. Rs 168/pc. GST included.'], ['B+ Grade Bath Towel 650 gm', 218, '650 gm. Rs 218/pc. GST included.'], ["B+ Grade Women's / Baby Towel", 117, '24 x 48 inches approximately; average weight 330 gm. Rs 117/pc. GST included.'], ['B+ Grade Hand Towel', 57, '170 gm. Rs 57/pc. GST included.'], ['B+ Grade Face Towel', 17, '50 gm. Rs 17/pc. GST included.'], ['B+ Grade Beach Towel', 268, '800 gm. Rs 268/pc. GST included.'],
-].map(([name, price, description]) => ({ name: name as string, category: name.toString().includes('Towel') || name.toString().includes('Grade') ? 'Bath Linen' : 'Bed Linen', price: price as number, sku: '', description: description as string }));
+].map(([name, price, description]) => ({ name: name as string, category: name.toString().includes('Towel') || name.toString().includes('Grade') ? 'Bath Linen' : 'Bed Linen', price: price as number, sku: null, description: description as string }));
 
 async function main(): Promise<void> {
   logger.info('Starting seed…');
@@ -73,6 +73,11 @@ async function main(): Promise<void> {
   const [catAll] = (await pool.query('SELECT id, name, slug FROM categories')) as unknown as [Array<{ id: number; name: string; slug: string }>, unknown];
   const categoryByName = new Map(catAll.map((row) => [row.name, row]));
 
+  await pool.query(
+    `UPDATE products SET deleted_at = CURRENT_TIMESTAMP
+     WHERE sku IN ('BT-SANG-001', 'BT-MAHE-002', 'BT-KUTC-003', 'BT-BAGR-004', 'BT-CHAN-005')`,
+  );
+
   for (const product of PRODUCTS) {
     const category = categoryByName.get(product.category);
     if (!category) continue;
@@ -90,6 +95,15 @@ async function main(): Promise<void> {
        VALUES (?, ?, ?, 0)`,
       [productId, `https://placehold.co/1200x1500/1A1611/F5EFE1?text=${encodeURIComponent(product.name)}`, product.name],
     );
+    if (['Gulliver Super Soft', 'Mink Blanket', 'Mink Cloudy'].includes(product.name)) {
+      const weights = ['1.3 kg', '1.5 kg', '2 kg', '2.5 kg', '3 kg', '4 kg', '5 kg', '6 kg', '7 kg', '8 kg'];
+      for (const weight of weights) for (const bedType of ['Double Bed', 'Single Bed']) {
+        await pool.query(
+          `INSERT INTO product_variants (product_id, sku, weight, bed_type, stock, is_active) VALUES (?, NULL, ?, ?, 0, 1)`,
+          [productId, weight, bedType],
+        );
+      }
+    }
   }
   logger.info('✓ Products seeded');
 
