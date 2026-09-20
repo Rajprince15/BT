@@ -1,7 +1,15 @@
-// BHAVITA TEXTILES — ESLint flat config (ESLint 9+/10, Next.js 16+).
-// Migrated from `.eslintrc.cjs` to satisfy `next lint` deprecation /
-// the ESLint CLI used by `eslint-config-next@^16`.
+// BHAVITA TEXTILES — ESLint flat config
+// ESLint 9 + Next.js 15
+//
+// Architecture:
+// UI (app/components/hooks) → services → mocks/API
+//
+// Mocks are intentionally private to the service layer.
+// Services are allowed to import mocks.
+// App/components/hooks are NOT allowed to import mocks or the API client.
+
 import { FlatCompat } from '@eslint/eslintrc';
+import tseslint from '@typescript-eslint/eslint-plugin';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -13,34 +21,28 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Next.js recommended rules
   ...compat.extends('next/core-web-vitals'),
 
-  // Global rule: nobody may import `@/mocks/*` outside of `src/services/**`
-  // (services are the only allowed boundary between mocks and the app).
+  // TypeScript ESLint plugin
   {
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['@/mocks/*'],
-              message:
-                'Mocks are internal to the service layer. Import via a service function in src/services/**.',
-            },
-          ],
-        },
-      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
 
-  // App / components / hooks: no direct axios, no direct mocks, no lib/api.
-  // They MUST go through services.
+  // Application architecture boundary.
+  //
+  // These files represent the UI/application layer and must use
+  // service functions instead of importing mocks or the API client directly.
   {
     files: [
-      'src/app/**/*.{ts,tsx}',
-      'src/components/**/*.{ts,tsx}',
-      'src/hooks/**/*.{ts,tsx}',
+      'src/app/**/*.{js,jsx,ts,tsx}',
+      'src/components/**/*.{js,jsx,ts,tsx}',
+      'src/hooks/**/*.{js,jsx,ts,tsx}',
     ],
     rules: {
       'no-restricted-imports': [
@@ -68,7 +70,7 @@ const eslintConfig = [
     },
   },
 
-  // Ignore generated / build outputs
+  // Generated / build output
   {
     ignores: [
       '.next/**',
@@ -76,6 +78,7 @@ const eslintConfig = [
       'public/**',
       'next-env.d.ts',
       'sentry.*.config.ts',
+      '.netlify/**',
     ],
   },
 ];
