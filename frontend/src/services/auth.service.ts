@@ -47,6 +47,18 @@ async function callApi<T>(path: string, payload?: unknown, method: 'get' | 'post
   return response.data.data;
 }
 
+function setRouteSession(user: User | undefined): void {
+  if (typeof document === 'undefined' || !user) return;
+  document.cookie = `bt_session=1; path=/; SameSite=Lax`;
+  document.cookie = `bt_role=${encodeURIComponent(user.role)}; path=/; SameSite=Lax`;
+}
+
+function clearRouteSession(): void {
+  if (typeof document === 'undefined') return;
+  document.cookie = 'bt_session=; Max-Age=0; path=/; SameSite=Lax';
+  document.cookie = 'bt_role=; Max-Age=0; path=/; SameSite=Lax';
+}
+
 export const authService = {
   async login(payload: AuthPayload) {
     if (useMockService) {
@@ -58,11 +70,13 @@ export const authService = {
       const token = `mock-token-${user.id}`;
       setSession(user.id, token);
       setAccessToken(token);
+      setRouteSession(user);
       return { accessToken: token, user };
     }
 
     const data = await callApi<AuthResponse>('/auth/login', payload, 'post');
     setAccessToken(data.accessToken);
+    setRouteSession(data.user);
     return data;
   },
 
@@ -91,11 +105,13 @@ export const authService = {
       const token = `mock-token-${user.id}`;
       setSession(user.id, token);
       setAccessToken(token);
+      setRouteSession(user);
       return { accessToken: token, user };
     }
 
-    const data = await callApi<AuthResponse>('/auth/register', payload, 'post');
+    const data = await callApi<AuthResponse>('/auth/signup', payload, 'post');
     setAccessToken(data.accessToken);
+    setRouteSession(data.user);
     return data;
   },
 
@@ -112,7 +128,9 @@ export const authService = {
       return { accessToken: token, user };
     }
 
-    return callApi<AuthResponse>('/auth/refresh', undefined, 'post');
+    const data = await callApi<AuthResponse>('/auth/refresh', undefined, 'post');
+    setAccessToken(data.accessToken);
+    return data;
   },
 
   async logout() {
@@ -120,11 +138,13 @@ export const authService = {
       await mockDelay();
       setSession(null, null);
       setAccessToken(null);
+      clearRouteSession();
       return { success: true };
     }
 
     const data = await callApi<{ success: boolean }>('/auth/logout', undefined, 'post');
     setAccessToken(null);
+    clearRouteSession();
     return data;
   },
 

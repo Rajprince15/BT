@@ -16,6 +16,9 @@ export interface CategoryRow {
 }
 
 export const categoryRepo = {
+  async publicWithCounts(): Promise<Array<CategoryRow & { product_count: number }>> {
+    return query<CategoryRow & { product_count: number }>(`SELECT c.*, COUNT(DISTINCT p.id) AS product_count FROM categories c LEFT JOIN products p ON p.category_id=c.id AND p.deleted_at IS NULL AND p.status='published' AND p.stock > 0 WHERE c.deleted_at IS NULL AND c.is_active=1 GROUP BY c.id ORDER BY c.sort_order, c.name`);
+  },
   async listActive(): Promise<CategoryRow[]> {
     return query<CategoryRow>(
       `SELECT * FROM categories WHERE deleted_at IS NULL AND is_active = 1 ORDER BY sort_order, name`,

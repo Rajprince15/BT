@@ -1,8 +1,9 @@
 :root {
-  --bg-primary: #FAF8F4; --bg-white: #FFFFFF; --bg-muted: #F3EFE6; --text-main: #332F24; --text-muted: #706958;
-  --gold-dark: #7A5F2D; --gold-medium: #A48348; --gold-light: #D5B97A; --gold-pale: #F0E6CD;
+  --cream-bg: #F9F4EC; --cream-bg-alt: #F1E8DA; --cream-panel: #E7DECE; --dark-green: #0C3832; --dark-green-alt: #0E3C35; --dark-brown: #774822;
+  --bg-primary: #F9F4EC; --bg-white: #FFFFFF; --bg-muted: #F1E8DA; --text-main: #2A2620; --text-muted: #706958;
+  --gold-dark: #774822; --gold-medium: #AD8247; --gold-light: #BE9C6C; --gold-pale: #F0E6CD;
   --gold-gradient: linear-gradient(135deg, #7A5F2D 0%, #D5B97A 50%, #7A5F2D 100%);
-  --peacock-teal: #015C65; --peacock-teal-dark: #00454C; --peacock-teal-light: #028A97; --peacock-teal-bg: #EAF3F4; --peacock-blue: #024873;
+  --peacock-teal: #0C3832; --peacock-teal-dark: #0E3C35; --peacock-teal-light: #028A97; --peacock-teal-bg: #EAF3F4; --peacock-blue: #024873;
   --success: #127A4E; --success-bg: #E8F5E9; --warning: #B96B07; --warning-bg: #FFF3E0; --danger: #B92525; --danger-bg: #FFEBEE;
   --bg: var(--bg-primary); --surface: var(--bg-white); --surface-2: var(--bg-muted); --ink: var(--text-main); --ink-2: var(--text-muted);
   --gold: var(--gold-medium); --gold-2: var(--gold-dark); --gold-soft: var(--gold-pale); --navy: var(--text-main);
@@ -12,10 +13,10 @@
 }
 
 [data-theme="dark"] {
+  --cream-bg: #12100E; --cream-bg-alt: #24201D; --cream-panel: #2A2620; --dark-green: #0C3832; --dark-green-alt: #0E3C35; --dark-brown: #774822;
   --bg-primary: #12100E; --bg-white: #1A1715; --bg-muted: #24201D; --text-main: #F5F2EE; --text-muted: #A8A099;
   --gold-dark: #E2BD52; --gold-medium: #D4AC3A; --gold-light: #E8C878; --gold-pale: #3A2E1B;
   --peacock-teal: #2D8B91; --peacock-teal-dark: #1F686F; --peacock-teal-light: #50B6BB; --peacock-teal-bg: #193337;
   --success: #6DB18B; --success-bg: #193126; --warning: #E0A04A; --warning-bg: #3A2B18; --danger: #E08B7F; --danger-bg: #3A2020;
   --bg: var(--bg-primary); --surface: var(--bg-white); --surface-2: var(--bg-muted); --ink: var(--text-main); --ink-2: var(--text-muted); --gold: var(--gold-medium); --gold-2: var(--gold-dark); --gold-soft: var(--gold-pale); --navy: var(--text-main); --brand: var(--peacock-teal); --brand-2: var(--peacock-teal-dark); --brand-soft: var(--peacock-teal-bg); --brand-ink: #F5F2EE; --border: #40372F; --grid-line: rgba(120, 110, 100, 0.01); --popover: var(--bg-white); --popover-foreground: var(--text-main); --accent: var(--bg-muted); --accent-foreground: var(--text-main); --destructive: var(--danger);
 }
-

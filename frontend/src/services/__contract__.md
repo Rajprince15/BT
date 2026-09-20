@@ -8,7 +8,7 @@ the same signature — toggle controlled by `NEXT_PUBLIC_USE_MOCKS`.
 | Function | Signature returns | Mock source | Backend endpoint |
 |---|---|---|---|
 | **Auth** | | | |
-| `authService.register(payload)` | `{ accessToken, user }` | `users.mock` + `_session` | `POST /api/auth/register` |
+| `authService.register(payload)` | `{ accessToken, user }` | `users.mock` + `_session` | `POST /api/auth/signup` |
 | `authService.login(payload)` | `{ accessToken, user }` | `users.mock` + `_session` | `POST /api/auth/login` |
 | `authService.refresh()` | `{ accessToken, user }` | `_session` | `POST /api/auth/refresh` |
 | `authService.logout()` | `{ success: true }` | `_session` | `POST /api/auth/logout` |

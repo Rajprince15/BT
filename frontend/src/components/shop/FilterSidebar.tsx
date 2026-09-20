@@ -27,7 +27,7 @@ interface FilterSidebarProps {
   categories: Category[];
   activeCategorySlug?: string;
   filters: ShopFilters;
-  facets: { colors: string[]; sizes: string[]; priceMin: number; priceMax: number };
+  facets: { colors: Array<{value:string;count:number}>; sizes: Array<{value:string;count:number}>; priceMin: number; priceMax: number };
   onChange: (next: Partial<ShopFilters>) => void;
   onReset: () => void;
   className?: string;
@@ -339,7 +339,7 @@ export default function FilterSidebar({
             </AccordionTrigger>
             <AccordionContent className="px-3 pb-3">
               <div className="grid grid-cols-6 gap-2">
-                {facets.colors.map((c) => {
+                {facets.colors.map(({value:c,count}) => {
                   const swatch = COLOR_SWATCH[c] ?? '#D6CBB4';
                   const active = filters.color === c;
                   const isGradient = swatch.includes('gradient');
@@ -354,7 +354,7 @@ export default function FilterSidebar({
                       onClick={() =>
                         onChange({ color: active ? undefined : c })
                       }
-                      title={c}
+                      title={`${c} (${count})`}
                       className={cn(
                         'group relative flex aspect-square items-center justify-center rounded-full border transition-all',
                         active
@@ -400,7 +400,7 @@ export default function FilterSidebar({
             </AccordionTrigger>
             <AccordionContent className="px-3 pb-3">
               <div className="flex flex-wrap gap-1.5">
-                {facets.sizes.map((s) => {
+                {facets.sizes.map(({value:s,count}) => {
                   const active = filters.size === s;
                   return (
                     <button
@@ -420,7 +420,7 @@ export default function FilterSidebar({
                           : 'border-border text-ink-2 hover:border-ink hover:text-ink',
                       )}
                     >
-                      {s}
+                      {s} ({count})
                     </button>
                   );
                 })}

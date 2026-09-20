@@ -24,4 +24,5 @@ export type ApiResponse<T> = ApiSuccess<T> | ApiError;
 export interface ListResponse<T> {
   items: T[];
   meta: PaginationMeta;
+  isEmpty?: boolean;
 }

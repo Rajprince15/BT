@@ -146,7 +146,7 @@ export const authService = {
     await refreshTokenRepo.revoke(row.id, newId);
     res.cookie(REFRESH_COOKIE, newRaw, refreshCookieOptions());
     const accessToken = signAccessToken({ sub: String(user.id), role: user.role, ver: user.token_version });
-    return { accessToken };
+    return { accessToken, user: toPublicUser(user) };
   },
 
   async logout(rawRefresh: string | undefined, res: Response) {

@@ -11,4 +11,5 @@ export interface Category {
   updatedAt: string;
   deletedAt?: string;
   children?: Category[];
+  productCount?: number;
 }

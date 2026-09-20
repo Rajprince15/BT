@@ -91,6 +91,35 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), 'Cinzel', Georgia, seri
 .text-balance { text-wrap: balance; }
 .page-grid { min-height: 60vh; background-color: var(--bg); background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px); background-size: 8px 8px; }
 .page-grid > .bg-bg, .page-grid > main.bg-bg, .page-grid > div.bg-bg { background-color: transparent !important; }
+[data-testid="home-page"], [data-testid="about-page"] { background: var(--cream-bg, #F9F4EC); }
+[data-testid="home-page"] [data-testid="home-stats"], [data-testid="home-page"] [data-testid="manufacturing-process"], [data-testid="about-page"] [data-testid="about-cta"] { width: 100%; }
+[data-testid="home-page"] [data-testid="hero-section"] { min-height: clamp(540px, 46vw, 690px); }
+[data-testid="about-page"] [data-testid="about-hero"] { min-height: clamp(430px, 37vw, 560px); }
+[data-testid="home-page"] [data-testid="featured-range"] { padding-block: clamp(2.5rem, 5vw, 4.5rem); }
+[data-testid="home-page"] [data-testid="manufacturing-process"] > div { min-height: 360px; }
+[data-testid="about-page"] [data-testid="about-stats"] { background: var(--cream-bg); }
+[data-testid="about-page"] [data-testid="about-cta"] { background: var(--dark-green, #0C3832); }
+[data-testid="home-page"] [data-testid="hero-section"] > div.absolute,
+[data-testid="about-page"] [data-testid="about-hero"] > div.absolute { background: transparent !important; }
+[data-testid="home-page"] [data-testid="home-stats"],
+[data-testid="home-page"] [data-testid="manufacturing-process"] .bg-ink,
+[data-testid="about-page"] [data-testid="about-cta"] { background-color: var(--dark-green) !important; }
+[data-testid="home-page"] [data-testid="hero-section"] { min-height: 405px; }
+[data-testid="home-page"] [data-testid="featured-range"] { min-height: 320px; }
+[data-testid="home-page"] [data-testid="home-stats"] { min-height: 90px; display: flex; align-items: center; }
+[data-testid="home-page"] [data-testid="audience-section"] { min-height: 230px; }
+[data-testid="home-page"] [data-testid="manufacturing-process"] { min-height: 230px; grid-template-columns: 23% 77%; }
+[data-testid="home-page"] [data-testid="manufacturing-process"] > div:first-child { min-height: 230px; }
+[data-testid="home-page"] [data-testid="manufacturing-process"] > div:last-child { grid-template-columns: 1fr 1.25fr; }
+[data-testid="about-page"] [data-testid="about-hero"] { min-height: 325px; }
+[data-testid="about-page"] [data-testid="about-story"] { min-height: 225px; grid-template-columns: 42% 58%; }
+[data-testid="about-page"] [data-testid="about-stats"] { min-height: 125px; background: var(--cream-bg) !important; }
+[data-testid="about-page"] [data-testid="about-what-we-do"] { min-height: 165px; }
+[data-testid="about-page"] [data-testid="about-values"] { min-height: 150px; }
+[data-testid="about-page"] [data-testid="about-strength"] { min-height: 220px; grid-template-columns: 34% 66%; }
+[data-testid="about-page"] [data-testid="about-global"] { min-height: 150px; }
+[data-testid="about-page"] [data-testid="about-cta"] { min-height: 100px; }
+.bg-dark-green { background-color: var(--dark-green) !important; }
 [data-testid="home-page"], [data-testid="home-page"] > section.bg-bg { background-color: transparent !important; }
 .page-grid .py-20 { padding-block: 3.5rem; }
 .page-grid .py-24 { padding-block: 4rem; }
@@ -117,4 +146,3 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), 'Cinzel', Georgia, seri
 .tracking-wider2 { letter-spacing: 0.18em; }
 :where(button, a, input, select, textarea):focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .fade-up, .fade-in, .scale-in, .slide-up, .stagger > * { animation: none !important; } .hover-lift:hover { transform: none; box-shadow: none; } *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
-

@@ -73,8 +73,8 @@ router.post('/quote', validate({ body: quoteSchema }), asyncWrap(async (req, res
   res.json(ok({
     quoteId,
     subtotal: cart.subtotal,
-    shippingAmount: cart.shippingAmount,
-    taxAmount: cart.taxAmount,
+    shipping: cart.shipping,
+    tax: cart.tax,
     total: cart.total,
     currency: cart.currency,
     itemsCount: cart.itemsCount,
@@ -110,16 +110,6 @@ router.post('/razorpay/order', validate({ body: orderSchema }), asyncWrap(async 
     paymentLogger.error('rp.order.create.failed', { message: (error as Error).message, userId: req.user.id });
     throw new BadRequestError('Could not initialise payment.');
   }
-
-  // Provisional payments row — status=created; the actual `orders` row is inserted on verify.
-  await exec(
-    `INSERT INTO payments (order_id, razorpay_order_id, amount, currency, status, raw_payload_json)
-     VALUES (0, :rpOrderId, :amount, :currency, 'created', :payload)`,
-    {
-      rpOrderId: rpOrder.id, amount: quote.total, currency: 'INR',
-      payload: JSON.stringify({ receipt, quoteId: body.quoteId }),
-    },
-  );
 
   paymentLogger.info('rp.order.created', { rpOrderId: rpOrder.id, userId: req.user.id, amount: quote.total });
 
@@ -201,12 +191,14 @@ router.post('/razorpay/verify', validate({ body: verifySchema }), asyncWrap(asyn
       `INSERT INTO orders (user_id, order_number, subtotal, shipping_amount, tax_amount, total_amount,
                            currency, shipping_address_json, payment_status, order_status, placed_at)
        VALUES (?, ?, ?, ?, ?, ?, 'INR', ?, 'paid', 'confirmed', CURRENT_TIMESTAMP)`,
-      [req.user!.id, number, cart.subtotal, cart.shippingAmount, cart.taxAmount, cart.total, JSON.stringify(shipping)],
+      [req.user!.id, number, cart.subtotal, cart.shipping, cart.tax, cart.total, JSON.stringify(shipping)],
     );
     const orderId = (orderResult as { insertId: number }).insertId;
 
     for (const item of rawItems) {
-      const price = Number(item.variant_price ?? item.sale_price ?? item.unit_price);
+      const basePrice = Number(item.variant_price ?? item.sale_price ?? item.unit_price);
+      const weight = Number.parseFloat(item.variant_weight ?? '');
+      const price = ['Gulliver Super Soft', 'Mink Blanket', 'Mink Cloudy'].includes(item.product_name) && Number.isFinite(weight) ? basePrice * weight : basePrice;
       await conn.execute(
         `INSERT INTO order_items (order_id, product_id, variant_id, product_name, product_sku, quantity, price, line_total)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -220,9 +212,9 @@ router.post('/razorpay/verify', validate({ body: verifySchema }), asyncWrap(asyn
     }
 
     await conn.execute(
-      `UPDATE payments SET order_id = ?, razorpay_payment_id = ?, razorpay_signature = ?, status = 'captured', updated_at = CURRENT_TIMESTAMP
-       WHERE razorpay_order_id = ?`,
-      [orderId, paymentId, signature, orderId],
+      `INSERT INTO payments (order_id, razorpay_order_id, razorpay_payment_id, razorpay_signature, amount, currency, status)
+       VALUES (?, ?, ?, ?, ?, 'INR', 'captured')`,
+      [orderId, orderId, paymentId, signature, cart.total],
     );
 
     await conn.execute(`DELETE ci FROM cart_items ci JOIN carts c ON c.id = ci.cart_id WHERE c.user_id = ?`, [req.user!.id]);

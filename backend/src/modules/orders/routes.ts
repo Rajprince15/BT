@@ -7,7 +7,7 @@ import { ok, camelize } from '../../utils/envelope';
 import { authMiddleware } from '../../middleware/auth';
 import { authReadLimiter } from '../../middleware/rateLimit';
 import { validate } from '../../middleware/validate';
-import { pageMeta, parsePagination } from '../../utils/pagination';
+import { parsePagination } from '../../utils/pagination';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../../utils/errors';
 import { sendMail } from '../../config/mailer';
 
@@ -53,7 +53,7 @@ router.get('/', validate({ query: listQuerySchema }), asyncWrap(async (req, res)
      FROM orders o ${where} ORDER BY o.placed_at DESC, o.id DESC LIMIT ${limit} OFFSET ${offset}`,
     params,
   );
-  res.json(ok(camelize(orders), pageMeta(page, limit, totalRows[0]?.n ?? 0)));
+  res.json(ok(camelize(orders)));
 }));
 
 router.get('/:orderNumber', asyncWrap(async (req, res) => {
@@ -62,7 +62,7 @@ router.get('/:orderNumber', asyncWrap(async (req, res) => {
   res.json(ok(detail));
 }));
 
-router.post('/:orderNumber/cancel', asyncWrap(async (req, res) => {
+router.patch('/:orderNumber/cancel', asyncWrap(async (req, res) => {
   if (!req.user) throw new UnauthorizedError();
   const rows = await query<{ id: number; user_id: number; order_status: string; payment_status: string; total_amount: number }>(
     `SELECT id, user_id, order_status, payment_status, total_amount FROM orders WHERE order_number = :n LIMIT 1`,
@@ -99,7 +99,7 @@ router.post('/:orderNumber/cancel', asyncWrap(async (req, res) => {
       data: { name: user[0].name, orderNumber: req.params.orderNumber, year: new Date().getFullYear() },
     }).catch(() => undefined);
   }
-  res.json(ok({ cancelled: true }));
+  res.json(ok(await fetchOrderDetail(req.user.id, req.params.orderNumber)));
 }));
 
 router.get('/:orderNumber/invoice', asyncWrap(async (req, res) => {

@@ -9,7 +9,7 @@ import { adminLimiter } from '../../middleware/rateLimit';
 import { validate } from '../../middleware/validate';
 import { pageMeta, parsePagination } from '../../utils/pagination';
 import { audit } from '../../utils/audit';
-import { NotFoundError } from '../../utils/errors';
+import { NotFoundError, ConflictError } from '../../utils/errors';
 import { productService } from '../products/service';
 import { categoryService } from '../categories/service';
 import {
@@ -222,21 +222,28 @@ router.get(
     res.json(ok(camelize(rows), pageMeta(page, limit, total[0]?.n ?? 0)));
   }),
 );
-router.post('/customers/:id/suspend', asyncWrap(async (req, res) => {
+router.get('/customers/:id', asyncWrap(async (req, res) => {
+  const rows = await query(`SELECT id, name, email, phone, role, email_verified, status, last_login_at, created_at, updated_at, deleted_at FROM users WHERE id = :id AND role = 'customer' LIMIT 1`, { id: req.params.id });
+  if (!rows[0]) throw new NotFoundError('Customer not found.');
+  res.json(ok(camelize(rows[0])));
+}));
+router.patch('/customers/:id/suspend', asyncWrap(async (req, res) => {
   await exec(`UPDATE users SET status = 'suspended' WHERE id = :id AND role = 'customer'`, { id: req.params.id });
   await audit(req, { action: 'customer.suspend', entity: 'user', entityId: req.params.id });
-  res.json(ok({ suspended: true }));
+  const rows = await query(`SELECT id, name, email, phone, role, email_verified, status, last_login_at, created_at, updated_at, deleted_at FROM users WHERE id = :id LIMIT 1`, { id: req.params.id });
+  res.json(ok(camelize(rows[0])));
 }));
-router.post('/customers/:id/activate', asyncWrap(async (req, res) => {
+router.patch('/customers/:id/activate', asyncWrap(async (req, res) => {
   await exec(`UPDATE users SET status = 'active' WHERE id = :id AND role = 'customer'`, { id: req.params.id });
   await audit(req, { action: 'customer.activate', entity: 'user', entityId: req.params.id });
-  res.json(ok({ activated: true }));
+  const rows = await query(`SELECT id, name, email, phone, role, email_verified, status, last_login_at, created_at, updated_at, deleted_at FROM users WHERE id = :id LIMIT 1`, { id: req.params.id });
+  res.json(ok(camelize(rows[0])));
 }));
 
 // ---------- Wholesale inquiries ----------
 
 router.get(
-  '/wholesale-inquiries',
+  '/wholesale',
   validate({ query: z.object({ status: z.enum(['new', 'contacted', 'qualified', 'won', 'lost']).optional(), page: z.coerce.number().int().min(1).default(1), limit: z.coerce.number().int().min(1).max(100).default(20) }) }),
   asyncWrap(async (req, res) => {
     const q = req.query as unknown as { status?: string; page: number; limit: number };
@@ -250,7 +257,7 @@ router.get(
   }),
 );
 router.patch(
-  '/wholesale-inquiries/:id',
+  '/wholesale/:id/status',
   validate({ body: z.object({ status: z.enum(['new', 'contacted', 'qualified', 'won', 'lost']), notes: z.string().max(2000).optional() }) }),
   asyncWrap(async (req, res) => {
     const body = req.body as { status: string; notes?: string };
@@ -332,7 +339,7 @@ router.get(
     res.json(ok(camelize(rows), pageMeta(page, limit, total[0]?.n ?? 0)));
   }),
 );
-router.post(
+router.patch(
   '/reviews/:id/moderate',
   validate({ body: z.object({ status: z.enum(['approved', 'rejected']) }) }),
   asyncWrap(async (req, res) => {
@@ -346,8 +353,38 @@ router.post(
     res.json(ok({ moderated: true }));
   }),
 );
+router.delete('/reviews/:id', asyncWrap(async (req, res) => {
+  await exec(`DELETE FROM reviews WHERE id = :id`, { id: req.params.id });
+  res.json(ok({ success: true }));
+}));
 
 // ---------- Users (super admin) ----------
+
+router.post(
+  '/users',
+  requireSuperAdmin,
+  validate({ body: z.object({
+    name: z.string().trim().min(2).max(120),
+    email: z.string().trim().email(),
+    phone: z.string().trim().max(20).optional(),
+    password: z.string().min(8).max(128),
+    role: z.enum(['admin', 'super_admin']).default('admin'),
+  }) }),
+  asyncWrap(async (req, res) => {
+    const bcrypt = await import('bcrypt');
+    const body = req.body as { name: string; email: string; phone?: string; password: string; role: 'admin' | 'super_admin' };
+    const existing = await query<{ id: number }>(`SELECT id FROM users WHERE email = :email LIMIT 1`, { email: body.email.toLowerCase() });
+    if (existing[0]) throw new ConflictError('An account with this email already exists.', 'EMAIL_TAKEN');
+    const result = await exec(
+      `INSERT INTO users (name, email, phone, password_hash, role, email_verified, status)
+       VALUES (:name, :email, :phone, :passwordHash, :role, 0, 'active')`,
+      { name: body.name, email: body.email.toLowerCase(), phone: body.phone ?? null, passwordHash: await bcrypt.hash(body.password, 12), role: body.role },
+    );
+    await audit(req, { action: 'user.admin_create', entity: 'user', entityId: result.insertId, after: { email: body.email, role: body.role } });
+    const rows = await query(`SELECT id, name, email, phone, role, email_verified, status, created_at, updated_at FROM users WHERE id = :id`, { id: result.insertId });
+    res.status(201).json(ok(camelize(rows[0])));
+  }),
+);
 
 router.get('/users', requireSuperAdmin, asyncWrap(async (_req, res) => {
   const rows = await query(`SELECT id, name, email, role, status, last_login_at, created_at FROM users WHERE deleted_at IS NULL ORDER BY id`);
@@ -367,7 +404,7 @@ router.post(
 // ---------- Audit log ----------
 
 router.get(
-  '/audit-logs',
+  '/audit',
   requireSuperAdmin,
   validate({ query: z.object({ entity: z.string().optional(), action: z.string().optional(), page: z.coerce.number().int().min(1).default(1), limit: z.coerce.number().int().min(1).max(200).default(50) }) }),
   asyncWrap(async (req, res) => {

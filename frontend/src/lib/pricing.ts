@@ -13,6 +13,5 @@ export function priceNote(product: Product): string | undefined {
   return undefined;
 }
 export function productTotalPrice(product: Product, variant: ProductVariant | undefined, quantity: number): number {
-  const unit = productUnitPrice(product, variant);
-  return product.name.includes('Towel') && !product.name.endsWith('Towels') ? unit * quantity : unit;
+  return productUnitPrice(product, variant) * Math.max(1, quantity);
 }

@@ -22,6 +22,8 @@ const wrap = (fn: (req: Request, res: Response, next: NextFunction) => Promise<u
   };
 
 router.post('/register', authLimiter, validate({ body: registerSchema }), wrap(authController.register));
+// Public signup is customer-only; the schema intentionally has no role field.
+router.post('/signup', authLimiter, validate({ body: registerSchema }), wrap(authController.register));
 router.post('/login', authLimiter, validate({ body: loginSchema }), wrap(authController.login));
 router.post('/refresh', wrap(authController.refresh));
 router.post('/logout', wrap(authController.logout));

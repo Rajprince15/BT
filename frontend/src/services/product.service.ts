@@ -3,6 +3,7 @@ import { products } from '@/mocks/products.mock';
 import { categories } from '@/mocks/categories.mock';
 import type { Product } from '@/types/Product';
 import type { ApiResponse, ListResponse } from '@/types/api';
+import { getAvailableFilters, type AvailableFilters } from '@/lib/catalog-filters';
 import { mockDelay, useMockService, paginate, simulateErrorRate } from '@/services/_mock-runtime';
 
 /* -------------------------------------------------------------------------- */
@@ -271,54 +272,16 @@ export const productService = {
 
   /** Distinct facets derived from current catalogue (mock). Backend will return a real aggregation. */
   async facets(params: Omit<ProductListParams, 'page' | 'limit'> = {}): Promise<{
-    colors: string[];
-    sizes: string[];
+    colors: Array<{value:string;count:number}>;
+    sizes: Array<{value:string;count:number}>;
     priceMin: number;
     priceMax: number;
   }> {
     if (useMockService) {
       await mockDelay();
-      const filtered = applyFilters(products, { ...params, page: 1, limit: 9999 });
-      const colors = new Set<string>();
-      const sizes = new Set<string>();
-      let lo = Number.POSITIVE_INFINITY;
-      let hi = 0;
-      for (const p of filtered) {
-        for (const v of p.variants) {
-          if (v.color) colors.add(v.color);
-          if (v.size) sizes.add(v.size);
-        }
-        const fp = finalPrice(p);
-        if (fp < lo) lo = fp;
-        if (fp > hi) hi = fp;
-      }
-      return {
-        colors: [...colors].sort(),
-        sizes: [...sizes].sort(),
-        priceMin: Number.isFinite(lo) ? Math.floor(lo) : 0,
-        priceMax: hi > 0 ? Math.ceil(hi) : 0,
-      };
+      return getAvailableFilters(products, categories);
     }
-    const result = await this.list({ ...params, limit: 1000, page: 1 });
-    const colors = new Set<string>();
-    const sizes = new Set<string>();
-    let lo = Number.POSITIVE_INFINITY;
-    let hi = 0;
-    for (const p of result.items) {
-      for (const v of p.variants) {
-        if (v.color) colors.add(v.color);
-        if (v.size) sizes.add(v.size);
-      }
-      const fp = finalPrice(p);
-      if (fp < lo) lo = fp;
-      if (fp > hi) hi = fp;
-    }
-    return {
-      colors: [...colors].sort(),
-      sizes: [...sizes].sort(),
-      priceMin: Number.isFinite(lo) ? Math.floor(lo) : 0,
-      priceMax: hi > 0 ? Math.ceil(hi) : 0,
-    };
+    return callApi<AvailableFilters>('/filters');
   },
 };
 

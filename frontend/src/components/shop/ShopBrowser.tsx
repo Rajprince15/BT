@@ -366,6 +366,8 @@ export default function ShopBrowser({
               emptyTitle={
                 isError
                   ? 'We couldn’t load these pieces'
+                  : lockedCategorySlug && total === 0
+                  ? 'No products here yet'
                   : effectiveQuery
                   ? `No matches for “${effectiveQuery}”`
                   : 'No pieces match your filters'
@@ -373,6 +375,8 @@ export default function ShopBrowser({
               emptyDescription={
                 isError
                   ? 'Please retry — your atelier feed will reappear shortly.'
+                  : lockedCategorySlug && total === 0
+                  ? 'Check back soon, or browse our other collections.'
                   : effectiveQuery
                   ? 'Try fewer keywords, or browse our collections to discover something new.'
                   : 'Try widening the price range or removing a colour / size to see more.'
@@ -380,6 +384,8 @@ export default function ShopBrowser({
               emptyAction={
                 isError
                   ? { label: 'Retry', onClick: () => refetch() }
+                  : lockedCategorySlug && total === 0
+                  ? { label: 'Browse other collections', onClick: () => router.push('/shop') }
                   : activeChips.length > 0
                   ? { label: 'Clear filters', onClick: onReset }
                   : undefined

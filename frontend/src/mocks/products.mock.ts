@@ -15,9 +15,10 @@ const weightedVariants = weights.flatMap((size) => ['Double Bed','Single Bed'].m
 
 function mk(seed: S): Product {
   const id = ++pid;
-  const variants: ProductVariant[] = (seed.variants ?? []).map((v) => ({ id: ++vid, productId: id, sku: '', weight: v.size, bedType: v.color as 'Single Bed' | 'Double Bed', stock: 0, isActive: true, createdAt: NOW, updatedAt: NOW }));
+  // Mock inventory is available so frontend-only catalogue and filter flows are usable.
+  const variants: ProductVariant[] = (seed.variants ?? []).map((v) => ({ id: ++vid, productId: id, sku: '', weight: v.size, bedType: v.color as 'Single Bed' | 'Double Bed', stock: 1, isActive: true, createdAt: NOW, updatedAt: NOW }));
   const images: ProductImage[] = [1, 2].map((n) => ({ id: ++iid, productId: id, imageUrl: mockImage(seed.slug, n - 1), cloudId: '', altText: seed.name, sortOrder: n - 1, createdAt: NOW }));
-  return { id, categoryId: seed.name.includes('Grade') || seed.name.includes('Towel') ? towels : bedding, name: seed.name, slug: seed.slug, sku: '', shortDescription: seed.shortDescription, description: seed.specification, price: seed.price, stock: 0, featured: false, bestSeller: false, newArrival: false, status: 'published', ratingAvg: 0, ratingCount: 0, metaTitle: seed.name, metaDescription: seed.shortDescription, createdAt: NOW, updatedAt: NOW, images, variants, aggregateRating: 0, reviewCount: 0, specification: seed.specification, sizeLabel: seed.variants ? 'Price per kg; available weights and bed types' : undefined };
+  return { id, categoryId: seed.name.includes('Grade') || seed.name.includes('Towel') ? towels : bedding, name: seed.name, slug: seed.slug, sku: '', shortDescription: seed.shortDescription, description: seed.specification, price: seed.price, stock: 1, featured: false, bestSeller: false, newArrival: false, status: 'published', ratingAvg: 0, ratingCount: 0, metaTitle: seed.name, metaDescription: seed.shortDescription, createdAt: NOW, updatedAt: NOW, images, variants, aggregateRating: 0, reviewCount: 0, specification: seed.specification, sizeLabel: seed.variants ? 'Price per kg; available weights and bed types' : undefined };
 }
 
 const seeds: S[] = [

@@ -3,6 +3,8 @@ import { categories } from '@/mocks/categories.mock';
 import type { Category } from '@/types/Category';
 import type { ApiResponse } from '@/types/api';
 import { mockDelay, useMockService } from '@/services/_mock-runtime';
+import { getAvailableFilters } from '@/lib/catalog-filters';
+import { products } from '@/mocks/products.mock';
 
 async function callApi<T>(path: string) {
   const response = await api.get<ApiResponse<T>>(path);
@@ -16,7 +18,7 @@ export const categoryService = {
   async tree(): Promise<Category[]> {
     if (useMockService) {
       await mockDelay();
-      return [...categories].sort((a, b) => a.sortOrder - b.sortOrder);
+      return getAvailableFilters(products, categories).categories;
     }
     return callApi<Category[]>('/categories');
   },

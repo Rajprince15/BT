@@ -46,6 +46,10 @@ function buildTree(rows: CategoryRow[]): CategoryNode[] {
 }
 
 export const categoryService = {
+  async publicWithCounts() {
+    const rows = await categoryRepo.publicWithCounts();
+    return rows.filter((r) => r.product_count > 0).map((r) => ({ ...toNode(r), productCount: Number(r.product_count) }));
+  },
   async publicTree() {
     const rows = await categoryRepo.listActive();
     return buildTree(rows);

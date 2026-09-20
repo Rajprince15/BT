@@ -13,7 +13,7 @@ router.get(
   publicReadLimiter,
   asyncWrap(async (_req, res) => {
     res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-    res.json(ok(await categoryService.publicTree()));
+    res.json(ok(await categoryService.publicWithCounts()));
   }),
 );
 
