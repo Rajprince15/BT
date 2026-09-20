@@ -29,8 +29,8 @@ const CARDS: SeasonalEditCard[] = [
   {
     key: 'winter-collection',
     label: 'Winter',
-    tagline: 'Cashmere & velvet',
-    description: 'Heavyweight razais, plush quilts and royal velvet drapes.',
+    tagline: 'Warm bedding',
+    description: 'Dohars, comforter sets and woolen sets.',
     panelClassName:
       'bg-[linear-gradient(155deg,#101728_0%,#1a2238_55%,#2a3556_100%)] text-bg',
     accentClassName: 'bg-gold text-ink',
@@ -38,8 +38,8 @@ const CARDS: SeasonalEditCard[] = [
   {
     key: 'festive-collection',
     label: 'Festive',
-    tagline: 'Gold-threaded craft',
-    description: 'Block-printed table linen, brocade cushions and Diwali decor.',
+    tagline: 'Towel grades',
+    description: 'A Grade and B+ Grade towels with GST included prices.',
     panelClassName:
       'bg-[linear-gradient(155deg,#3a1414_0%,#5a1f1f_55%,#7d2e2e_100%)] text-bg',
     accentClassName: 'bg-gold text-ink',
@@ -47,8 +47,8 @@ const CARDS: SeasonalEditCard[] = [
   {
     key: 'wedding-collection',
     label: 'Wedding',
-    tagline: 'Trousseau heirlooms',
-    description: 'Hand-embroidered bedding, dupion silk and ivory monogram sets.',
+    tagline: 'Bedding sets',
+    description: 'Comforter, bedsheet, cushion and pillow-cover sets.',
     panelClassName:
       'bg-[linear-gradient(155deg,#f3e8d4_0%,#e9d7b4_55%,#caa971_100%)] text-ink',
     accentClassName: 'bg-ink text-bg',

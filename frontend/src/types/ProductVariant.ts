@@ -4,6 +4,8 @@ export interface ProductVariant {
   sku: string;
   size?: string;
   color?: string;
+  weight?: string;
+  bedType?: 'Single Bed' | 'Double Bed';
   price?: number;
   stock: number;
   isActive: boolean;

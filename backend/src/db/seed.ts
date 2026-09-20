@@ -23,12 +23,25 @@ const CATEGORIES = [
 ];
 
 const PRODUCTS = [
-  { name: 'Sanganeri Cotton Bedsheet', category: 'Bed Linen', price: 5400, sku: 'BT-SANG-001', description: 'Hand-block printed on 300 TC cotton.' },
-  { name: 'Maheshwari Silk Runner', category: 'Table & Kitchen', price: 2800, sku: 'BT-MAHE-002', description: 'Featherweight silk-cotton weave.' },
-  { name: 'Kutch Mirror Cushion', category: 'Living', price: 1900, sku: 'BT-KUTC-003', description: 'Hand-mirrored square cushion cover.' },
-  { name: 'Bagru Indigo Throw', category: 'Living', price: 4200, sku: 'BT-BAGR-004', description: 'Deep indigo natural dye.' },
-  { name: 'Chanderi Curtain Pair', category: 'Curtains & Drapery', price: 8900, sku: 'BT-CHAN-005', description: 'Sheer weave, gold-thread border.' },
-];
+  ['Dohar Double Bed', 699, 'Size: 90x100 inches. Price: Rs 699 + GST.'],
+  ['Fleno Woolen Set with Satin', 699, 'Includes: 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['6 Piece Embroidery set', 1999, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Cushions; 2 Pillow Covers.'],
+  ['5 Piece Lace set', 699, 'Includes: 1 Double Bedsheet; 2 Cushions; 2 Pillow Covers.'],
+  ['Snowberry 4 Piece set', 1349, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['6 Piece Comforter Set', 1399, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Cushions; 2 Pillow Covers.'],
+  ['La Mour 4 Piece set', 1299, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['White Pearls 4 Piece set', 1299, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['Plash 4 Piece set', 1299, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['Occasion Dohar Double Bed Set', 1399, 'Includes: 1 AC Dohar Double bed; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['Dior Comforter Double bed', 549, ''], ['Plano Woolen Set', 499, 'Includes: 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['Celebration 4 Piece Set', 799, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['Calvin Print 4 Piece Set', 999, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['Calvin Solid 4 Piece Set', 1199, 'Includes: 1 Comforter; 1 Double Bedsheet; 2 Pillow Covers.'],
+  ['Pum-Pum 5 Piece Set', 499, 'Includes: 1 Double Bedsheet; 2 Cushions; 2 Pillow Covers.'],
+  ['Gulliver Super Soft', 270, 'Rs 270/KG + GST + BAG EXTRA'], ['Mink Blanket', 230, 'Rs 230/KG + GST + BAG EXTRA'], ['Mink Cloudy', 300, 'Rs 300/KG + GST + BAG EXTRA'],
+  ['A Grade Towels', 455, 'Rs 455/kg. GST included.'], ['A Grade Bath Towel 500 gm', 230, '500 gm. Rs 230/pc. GST included.'], ['A Grade Bath Towel 650 gm', 300, '650 gm. Rs 300/pc. GST included.'], ["A Grade Women's / Baby Towel", 150, '24 x 48 inches approximately; average weight 330 gm. Rs 150/pc. GST included.'], ['A Grade Hand Towel', 78, '170 gm. Rs 78/pc. GST included.'], ['A Grade Face Towel', 23, '50 gm. Rs 23/pc. GST included.'], ['A Grade Beach Towel', 360, '800 gm. Rs 360/pc. GST included.'],
+  ['B+ Grade Towels', 335, 'Rs 335/kg. GST included.'], ['B+ Grade Bath Towel 500 gm', 168, '500 gm. Rs 168/pc. GST included.'], ['B+ Grade Bath Towel 650 gm', 218, '650 gm. Rs 218/pc. GST included.'], ["B+ Grade Women's / Baby Towel", 117, '24 x 48 inches approximately; average weight 330 gm. Rs 117/pc. GST included.'], ['B+ Grade Hand Towel', 57, '170 gm. Rs 57/pc. GST included.'], ['B+ Grade Face Towel', 17, '50 gm. Rs 17/pc. GST included.'], ['B+ Grade Beach Towel', 268, '800 gm. Rs 268/pc. GST included.'],
+].map(([name, price, description]) => ({ name: name as string, category: name.toString().includes('Towel') || name.toString().includes('Grade') ? 'Bath Linen' : 'Bed Linen', price: price as number, sku: '', description: description as string }));
 
 async function main(): Promise<void> {
   logger.info('Starting seed…');
@@ -64,7 +77,7 @@ async function main(): Promise<void> {
     const category = categoryByName.get(product.category);
     if (!category) continue;
     const slug = slugify(product.name);
-    const [existing] = (await pool.query('SELECT id FROM products WHERE sku = ? LIMIT 1', [product.sku])) as unknown as [Array<{ id: number }>, unknown];
+    const [existing] = (await pool.query('SELECT id FROM products WHERE slug = ? LIMIT 1', [slug])) as unknown as [Array<{ id: number }>, unknown];
     if ((existing as unknown[]).length > 0) continue;
     const [insert] = await pool.query(
       `INSERT INTO products (category_id, name, slug, sku, short_description, description, price, stock, status, featured, new_arrival)

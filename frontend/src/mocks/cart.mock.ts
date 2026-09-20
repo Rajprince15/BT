@@ -4,8 +4,8 @@ import { mockImage } from '@/mocks/_images';
 const NOW = '2025-12-15T10:00:00.000Z';
 
 /* Seed cart for demo customer (userId=1).
- * - Item 1: Imperial Gold Jacquard (productId=6), qty 1, sale price 9499
- * - Item 2: Velvet Royal Cushion Cover Set (productId=9), qty 2, sale price 999
+ * - Item 1: Dohar Double Bed (productId=1), qty 1, price 699
+ * - Item 2: Fleno Woolen Set with Satin (productId=2), qty 1, price 699
  *
  * Totals are server-computed in the cart service (`computeTotals`). Values here
  * are the expected output so any consumer reading raw mocks sees a coherent state.
@@ -18,33 +18,27 @@ export const carts: Cart[] = [
       {
         id: 1,
         cartId: 1,
-        productId: 6,
+        productId: 1,
         variantId: undefined,
         quantity: 1,
-        price: 9499,
-        productName: 'Imperial Gold Jacquard Bedsheet Set',
-        productSku: 'BT-PB-001',
-        productSlug: 'imperial-gold-jacquard-bedsheet',
-        imageUrl: mockImage('imperial-gold-jacquard-bedsheet'),
+        price: 699,
+        productName: 'Dohar Double Bed', productSku: '', productSlug: 'dohar-double-bed', imageUrl: mockImage('dohar-double-bed'),
       },
       {
         id: 2,
         cartId: 1,
-        productId: 9,
+        productId: 2,
         variantId: undefined,
-        quantity: 2,
-        price: 999,
-        productName: 'Velvet Royal Cushion Cover (Set of 2)',
-        productSku: 'BT-CC-001',
-        productSlug: 'velvet-royal-cushion-cover-set',
-        imageUrl: mockImage('velvet-royal-cushion-cover-set'),
+        quantity: 1,
+        price: 699,
+        productName: 'Fleno Woolen Set with Satin', productSku: '', productSlug: 'fleno-woolen-set-with-satin', imageUrl: mockImage('fleno-woolen-set-with-satin'),
       },
     ],
     // 9499 + 2*999 = 11497 subtotal, +150 shipping, +5% tax = 574.85 → rounded to 574.85
-    subtotal: 11497,
+    subtotal: 1398,
     shipping: 150,
-    tax: 574.85,
-    total: 12221.85,
+    tax: 0,
+    total: 1548,
     createdAt: NOW,
     updatedAt: NOW,
   },

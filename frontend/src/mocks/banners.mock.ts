@@ -23,7 +23,7 @@ export const banners: Banner[] = [
   {
     id: 2,
     title: 'The Winter Royal Edit',
-    subtitle: 'Cashmere blankets, velvet drapes, festive layers.',
+    subtitle: 'Dohars, comforter sets and woolen sets.',
     imageUrl: IMG('hero-winter-royal'),
     linkUrl: '/collections/winter-collection',
     placement: 'home_hero',
@@ -38,7 +38,7 @@ export const banners: Banner[] = [
   {
     id: 3,
     title: 'Bedroom Collection — Premium Linen',
-    subtitle: '300–600 TC sateen, ivory & royal indigo.',
+    subtitle: 'Dohars, comforter sets and woolen sets.',
     imageUrl: IMG('cat-bedroom'),
     linkUrl: '/shop/bedroom',
     placement: 'category',
@@ -52,7 +52,7 @@ export const banners: Banner[] = [
   {
     id: 4,
     title: 'Festive Sale — Up to 30% Off',
-    subtitle: 'On select handloom heritage pieces.',
+    subtitle: 'A Grade and B+ Grade towels. GST included.',
     imageUrl: IMG('promo-festive-30'),
     linkUrl: '/collections/festive-collection',
     placement: 'home_promo',

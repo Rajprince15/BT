@@ -41,7 +41,7 @@ const seeds: OSeed[] = [
     daysAgo: 0,
     placedDaysAgo: 0,
     items: [
-      { id: 1, productId: 23, productName: 'Hand-Embroidered Table Runner', productSku: 'BT-TL-001', quantity: 1, price: 2299 },
+      { id: 1, productId: 1, productName: 'Dohar Double Bed', productSku: '', quantity: 1, price: 699 },
     ],
   },
   // 2) confirmed
@@ -53,7 +53,7 @@ const seeds: OSeed[] = [
     daysAgo: 1,
     placedDaysAgo: 1,
     items: [
-      { id: 2, productId: 12, productName: 'Silk Damask Luxury Curtain (Pair)', productSku: 'BT-LC-001', quantity: 2, price: 6499 },
+      { id: 2, productId: 2, productName: 'Fleno Woolen Set with Satin', productSku: '', quantity: 2, price: 699 },
     ],
   },
   // 3) processing
@@ -65,8 +65,8 @@ const seeds: OSeed[] = [
     daysAgo: 3,
     placedDaysAgo: 3,
     items: [
-      { id: 3, productId: 1, productName: 'Ivory Pure Cotton King Bedsheet', productSku: 'BT-CB-001', quantity: 1, price: 3299 },
-      { id: 4, productId: 18, productName: 'Egyptian Cotton Bath Towel', productSku: 'BT-BT-001', quantity: 4, price: 1099 },
+      { id: 3, productId: 3, productName: '6 Piece Embroidery set', productSku: '', quantity: 1, price: 1999 },
+      { id: 4, productId: 20, productName: 'A Grade Bath Towel 500 gm', productSku: '', quantity: 4, price: 230 },
     ],
   },
   // 4) shipped
@@ -78,7 +78,7 @@ const seeds: OSeed[] = [
     daysAgo: 6,
     placedDaysAgo: 6,
     items: [
-      { id: 5, productId: 13, productName: 'Premium Blackout Curtain (Pair)', productSku: 'BT-BC-001', quantity: 1, price: 4299 },
+      { id: 5, productId: 4, productName: '5 Piece Lace set', productSku: '', quantity: 1, price: 699 },
     ],
   },
   // 5) delivered
@@ -91,8 +91,8 @@ const seeds: OSeed[] = [
     placedDaysAgo: 15,
     deliveredDaysAgo: 10,
     items: [
-      { id: 6, productId: 9, productName: 'Velvet Royal Cushion Cover (Set of 2)', productSku: 'BT-CC-001', quantity: 2, price: 999 },
-      { id: 7, productId: 26, productName: 'Festive Gift Hamper — Premium', productSku: 'BT-GC-001', quantity: 1, price: 3799 },
+      { id: 6, productId: 5, productName: 'Snowberry 4 Piece set', productSku: '', quantity: 2, price: 1349 },
+      { id: 7, productId: 6, productName: '6 Piece Comforter Set', productSku: '', quantity: 1, price: 1399 },
     ],
   },
   // 6) cancelled
@@ -105,7 +105,7 @@ const seeds: OSeed[] = [
     placedDaysAgo: 20,
     cancelledDaysAgo: 18,
     items: [
-      { id: 8, productId: 7, productName: 'Cashmere-Wool Royal Blanket', productSku: 'BT-WB-001', quantity: 1, price: 6999 },
+      { id: 8, productId: 17, productName: 'Gulliver Super Soft', productSku: '', quantity: 1, price: 270 },
     ],
   },
 ];

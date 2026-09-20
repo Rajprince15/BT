@@ -16,16 +16,16 @@ interface CraftPillar {
 
 const PILLARS: CraftPillar[] = [
   {
-    title: 'Jaipur Block Print',
-    body: 'Hand-carved teak blocks struck on Sanganeri cotton — every motif a fingerprint of its maker.',
+    title: 'Bedding Sets',
+    body: 'Comforters, double bedsheets, cushions and pillow covers in supplied set combinations.',
   },
   {
-    title: 'Maheshwari Weave',
-    body: 'Pit-loom silks from the banks of the Narmada — featherlight, with five-yard heritage borders.',
+    title: 'Weight-Based Bedding',
+    body: 'Gulliver Super Soft, Mink Blanket and Mink Cloudy are available from 1.3 kg to 8 kg.',
   },
   {
-    title: 'Bengal Jamdani',
-    body: 'Inlaid muslin in moonlit ivory — patterns floated on the loom one thread at a time.',
+    title: 'Towel Grades',
+    body: 'A Grade and B+ Grade towels with GST-included per-piece prices.',
   },
 ];
 
@@ -61,9 +61,9 @@ export default function HandloomHeritage() {
             <span aria-hidden className="mt-7 block h-px w-16 bg-gold" />
 
             <p className="mt-7 max-w-md text-[15px] leading-relaxed text-ink-2">
-              Every piece in this edit is signed by a master weaver — sourced from Rajasthan,
-              Madhya Pradesh and Bengal. No mill. No shortcut. Only craft that has out-lived
-              centuries, brought into your home unchanged.
+              Explore the supplied bedding, weight-based bedding and towel catalogue in one place.
+              Prices, units, sizes, available weights, bed types and GST treatment are shown as
+              provided.
             </p>
 
             <Link
@@ -85,7 +85,7 @@ export default function HandloomHeritage() {
                   <Image
                     src={heroError ? EDITORIAL_IMAGE : EDITORIAL_IMAGE}
                     onError={() => setHeroError(true)}
-                    alt="Master weaver finishing a Maheshwari border at the pit loom"
+                    alt="Bedding and towel catalogue"
                     fill
                     sizes="(min-width: 1024px) 40vw, 100vw"
                     className="object-cover"
@@ -103,7 +103,7 @@ export default function HandloomHeritage() {
                   <Image
                     src={artisanError ? EDITORIAL_IMAGE : ARTISAN_IMAGE}
                     onError={() => setArtisanError(true)}
-                    alt="Hand-carved teak block striking Sanganeri cotton"
+                    alt="Bedding and towel products"
                     fill
                     sizes="(min-width: 1024px) 25vw, 50vw"
                     className="object-cover"
@@ -112,10 +112,10 @@ export default function HandloomHeritage() {
 
                 <figure className="rounded-md border border-gold/30 bg-bg p-5 shadow-sm">
                   <blockquote className="font-serif text-lg leading-snug text-ink">
-                    “The loom remembers what the factory forgets.”
+                    “Product details and pricing shown as supplied.”
                   </blockquote>
                   <figcaption className="mt-3 text-[11px] font-semibold uppercase tracking-wider2 text-gold-2">
-                    Shankar Lal · Maheshwar weaver, 4th generation
+                    Bhavita Textiles catalogue
                   </figcaption>
                 </figure>
               </div>

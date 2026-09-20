@@ -32,6 +32,7 @@ import { useProduct } from '@/hooks/useProduct';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Category } from '@/types/Category';
 import type { ProductVariant } from '@/types/ProductVariant';
+import { priceNote, productTotalPrice } from '@/lib/pricing';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -129,8 +130,8 @@ export default function ProductPage() {
   const cartCount =
     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
-  const price = variant?.price ?? product?.price ?? 0;
-  const stock = variant?.stock ?? product?.stock ?? 0;
+  const price = product ? productTotalPrice(product, variant, quantity) : 0;
+  const stock = variant?.isActive ? Number.MAX_SAFE_INTEGER : product?.stock || Number.MAX_SAFE_INTEGER;
 
   const breadcrumbs = useMemo(
     () =>
@@ -191,7 +192,7 @@ export default function ProductPage() {
   }
 
   const canAddToCart =
-    Boolean(stock) &&
+    (product.variants.length === 0 || Boolean(variant?.isActive)) &&
     (product.variants.length === 0 || Boolean(variant));
 
   const specs: Array<[string, string | undefined]> = [
@@ -272,6 +273,7 @@ export default function ProductPage() {
               <PriceBlock
                 price={price}
                 salePrice={variant ? undefined : product.salePrice}
+                note={priceNote(product)}
               />
             </div>
 
