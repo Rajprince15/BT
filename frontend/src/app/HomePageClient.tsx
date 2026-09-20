@@ -133,18 +133,24 @@ export default function HomePageClient() {
       data-testid="home-page"
       className="overflow-hidden bg-bg text-ink"
     >
+      {/* ───────────────────────── HERO ───────────────────────── */}
       <section
         data-testid="hero-section"
         className="relative min-h-[470px] overflow-hidden bg-bg"
       >
-        <div className="absolute inset-y-0 right-0 h-[330px] w-full sm:h-[430px] lg:left-[55%] lg:h-full lg:w-[45%]">
+        {/* FIX: object-cover → object-contain so the full hero photo
+            (folded textiles, branded box) is always visible, never
+            cropped — at any screen size, on any host. bg-bg on the
+            wrapper matches the page background so any letterbox space
+            blends in instead of showing a hard edge. */}
+        <div className="absolute inset-y-0 right-0 h-[330px] w-full bg-bg sm:h-[430px] lg:left-[55%] lg:h-full lg:w-[45%]">
           <Image
             src={images.hero}
             alt="Folded luxury home textiles ready for wholesale supply"
             fill
             priority
             sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
 
           <div className="absolute inset-0 bg-ink/10" />
@@ -238,6 +244,7 @@ export default function HomePageClient() {
         </Container>
       </section>
 
+      {/* ─────────────────── WHOLESALE COLLECTIONS ─────────────────── */}
       <section
         data-testid="featured-range"
         className="border-t border-border bg-bg py-16 sm:py-20"
@@ -258,6 +265,12 @@ export default function HomePageClient() {
             </p>
           </div>
 
+          {/* FIX: object-cover → object-contain on each card image, plus
+              a bg-surface fallback behind the image so any letterbox
+              space (where a photo's aspect ratio doesn't exactly match
+              the 1.25 card ratio) blends in cleanly instead of showing a
+              transparent gap. Nothing in any of these 6 product photos
+              gets cropped now, at any screen size. */}
           <div
             data-testid="collection-grid"
             className="mt-10 grid gap-2 sm:grid-cols-3 lg:grid-cols-6"
@@ -270,13 +283,13 @@ export default function HomePageClient() {
                   data-testid={`product-category-card-${index + 1}`}
                   className="group border border-border bg-bg pb-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_18px_35px_-25px_rgba(42,38,32,.6)]"
                 >
-                  <div className="relative aspect-[1.25] overflow-hidden">
+                  <div className="relative aspect-[1.25] overflow-hidden bg-surface">
                     <Image
                       src={image}
                       alt={title}
                       fill
                       sizes="(min-width: 1024px) 16vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
 
@@ -298,6 +311,7 @@ export default function HomePageClient() {
         </Container>
       </section>
 
+      {/* ─────────────────────── STATS BANNER ─────────────────────── */}
       <section
         data-testid="home-stats"
         className="bg-dark-green py-8 text-bg"
@@ -321,6 +335,7 @@ export default function HomePageClient() {
         </Container>
       </section>
 
+      {/* ─────────────────── WHO DO WE SUPPLY TO ─────────────────── */}
       <section
         data-testid="audience-section"
         className="py-16 sm:py-20"
@@ -369,17 +384,20 @@ export default function HomePageClient() {
         </Container>
       </section>
 
+      {/* ────────────── CUSTOM MANUFACTURING + PROCESS ────────────── */}
       <section
         data-testid="manufacturing-process"
         className="grid lg:grid-cols-[23%_77%]"
       >
-        <div className="relative min-h-[360px] lg:min-h-[420px]">
+        {/* FIX: object-cover → object-contain, bg-bg added so the full
+            manufacturing-workshop photo is always shown whole. */}
+        <div className="relative min-h-[360px] bg-bg lg:min-h-[420px]">
           <Image
             src={images.custom}
             alt="Textile rolls in a custom manufacturing workshop"
             fill
             sizes="(min-width: 1024px) 23vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
 
@@ -450,6 +468,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
+      {/* ─────────────────── LET'S GROW TOGETHER ─────────────────── */}
       <section
         data-testid="wholesale-cta"
         className="relative overflow-hidden bg-cream-panel py-16"

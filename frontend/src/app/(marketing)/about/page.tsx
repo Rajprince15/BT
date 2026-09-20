@@ -57,18 +57,25 @@ export default function AboutPage() {
       data-testid="about-page"
       className="overflow-hidden bg-bg text-ink"
     >
+      {/* ───────────────────────── HERO ───────────────────────── */}
       <section
         data-testid="about-hero"
         className="relative min-h-[560px] overflow-hidden bg-bg"
       >
-        <div className="absolute inset-y-0 right-0 h-[300px] w-full sm:h-[400px] lg:left-[55%] lg:h-full lg:w-[45%]">
+        {/* FIX: object-cover → object-contain so the full photo (including
+            the tag/box branding) is always fully visible, never cropped.
+            bg-bg on the wrapper matches the page background, so the
+            letterbox space around the image blends in seamlessly instead
+            of showing a hard edge. This is pure CSS — identical on every
+            host (Netlify, Vercel, etc.), it's not a deployment setting. */}
+        <div className="absolute inset-y-0 right-0 h-[300px] w-full bg-bg sm:h-[400px] lg:left-[55%] lg:h-full lg:w-[45%]">
           <Image
             src={images.hero}
             alt="Layered home textiles made for wholesale buyers"
             fill
             priority
             sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
 
           <div className="absolute inset-0 bg-ink/10" />
@@ -128,18 +135,22 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ─────────────────────── OUR STORY ─────────────────────── */}
       <section
         id="story"
         data-testid="about-story"
         className="grid lg:grid-cols-[42%_58%]"
       >
-        <div className="relative min-h-[360px]">
+        {/* FIX: object-cover → object-contain, bg-bg added so the loom
+            photo is always shown whole, with any letterbox space blending
+            into the page background instead of cropping the hand/loom. */}
+        <div className="relative min-h-[360px] bg-bg">
           <Image
             src={images.story}
             alt="Hands working at a traditional textile loom"
             fill
             sizes="(min-width: 1024px) 42vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
 
           <div className="absolute inset-0 bg-transparent" />
@@ -198,6 +209,7 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ─────────────────────── STATS STRIP ─────────────────────── */}
       <section
         data-testid="about-stats"
         className="border-y border-border bg-bg"
@@ -229,6 +241,7 @@ export default function AboutPage() {
         </Container>
       </section>
 
+      {/* ─────────────────────── WHAT WE DO ─────────────────────── */}
       <section
         data-testid="about-what-we-do"
         className="py-16 sm:py-20"
@@ -266,6 +279,16 @@ export default function AboutPage() {
             </Link>
           </div>
 
+          {/* FIX: these 4 cards also switched to object-contain so no part
+              of any product photo is cropped. Note: since these are plain
+              stock photos (no baked text) with varied aspect ratios, this
+              will show visible letterbox bars in some cards — if that looks
+              too inconsistent, this is the one place a controlled crop
+              (object-cover) is usually preferred purely for visual tidiness
+              since nothing important is lost. Left as object-contain here
+              to follow the "never crop, anywhere" rule strictly; flip back
+              to object-cover on this grid specifically if you'd rather have
+              a tighter, uniform card look. */}
           <div
             data-testid="what-we-do-grid"
             className="grid grid-cols-2 gap-2 sm:grid-cols-4"
@@ -274,14 +297,14 @@ export default function AboutPage() {
               <div
                 key={label}
                 data-testid={`what-we-do-card-${index + 1}`}
-                className="relative aspect-[.75] overflow-hidden"
+                className="relative aspect-[.75] overflow-hidden bg-surface"
               >
                 <Image
                   src={image}
                   alt={label}
                   fill
                   sizes="(min-width: 1024px) 18vw, (min-width: 640px) 25vw, 50vw"
-                  className="object-cover transition-transform duration-500 hover:scale-105"
+                  className="object-contain transition-transform duration-500 hover:scale-105"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
@@ -295,18 +318,31 @@ export default function AboutPage() {
         </Container>
       </section>
 
+      {/* ─────────────────────── OUR VALUES ─────────────────────── */}
       <section
         id="values"
         data-testid="about-values"
         className="relative overflow-hidden bg-cream-panel py-12 sm:py-14"
       >
-        <Image
-          src={images.values}
-          alt=""
-          width={360}
-          height={520}
-            className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[42%] object-cover opacity-95 mix-blend-multiply lg:block"
-        />
+        {/* FIX: previously mixed fixed width={360} height={520} props with
+            conflicting Tailwind sizing (h-full w-[42%]), producing
+            unreliable rendering — and used object-cover, which cropped the
+            fabric photo. Now uses `fill` inside a properly sized relative
+            wrapper with object-contain, so the full image always shows;
+            the wrapper has no background override so the section's own
+            bg-cream-panel shows through any letterbox space automatically. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[42%] lg:block"
+        >
+          <Image
+            src={images.values}
+            alt=""
+            fill
+            sizes="42vw"
+            className="object-contain opacity-95 mix-blend-multiply"
+          />
+        </div>
 
         <Container className="relative z-10">
           <h2
@@ -346,20 +382,22 @@ export default function AboutPage() {
         </Container>
       </section>
 
+      {/* ───────────────── MANUFACTURING STRENGTH ───────────────── */}
       <section
         id="strength"
         data-testid="about-strength"
         className="grid lg:grid-cols-[34%_66%]"
       >
-        <div className="relative min-h-[360px]">
+        {/* FIX: object-cover → object-contain, bg-bg added so the block-
+            print photo is always shown whole. */}
+        <div className="relative min-h-[360px] bg-bg">
           <Image
             src={images.custom}
             alt="Block printing by hand on Indian textile"
             fill
             sizes="(min-width: 1024px) 34vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
-
         </div>
 
         <div className="grid sm:grid-cols-2">
@@ -419,6 +457,7 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ─────────────────── OUR INDIA PRESENCE ─────────────────── */}
       <section
         data-testid="about-global"
         className="py-16 sm:py-20"
@@ -442,12 +481,19 @@ export default function AboutPage() {
             </p>
           </div>
 
+          {/* FIX: previously rendered images.india (a raster PNG,
+              object-contain — already correct and fully visible) stacked
+              UNDERNEATH this SVG map at z-10, so the PNG was 100% hidden,
+              not cropped. Kept the SVG only, since it's branded, labeled
+              with cities, and matches the site's color tokens. If the
+              photographic map should be the one shown instead, delete the
+              <svg> block below and re-add:
+              <Image src={images.india} alt="India supply network" fill
+                className="object-contain p-5" sizes="35vw" /> */}
           <div
             data-testid="india-map-panel"
             className="relative flex min-h-[390px] items-center justify-center overflow-hidden border-y border-border bg-cream-panel/50"
           >
-            <Image src={images.india} alt="India supply network" fill className="object-contain p-5" sizes="35vw" />
-
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(173,130,71,.12)_1px,transparent_1px)] bg-[length:18px_18px]" />
 
             <svg
@@ -523,6 +569,7 @@ export default function AboutPage() {
         </Container>
       </section>
 
+      {/* ───────────────────────── CTA ───────────────────────── */}
       <section
         data-testid="about-cta"
         className="relative overflow-hidden bg-dark-green py-16 text-bg"

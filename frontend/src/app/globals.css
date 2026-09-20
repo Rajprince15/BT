@@ -192,16 +192,23 @@ dt {
   height: 100%;
 }
 
+/* FIX: these were forcing object-fit: cover !important on the About hero
+   and Our Story images, which silently overrode the object-contain class
+   set in the component JSX — this was the actual root cause of the
+   cropping, not stale code or caching. Changed cover → contain so the
+   full photo (including any baked-in text) is always shown, never cropped. */
 [data-testid="about-page"] [data-testid="about-hero"] > div.absolute.right-0 img,
 [data-testid="about-page"] [data-testid="about-story"] > div:first-child img {
-  object-fit: cover !important;
+  object-fit: contain !important;
   object-position: center;
   background: var(--reference-cream);
 }
 
+/* FIX: same issue — was forcing cover !important on the Manufacturing
+   Strength and Values images. Changed to contain. */
 [data-testid="about-page"] [data-testid="about-strength"] > div:first-child img,
 [data-testid="about-page"] [data-testid="about-values"] img {
-  object-fit: cover !important;
+  object-fit: contain !important;
   object-position: center;
   background: var(--reference-cream-alt);
 }
@@ -275,9 +282,11 @@ dt {
     height: 260px;
   }
 
+  /* FIX: was forcing cover !important on both mobile heroes. Changed to
+     contain so nothing is cropped on small screens either. */
   [data-testid="home-page"] [data-testid="hero-section"] > div.absolute.right-0 img,
   [data-testid="about-page"] [data-testid="about-hero"] > div.absolute.right-0 img {
-    object-fit: cover !important;
+    object-fit: contain !important;
   }
 
   [data-testid="about-page"] [data-testid="about-stats"] > div {
@@ -310,8 +319,10 @@ dt {
     min-height: 470px;
   }
 
+  /* FIX: was forcing cover !important on the Home hero (desktop). Changed
+     to contain so the full hero photo is always shown, never cropped. */
   [data-testid="home-page"] [data-testid="hero-section"] > div.absolute.right-0 img {
-    object-fit: cover !important;
+    object-fit: contain !important;
     object-position: center;
     background: var(--reference-cream);
   }
