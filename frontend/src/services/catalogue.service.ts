@@ -1,229 +1,270 @@
+import { createElement } from 'react';
+
 import api from '@/lib/api';
 import env from '@/lib/env';
-import { categories } from '@/mocks/categories.mock';
-import { products } from '@/mocks/products.mock';
 import { useMockService } from '@/services/_mock-runtime';
 
-function escapePdf(value: string): string {
-  return value
-    .replace(/\\/g, '\\\\')
-    .replace(/\(/g, '\\(')
-    .replace(/\)/g, '\\)')
-    .replace(/[^\x20-\x7E]/g, ' ');
+/**
+ * ONE design, TWO data sources.
+ *   mock mode : products/categories come from the local mocks
+ *   real mode : products/categories come from your backend
+ * Both feed the exact same normaliser → image loader → PDF document.
+ */
+
+/** Logo for cover, top bars and closing page (light/gold, sits on dark green). */
+const LOGO_SRC = '/images/footerlogo.png';
+
+/** Backend list endpoints. Change if yours differ. */
+const PRODUCTS_ENDPOINT = '/products';
+const CATEGORIES_ENDPOINT = '/categories';
+
+const FALLBACK_COPY = 'Premium home textile for wholesale supply.';
+
+/* ───────────────────────── raw data sources ───────────────────────── */
+
+type Raw = Record<string, unknown>;
+
+/** Accepts [..], {data:[..]}, {items:[..]}, {results:[..]}, {data:{items:[..]}} … */
+function unwrapList(payload: unknown): Raw[] {
+  if (Array.isArray(payload)) return payload as Raw[];
+  if (payload && typeof payload === 'object') {
+    const obj = payload as Raw;
+    for (const key of ['data', 'items', 'results', 'products', 'categories', 'rows']) {
+      const value = obj[key];
+      if (Array.isArray(value)) return value as Raw[];
+      if (value && typeof value === 'object') {
+        const nested = unwrapList(value);
+        if (nested.length) return nested;
+      }
+    }
+  }
+  return [];
 }
 
-function wrap(value: string, width: number): string[] {
-  const words = value.split(/\s+/);
-  const lines: string[] = [];
-  let line = '';
+/** Fetches every page (stops on short page, repeated page, or 20 pages). */
+async function fetchAll(path: string): Promise<Raw[]> {
+  const limit = 100;
+  const all: Raw[] = [];
+  let firstId: unknown;
 
-  words.forEach((word) => {
-    if (`${line} ${word}`.trim().length > width && line) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = `${line} ${word}`.trim();
-    }
-  });
+  for (let page = 1; page <= 20; page += 1) {
+    const { data } = await api.get<unknown>(path, { params: { page, limit } });
+    const list = unwrapList(data);
 
-  if (line) {
-    lines.push(line);
+    if (!list.length) break;
+    if (page > 1 && list[0]?.id === firstId) break; // backend ignores `page`
+    if (page === 1) firstId = list[0]?.id;
+
+    all.push(...list);
+    if (list.length < limit) break;
   }
 
-  return lines.slice(0, 2);
+  return all;
 }
 
-function createMockCatalogue(): Blob {
-  const categoryName = new Map(
-    categories.map((category) => [category.id, category.name]),
+async function loadRaw(): Promise<{ products: Raw[]; categories: Raw[] }> {
+  if (useMockService) {
+    // Dynamic imports keep the mocks out of the production bundle.
+    const [{ products }, { categories }] = await Promise.all([
+      import('@/mocks/products.mock'),
+      import('@/mocks/categories.mock'),
+    ]);
+    return {
+      products: products as unknown as Raw[],
+      categories: categories as unknown as Raw[],
+    };
+  }
+
+  const [products, categories] = await Promise.all([
+    fetchAll(PRODUCTS_ENDPOINT),
+    fetchAll(CATEGORIES_ENDPOINT).catch(() => [] as Raw[]), // names can fall back to product.category
+  ]);
+  return { products, categories };
+}
+
+/* ───────────────────────── normalise (same for both) ───────────────────────── */
+
+type Item = {
+  id: string | number;
+  name: string;
+  price: number | string;
+  description: string;
+  sku?: string;
+  imageSrc?: string;
+};
+type Group = { id: string | number; name: string; items: Item[] };
+
+const str = (v: unknown): string | undefined =>
+  typeof v === 'string' && v.trim() ? v.trim() : undefined;
+
+/** First match wins. Add your field name here if it is not covered. */
+function imageOf(p: Raw): string | undefined {
+  const first = (p.images as unknown[] | undefined)?.[0] as
+    | string
+    | { url?: string; src?: string; secure_url?: string }
+    | undefined;
+
+  return (
+    str(p.image) ??
+    str(p.imageUrl) ??
+    str(p.thumbnail) ??
+    str(p.primaryImage) ??
+    (typeof first === 'string' ? str(first) : str(first?.url) ?? str(first?.src) ?? str(first?.secure_url))
+  );
+}
+
+function shorten(text: string, max = 150): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, max).replace(/\s+\S*$/, '')}…`;
+}
+
+function normalise(rawProducts: Raw[], rawCategories: Raw[]): Group[] {
+  const groups = new Map<string, Group>();
+
+  // keep the backend/mocks category order
+  rawCategories.forEach((c) => {
+    const id = (c.id ?? c._id ?? c.slug) as string | number;
+    groups.set(String(id), { id, name: str(c.name) ?? 'Textiles', items: [] });
+  });
+
+  rawProducts.forEach((p) => {
+    const cat = p.category as Raw | string | number | undefined;
+    const catObj = cat && typeof cat === 'object' ? cat : undefined;
+    const catId = (p.categoryId ?? p.category_id ?? catObj?.id ?? catObj?._id ?? (typeof cat !== 'object' ? cat : undefined) ?? 'other') as string | number;
+
+    let group = groups.get(String(catId));
+    if (!group) {
+      group = { id: catId, name: str(catObj?.name) ?? 'Textiles', items: [] };
+      groups.set(String(catId), group);
+    }
+
+    group.items.push({
+      id: (p.id ?? p._id ?? p.slug ?? `${group.items.length}`) as string | number,
+      name: str(p.name) ?? str(p.title) ?? 'Product',
+      price: (p.price ?? p.basePrice ?? '') as number | string,
+      description: shorten(
+        str(p.specification) ?? str(p.shortDescription) ?? str(p.description) ?? FALLBACK_COPY,
+      ),
+      sku: str(p.sku),
+      imageSrc: imageOf(p),
+    });
+  });
+
+  return [...groups.values()].filter((g) => g.items.length > 0);
+}
+
+/* ───────────────────────── image helpers ───────────────────────── */
+
+function absolute(src: string): string {
+  return new URL(src, window.location.origin).toString();
+}
+
+/**
+ * Loads any browser-supported image (jpg/png/webp/avif) and returns a
+ * JPEG/PNG data URL react-pdf can embed. Resolves null on failure so one
+ * broken photo never breaks the whole catalogue.
+ */
+function toDataUrl(
+  src: string | undefined | null,
+  format: 'jpeg' | 'png' = 'jpeg',
+  maxWidth = 900,
+): Promise<string | null> {
+  if (!src) return Promise.resolve(null);
+
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, maxWidth / img.naturalWidth);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(null);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(
+          format === 'png'
+            ? canvas.toDataURL('image/png')
+            : canvas.toDataURL('image/jpeg', 0.82),
+        );
+      } catch {
+        resolve(null); // tainted canvas (image host has no CORS headers)
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = absolute(src);
+  });
+}
+
+async function mapPool<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (next < items.length) {
+        const i = next++;
+        out[i] = await fn(items[i]);
+      }
+    }),
   );
 
-  const grouped = new Map<string, typeof products>();
-
-  products.forEach((product) => {
-    const name = categoryName.get(product.categoryId) ?? 'Textiles';
-
-    grouped.set(name, [
-      ...(grouped.get(name) ?? []),
-      product,
-    ]);
-  });
-
-  const pages: string[][] = [[]];
-
-  const push = (line: string) => {
-    if (pages[pages.length - 1].length >= 20) {
-      pages.push([]);
-    }
-
-    pages[pages.length - 1].push(line);
-  };
-
-  grouped.forEach((items, name) => {
-    push(`CATEGORY|${name}`);
-
-    items.forEach((product) => {
-      push(
-        `PRODUCT|${product.name}|${product.price}|${
-          product.specification ??
-          product.shortDescription ??
-          'Premium home textile for wholesale supply.'
-        }|${product.sku || 'Available on enquiry'}`,
-      );
-    });
-  });
-
-  const objects: string[] = [
-    '<< /Type /Catalog /Pages 2 0 R >>',
-    '<< /Type /Pages /Kids [PLACEHOLDER] /Count 0 >>',
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >>',
-  ];
-
-  const pageIds: number[] = [];
-
-  pages.forEach((lines, pageIndex) => {
-    const stream: string[] = [
-      'q',
-      '0.047 0.22 0.196 rg',
-      '0 0 595 842 re f',
-      'Q',
-      'BT',
-      '/F2 34 Tf',
-      '0.94 0.90 0.80 rg',
-      '48 790 Td',
-      '(BT) Tj',
-      '/F2 22 Tf',
-      '0.68 0.51 0.28 rg',
-      '58 0 Td',
-      '(BHAVITA TEXTILES) Tj',
-      '/F1 10 Tf',
-      '0 -18 Td',
-      '0.94 0.90 0.80 rg',
-      '(WHOLESALE CATALOGUE  |  WOVEN WITH TRADITION) Tj',
-      '0 -32 Td',
-    ];
-
-    if (pageIndex === 0) {
-      stream.push(
-        '/F2 30 Tf',
-        '0.94 0.90 0.80 rg',
-        '(A living catalogue) Tj',
-        '/F1 11 Tf',
-        '0 -22 Td',
-        '(Current selection for wholesale partners across India and beyond.) Tj',
-        '0 -35 Td',
-      );
-    }
-
-    lines.forEach((line) => {
-      const [kind, name, price, description, sku] = line.split('|');
-
-      if (kind === 'CATEGORY') {
-        stream.push(
-          '/F2 18 Tf',
-          '0.68 0.51 0.28 rg',
-          `(${escapePdf(name)}) Tj`,
-          '/F1 8 Tf',
-          '0 -20 Td',
-        );
-      } else {
-        const copy = wrap(description, 84);
-
-        stream.push(
-          '/F2 12 Tf',
-          '0.16 0.15 0.13 rg',
-          `(${escapePdf(name)}) Tj`,
-          '/F1 8 Tf',
-          '0 -15 Td',
-          `(${escapePdf(copy[0] ?? '')}) Tj`,
-          '0 -11 Td',
-          `(${escapePdf(copy[1] ?? '')}) Tj`,
-          '/F2 11 Tf',
-          '0.68 0.51 0.28 rg',
-          '0 -15 Td',
-          `(${escapePdf(
-            `Rs ${Number(price).toLocaleString('en-IN')}`,
-          )}) Tj`,
-          '/F1 7 Tf',
-          '0 -12 Td',
-          '0.44 0.41 0.35 rg',
-          `(${escapePdf(`SKU ${sku}`)}) Tj`,
-          '0 -20 Td',
-        );
-      }
-    });
-
-    stream.push(
-      '/F1 8 Tf',
-      '0.94 0.90 0.80 rg',
-      `48 28 Td (Bhavita Textiles  |  ${pageIndex + 1} / ${pages.length}) Tj`,
-      'ET',
-    );
-
-    const content = stream.join('\n');
-    const contentId = objects.length + 1;
-
-    objects.push(
-      `<< /Length ${content.length} >>\nstream\n${content}\nendstream`,
-    );
-
-    const pageId = objects.length + 1;
-
-    objects.push(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentId} 0 R >>`,
-    );
-
-    pageIds.push(pageId);
-  });
-
-  objects[1] = `<< /Type /Pages /Kids [${pageIds
-    .map((id) => `${id} 0 R`)
-    .join(' ')}] /Count ${pageIds.length} >>`;
-
-  let pdf = '%PDF-1.4\n';
-  const offsets = [0];
-
-  objects.forEach((object, index) => {
-    offsets[index + 1] = pdf.length;
-    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
-  });
-
-  const xref = pdf.length;
-
-  pdf += `xref
-0 ${objects.length + 1}
-0000000000 65535 f 
-${offsets
-  .slice(1)
-  .map(
-    (offset) => `${String(offset).padStart(10, '0')} 00000 n `,
-  )
-  .join('\n')}
-trailer
-<< /Size ${objects.length + 1} /Root 1 0 R >>
-startxref
-${xref}
-%%EOF`;
-
-  return new Blob([pdf], {
-    type: 'application/pdf',
-  });
+  return out;
 }
 
-export async function downloadCatalogue(): Promise<Blob> {
-  if (useMockService) {
-    return createMockCatalogue();
-  }
+/* ───────────────────────── catalogue builder ───────────────────────── */
 
-  const response = await api.get<Blob>('/products/catalogue.pdf', {
-    responseType: 'blob',
-    headers: {
-      Accept: 'application/pdf',
-    },
+async function createCatalogue(): Promise<Blob> {
+  // Heavy libs load only when the user clicks "Download catalogue".
+  const [{ pdf }, { default: CatalogueDocument }, raw] = await Promise.all([
+    import('@react-pdf/renderer'),
+    import('@/components/catalogue/CatalogueDocument'),
+    loadRaw(),
+  ]);
+
+  const groups = normalise(raw.products, raw.categories);
+  if (!groups.length) throw new Error('No products available for the catalogue');
+
+  const flat = groups.flatMap((g) => g.items);
+  const [logo, photos] = await Promise.all([
+    toDataUrl(LOGO_SRC, 'png', 600),
+    mapPool(flat, 6, (item) => toDataUrl(item.imageSrc)),
+  ]);
+
+  const photoOf = new Map(flat.map((item, i) => [item, photos[i]]));
+
+  const element = createElement(CatalogueDocument, {
+    categories: groups.map((g) => ({
+      id: g.id,
+      name: g.name,
+      products: g.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        description: item.description,
+        sku: item.sku,
+        image: photoOf.get(item) ?? null,
+      })),
+    })),
+    logo,
+    siteUrl: window.location.origin,
+    year: new Date().getFullYear(),
   });
 
-  return response.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return pdf(element as any).toBlob();
+}
+
+/* ───────────────────────── public API (unchanged) ───────────────────────── */
+
+export async function downloadCatalogue(): Promise<Blob> {
+  return createCatalogue();
 }
 
 export function catalogueApiUrl(): string {

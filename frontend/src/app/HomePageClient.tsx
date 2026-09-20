@@ -133,51 +133,34 @@ export default function HomePageClient() {
       data-testid="home-page"
       className="overflow-hidden bg-bg text-ink"
     >
-      {/* ───────────────────────── HERO ───────────────────────── */}
+      {/* ───────────────────────── HERO ─────────────────────────
+          Original photo, untouched: no tint overlay, no cream gradient, no
+          duplicate caption (the tagline + feather are already in the image).
+          Natural aspect ratio = no crop, no letterbox bars. `.photo-fade`
+          only feathers the outer edge so there is no visible box. */}
       <section
         data-testid="hero-section"
-        className="relative min-h-[470px] overflow-hidden bg-bg"
+        className="relative overflow-hidden bg-bg lg:min-h-[470px]"
       >
-        {/* FIX: object-cover → object-contain so the full hero photo
-            (folded textiles, branded box) is always visible, never
-            cropped — at any screen size, on any host. bg-bg on the
-            wrapper matches the page background so any letterbox space
-            blends in instead of showing a hard edge. */}
-        <div className="absolute inset-y-0 right-0 h-[330px] w-full bg-bg sm:h-[430px] lg:left-[55%] lg:h-full lg:w-[45%]">
+        <div className="relative w-full lg:absolute lg:inset-y-0 lg:left-[55%] lg:flex lg:w-[45%] lg:items-center">
           <Image
             src={images.hero}
             alt="Folded luxury home textiles ready for wholesale supply"
-            fill
-            priority
+            width={0}
+            height={0}
             sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-contain"
-          />
-
-          <div className="absolute inset-0 bg-ink/10" />
-
-          <div className="absolute bottom-5 right-5 hidden max-w-[150px] border-l border-gold/70 pl-4 text-[10px] uppercase leading-5 tracking-[.18em] text-bg lg:block">
-            Trusted by businesses.
-            <br />
-            Crafted for tomorrow.
-          </div>
-
-          <Image
-            src="/images/feather.png"
-            alt=""
-            width={180}
-            height={260}
-            className="absolute -bottom-14 right-8 hidden w-28 rotate-[18deg] opacity-60 mix-blend-multiply lg:block"
+            priority
+            style={{ width: '100%', height: 'auto' }}
+            className="photo-fade block"
           />
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#F9F4EC_0%,rgba(249,244,236,.96)_35%,rgba(249,244,236,.56)_56%,transparent_75%)] lg:bg-[linear-gradient(90deg,#F9F4EC_0%,#F9F4EC_42%,rgba(249,244,236,.4)_62%,transparent_75%)]" />
-
-        <Container className="relative z-10 flex min-h-[470px] items-end pb-10 pt-[220px] sm:pt-[250px] lg:items-center lg:pb-12 lg:pt-12">
+        <Container className="relative z-10 py-10 lg:flex lg:min-h-[470px] lg:items-center lg:py-12">
           <motion.div
             variants={reveal}
             initial="hidden"
             animate="show"
-            className="max-w-[600px]"
+            className="max-w-[600px] lg:max-w-[min(600px,48vw)]"
           >
             <p
               data-testid="hero-eyebrow"
@@ -265,12 +248,8 @@ export default function HomePageClient() {
             </p>
           </div>
 
-          {/* FIX: object-cover → object-contain on each card image, plus
-              a bg-surface fallback behind the image so any letterbox
-              space (where a photo's aspect ratio doesn't exactly match
-              the 1.25 card ratio) blends in cleanly instead of showing a
-              transparent gap. Nothing in any of these 6 product photos
-              gets cropped now, at any screen size. */}
+          {/* Uniform product tiles with no baked-in text: object-cover gives
+              a clean, equal-size grid (contain would leave bars). */}
           <div
             data-testid="collection-grid"
             className="mt-10 grid gap-2 sm:grid-cols-3 lg:grid-cols-6"
@@ -289,7 +268,7 @@ export default function HomePageClient() {
                       alt={title}
                       fill
                       sizes="(min-width: 1024px) 16vw, 33vw"
-                      className="object-contain transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
 
@@ -384,25 +363,27 @@ export default function HomePageClient() {
         </Container>
       </section>
 
-      {/* ────────────── CUSTOM MANUFACTURING + PROCESS ────────────── */}
+      {/* ────────────── CUSTOM MANUFACTURING + PROCESS ──────────────
+          Image at natural ratio (no crop). Row height = image height; the green
+          panel and process column stretch to match it and centre their content. */}
       <section
         data-testid="manufacturing-process"
         className="grid lg:grid-cols-[23%_77%]"
       >
-        {/* FIX: object-cover → object-contain, bg-bg added so the full
-            manufacturing-workshop photo is always shown whole. */}
-        <div className="relative min-h-[360px] bg-bg lg:min-h-[420px]">
+        <div className="bg-bg">
           <Image
             src={images.custom}
             alt="Textile rolls in a custom manufacturing workshop"
-            fill
+            width={0}
+            height={0}
             sizes="(min-width: 1024px) 23vw, 100vw"
-            className="object-contain"
+            style={{ width: '100%', height: 'auto' }}
+            className="block"
           />
         </div>
 
         <div className="grid sm:grid-cols-[.9fr_1.1fr]">
-          <div className="bg-dark-green p-9 text-bg sm:p-12">
+          <div className="flex flex-col justify-center bg-dark-green p-9 text-bg sm:p-12">
             <p className="text-[10px] uppercase tracking-[.2em] text-gold">
               Custom manufacturing
             </p>
@@ -429,7 +410,7 @@ export default function HomePageClient() {
             </Link>
           </div>
 
-          <div className="p-9 sm:p-12">
+          <div className="flex flex-col justify-center p-9 sm:p-12">
             <h2 className="font-serif text-3xl uppercase tracking-[.08em]">
               Our wholesale process
             </h2>

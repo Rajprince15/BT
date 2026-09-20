@@ -115,10 +115,10 @@ export default function Header() {
               <Image
                 src="/icons/logo.jpg"
                 alt=""
-                width={112}
-                height={112}
+                width={250}
+                height={250}
                 priority
-                className="h-[170%] w-[170%] max-w-none object-cover object-center"
+                className="h-[120%] w-[120%] max-w-none object-cover object-center"
               />
             </span>
 
@@ -188,9 +188,7 @@ export default function Header() {
               <CountPill value={cartCount} testid="nav-cart-count" />
             </Link>
 
-            <span className="ml-1 hidden sm:inline-flex">
-              <ThemeToggle />
-            </span>
+            
           </div>
         </div>
       </header>

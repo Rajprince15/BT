@@ -155,13 +155,7 @@ export default function MobileNav() {
             </ul>
           </div>
 
-          {/* Theme */}
-          <div className="mt-auto flex items-center justify-between border-t border-border bg-surface px-5 py-4 sm:px-6 sm:py-5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-2">
-              Appearance
-            </span>
-            <ThemeToggle />
-          </div>
+          
         </div>
       </SheetContent>
     </Sheet>

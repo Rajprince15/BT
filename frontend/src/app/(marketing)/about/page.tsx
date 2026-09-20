@@ -57,34 +57,28 @@ export default function AboutPage() {
       data-testid="about-page"
       className="overflow-hidden bg-bg text-ink"
     >
-      {/* ───────────────────────── HERO ───────────────────────── */}
+      {/* ───────────────────────── HERO ─────────────────────────
+          Image keeps its natural aspect ratio (no crop, no letterbox bars).
+          `.photo-fade` (globals.css) melts its edges into the cream page. */}
       <section
         data-testid="about-hero"
-        className="relative min-h-[560px] overflow-hidden bg-bg"
+        className="relative overflow-hidden bg-bg lg:min-h-[560px]"
       >
-        {/* FIX: object-cover → object-contain so the full photo (including
-            the tag/box branding) is always fully visible, never cropped.
-            bg-bg on the wrapper matches the page background, so the
-            letterbox space around the image blends in seamlessly instead
-            of showing a hard edge. This is pure CSS — identical on every
-            host (Netlify, Vercel, etc.), it's not a deployment setting. */}
-        <div className="absolute inset-y-0 right-0 h-[300px] w-full bg-bg sm:h-[400px] lg:left-[55%] lg:h-full lg:w-[45%]">
+        <div className="relative w-full lg:absolute lg:inset-y-0 lg:left-[55%] lg:flex lg:w-[45%] lg:items-center">
           <Image
             src={images.hero}
             alt="Layered home textiles made for wholesale buyers"
-            fill
-            priority
+            width={0}
+            height={0}
             sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-contain"
+            priority
+            style={{ width: '100%', height: 'auto' }}
+            className="photo-fade block"
           />
-
-          <div className="absolute inset-0 bg-ink/10" />
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,#F9F4EC_0%,rgba(249,244,236,.96)_38%,rgba(249,244,236,.38)_65%,transparent_80%)] lg:bg-[linear-gradient(90deg,#F9F4EC_0%,#F9F4EC_42%,rgba(249,244,236,.34)_63%,transparent_78%)]" />
-
-        <Container className="relative z-10 flex min-h-[560px] items-end pb-12 pt-[250px] sm:pt-[320px] lg:items-center lg:pb-20 lg:pt-20">
-          <div className="max-w-[590px]">
+        <Container className="relative z-10 py-12 lg:flex lg:min-h-[560px] lg:items-center lg:py-20">
+          <div className="max-w-[590px] lg:max-w-[min(590px,48vw)]">
             <p
               data-testid="about-eyebrow"
               className="text-[11px] font-semibold uppercase tracking-[.22em] text-brand"
@@ -139,35 +133,18 @@ export default function AboutPage() {
       <section
         id="story"
         data-testid="about-story"
-        className="grid lg:grid-cols-[42%_58%]"
+        className="grid lg:grid-cols-[42%_58%] lg:items-center"
       >
-        {/* FIX: object-cover → object-contain, bg-bg added so the loom
-            photo is always shown whole, with any letterbox space blending
-            into the page background instead of cropping the hand/loom. */}
-        <div className="relative min-h-[360px] bg-bg">
+        <div className="bg-bg">
           <Image
             src={images.story}
             alt="Hands working at a traditional textile loom"
-            fill
+            width={0}
+            height={0}
             sizes="(min-width: 1024px) 42vw, 100vw"
-            className="object-contain"
+            style={{ width: '100%', height: 'auto' }}
+            className="block"
           />
-
-          <div className="absolute inset-0 bg-transparent" />
-
-          <div className="hidden">
-            <div>
-              <p className="text-[10px] uppercase tracking-[.2em] text-gold">
-                ✦ Our story ✦
-              </p>
-
-              <h2 className="mt-3 font-serif text-5xl">
-                From tradition
-                <br />
-                to tomorrow.
-              </h2>
-            </div>
-          </div>
         </div>
 
         <div className="relative flex items-center overflow-hidden p-10 lg:p-16">
@@ -279,16 +256,8 @@ export default function AboutPage() {
             </Link>
           </div>
 
-          {/* FIX: these 4 cards also switched to object-contain so no part
-              of any product photo is cropped. Note: since these are plain
-              stock photos (no baked text) with varied aspect ratios, this
-              will show visible letterbox bars in some cards — if that looks
-              too inconsistent, this is the one place a controlled crop
-              (object-cover) is usually preferred purely for visual tidiness
-              since nothing important is lost. Left as object-contain here
-              to follow the "never crop, anywhere" rule strictly; flip back
-              to object-cover on this grid specifically if you'd rather have
-              a tighter, uniform card look. */}
+          {/* Uniform stock-photo tiles with no baked-in text: a tight crop
+              (object-cover) looks cleaner here than letterbox bars. */}
           <div
             data-testid="what-we-do-grid"
             className="grid grid-cols-2 gap-2 sm:grid-cols-4"
@@ -304,7 +273,7 @@ export default function AboutPage() {
                   alt={label}
                   fill
                   sizes="(min-width: 1024px) 18vw, (min-width: 640px) 25vw, 50vw"
-                  className="object-contain transition-transform duration-500 hover:scale-105"
+                  className="object-cover transition-transform duration-500 hover:scale-105"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
@@ -318,85 +287,77 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* ─────────────────────── OUR VALUES ─────────────────────── */}
+      {/* ─────────────────────── OUR VALUES ───────────────────────
+          The photo (fabric + "Rooted in values" quote) is one baked image:
+          natural ratio, no blend/opacity tint, edges feathered with
+          `.photo-fade-panel`. Values column is capped at 60% so it never
+          runs under the image. On mobile the image simply follows the grid. */}
       <section
         id="values"
         data-testid="about-values"
-        className="relative overflow-hidden bg-cream-panel py-12 sm:py-14"
+        className="relative overflow-hidden bg-cream-panel py-12 sm:py-14 lg:min-h-[340px]"
       >
-        {/* FIX: previously mixed fixed width={360} height={520} props with
-            conflicting Tailwind sizing (h-full w-[42%]), producing
-            unreliable rendering — and used object-cover, which cropped the
-            fabric photo. Now uses `fill` inside a properly sized relative
-            wrapper with object-contain, so the full image always shows;
-            the wrapper has no background override so the section's own
-            bg-cream-panel shows through any letterbox space automatically. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[42%] lg:block"
-        >
+        <Container className="relative z-10">
+          <div className="lg:max-w-[60%]">
+            <h2
+              data-testid="values-heading"
+              className="font-serif text-4xl sm:text-5xl"
+            >
+              Our Values
+            </h2>
+
+            <div
+              data-testid="values-grid"
+              className="mt-8 grid grid-cols-2 gap-y-8 sm:grid-cols-5 sm:gap-y-0"
+            >
+              {values.map(([Icon, label], index) => (
+                <div
+                  key={label}
+                  data-testid={`value-card-${index + 1}`}
+                  className="text-center"
+                >
+                  <Icon
+                    className="mx-auto size-8 text-gold"
+                    strokeWidth={1.3}
+                  />
+
+                  <p className="mt-4 text-[10px] font-semibold leading-4">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Container>
+
+        <div className="relative mt-8 lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:flex lg:w-[36%] lg:max-w-[820px] lg:items-center">
           <Image
             src={images.values}
-            alt=""
-            fill
-            sizes="42vw"
-            className="object-contain opacity-95 mix-blend-multiply"
+            alt="Rooted in values. Growing with purpose."
+            width={0}
+            height={0}
+            sizes="(min-width: 1024px) 36vw, 100vw"
+            style={{ width: '100%', height: 'auto' }}
+            className="photo-fade-panel block"
           />
         </div>
-
-        <Container className="relative z-10">
-          <h2
-            data-testid="values-heading"
-            className="font-serif text-4xl sm:text-5xl"
-          >
-            Our Values
-          </h2>
-
-          <div
-            data-testid="values-grid"
-            className="mt-8 grid grid-cols-2 gap-y-8 sm:grid-cols-5 sm:gap-y-0"
-          >
-            {values.map(([Icon, label], index) => (
-              <div
-                key={label}
-                data-testid={`value-card-${index + 1}`}
-                className="text-center"
-              >
-                <Icon
-                  className="mx-auto size-8 text-gold"
-                  strokeWidth={1.3}
-                />
-
-                <p className="mt-4 text-[10px] font-semibold leading-4">
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <p className="hidden">
-            “Rooted in values.
-            <br />
-            Growing with purpose.”
-          </p>
-        </Container>
       </section>
 
       {/* ───────────────── MANUFACTURING STRENGTH ───────────────── */}
       <section
         id="strength"
         data-testid="about-strength"
-        className="grid lg:grid-cols-[34%_66%]"
+        className="grid lg:grid-cols-[34%_66%] lg:items-center"
       >
-        {/* FIX: object-cover → object-contain, bg-bg added so the block-
-            print photo is always shown whole. */}
-        <div className="relative min-h-[360px] bg-bg">
+        <div className="bg-bg">
           <Image
             src={images.custom}
             alt="Block printing by hand on Indian textile"
-            fill
+            width={0}
+            height={0}
             sizes="(min-width: 1024px) 34vw, 100vw"
-            className="object-contain"
+            style={{ width: '100%', height: 'auto' }}
+            className="block"
           />
         </div>
 
@@ -457,12 +418,14 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ─────────────────── OUR INDIA PRESENCE ─────────────────── */}
+      {/* ─────────────────── OUR INDIA PRESENCE ───────────────────
+          Middle column = panIndia.png at natural ratio, edges feathered
+          by `.photo-fade-soft` so it melts into the cream background. */}
       <section
         data-testid="about-global"
         className="py-16 sm:py-20"
       >
-        <Container className="grid gap-8 lg:grid-cols-[.9fr_1.35fr_.65fr] lg:items-center">
+        <Container className="grid gap-8 lg:grid-cols-[.8fr_1.7fr_.7fr] lg:items-center">
           <div>
             <Globe2 className="size-9 text-gold" />
 
@@ -481,78 +444,19 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* FIX: previously rendered images.india (a raster PNG,
-              object-contain — already correct and fully visible) stacked
-              UNDERNEATH this SVG map at z-10, so the PNG was 100% hidden,
-              not cropped. Kept the SVG only, since it's branded, labeled
-              with cities, and matches the site's color tokens. If the
-              photographic map should be the one shown instead, delete the
-              <svg> block below and re-add:
-              <Image src={images.india} alt="India supply network" fill
-                className="object-contain p-5" sizes="35vw" /> */}
           <div
             data-testid="india-map-panel"
-            className="relative flex min-h-[390px] items-center justify-center overflow-hidden border-y border-border bg-cream-panel/50"
+            className="relative"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(173,130,71,.12)_1px,transparent_1px)] bg-[length:18px_18px]" />
-
-            <svg
-              viewBox="0 0 420 500"
-              role="img"
-              aria-label="Stylised map of India showing textile supply hubs"
-              className="relative z-10 h-[350px] w-full max-w-[340px]"
-            >
-              <path
-                d="M174 18 205 35l17 26 25 17 15 27 12 15 26 19 14 27 26 14-16 21-5 25 18 24-8 24-14 16-9 36-14 19-9 28-14 17-19 31-25 33-17 26-17-24-16-26-13-25-20-22-15-28-18-20-10-28-15-20 13-21-7-22 12-20 14-14-8-24 17-13 15-18 18-13 7-26-3-22 8-26Z"
-                fill="#E7DECE"
-                stroke="#AD8247"
-                strokeWidth="3"
-              />
-
-              <path
-                d="M174 18 205 35m-43 110 41 27m-72 30 47 10m-35 39 55 7m-30 34 51 13m-26 40 54 5m-16 37 38-6m-4-324 17 47m-55 17 72 13m-81 48 78 9"
-                fill="none"
-                stroke="#BE9C6C"
-                strokeWidth="1"
-                strokeDasharray="4 5"
-              />
-
-              <path
-                d="M193 40 180 86 160 138 148 196 135 251 153 306 177 359 201 418 223 458"
-                fill="none"
-                stroke="#AD8247"
-                strokeWidth="1.5"
-                strokeDasharray="3 7"
-              />
-
-              <g
-                fill="#0C3832"
-                stroke="#F0E6CD"
-                strokeWidth="3"
-              >
-                <circle cx="165" cy="139" r="7" />
-                <circle cx="176" cy="170" r="7" />
-                <circle cx="143" cy="211" r="7" />
-                <circle cx="190" cy="257" r="7" />
-                <circle cx="210" cy="332" r="7" />
-                <circle cx="239" cy="290" r="7" />
-                <circle cx="254" cy="198" r="7" />
-              </g>
-
-              <g
-                fill="#2A2620"
-                fontSize="10"
-                fontFamily="Montserrat, sans-serif"
-              >
-                <text x="179" y="137">Panipat</text>
-                <text x="189" y="169">Delhi</text>
-                <text x="101" y="212">Mumbai</text>
-                <text x="199" y="256">Jaipur</text>
-                <text x="219" y="334">Bengaluru</text>
-                <text x="250" y="287">Kolkata</text>
-                <text x="264" y="196">Chennai</text>
-              </g>
-            </svg>
+            <Image
+              src={images.india}
+              alt="Map of India showing our pan-India supply network and export routes"
+              width={0}
+              height={0}
+              sizes="(min-width: 1024px) 55vw, 100vw"
+              style={{ width: '100%', height: 'auto' }}
+              className="photo-fade-soft block"
+            />
           </div>
 
           <div className="border-l border-border pl-7 text-right">

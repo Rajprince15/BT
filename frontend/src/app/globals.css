@@ -152,11 +152,68 @@ dt {
   --reference-muted: #706958;
 }
 
+/* ═══════════════ SOFT-EDGED PHOTOS ═══════════════
+   Images render at their natural aspect ratio (no crop, no letterbox bars).
+   These masks fade the photo edges into the cream page so no box is visible. */
+
+/* Hero photo: mobile = fade bottom only */
+.photo-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 94%, transparent 100%);
+}
+
+/* Hero photo: desktop = hairline feather on left/top/bottom (no colour tint) */
+@media (min-width: 1024px) {
+  .photo-fade {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, #000 5%),
+      linear-gradient(to bottom, transparent 0%, #000 3%, #000 97%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0%, #000 5%),
+      linear-gradient(to bottom, transparent 0%, #000 3%, #000 97%, transparent 100%);
+    mask-composite: intersect;
+  }
+}
+
+/* Values panel photo: soft left/top/bottom edge (right edge bleeds off-screen) */
+.photo-fade-panel {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 6%, #000 94%, transparent 100%);
+}
+
+@media (min-width: 1024px) {
+  .photo-fade-panel {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, #000 10%),
+      linear-gradient(to bottom, transparent 0%, #000 6%, #000 94%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0%, #000 10%),
+      linear-gradient(to bottom, transparent 0%, #000 6%, #000 94%, transparent 100%);
+    mask-composite: intersect;
+  }
+}
+
+/* India map: fade all four edges. Bottom fade starts late (97%) so the
+   baked-in "Reaching every corner…" caption stays readable. */
+.photo-fade-soft {
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 10%, #000 97%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 10%, #000 97%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* ═══════════════ HOME + ABOUT PAGE BACKGROUNDS ═══════════════ */
+
 [data-testid="home-page"], [data-testid="about-page"] { background-color: var(--reference-cream); color: var(--reference-ink); }
 [data-testid="home-page"] [data-testid="manufacturing-process"] .bg-ink,
 [data-testid="home-page"] [data-testid="manufacturing-process"] .bg-dark-green { background-color: var(--reference-green) !important; color: #FFFFFF; }
 [data-testid="home-page"] [data-testid="manufacturing-process"] { grid-template-columns: 23% 77%; background: var(--reference-cream); }
-[data-testid="home-page"] [data-testid="manufacturing-process"] > div:first-child { min-height: 0; aspect-ratio: 0.78; }
 [data-testid="home-page"] [data-testid="manufacturing-process"] > div:last-child { grid-template-columns: 1fr 1.6fr; }
 [data-testid="home-page"] [data-testid="manufacturing-process"] > div:last-child > div:last-child { background: var(--reference-cream); }
 [data-testid="home-page"] [data-testid="home-stats"] { background: #0C382E !important; padding: 1.55rem 0; }
@@ -168,9 +225,6 @@ dt {
 @media (min-width: 640px) {
   [data-testid="home-page"] [data-testid="home-stats"] > div { grid-template-columns: repeat(5, minmax(0, 1fr)); width: 100%; max-width: none; padding-inline: 4%; }
 }
-@media (min-width: 1024px) {
-  [data-testid="home-page"] [data-testid="manufacturing-process"] > div:first-child { min-height: 0 !important; }
-}
 [data-testid="home-page"] [data-testid="featured-range"],
 [data-testid="home-page"] [data-testid="audience-section"],
 [data-testid="about-page"] [data-testid="about-story"],
@@ -178,40 +232,9 @@ dt {
 [data-testid="about-page"] [data-testid="about-global"] { background-color: var(--reference-cream); }
 [data-testid="about-page"] [data-testid="about-values"] { background-color: var(--reference-cream-alt); }
 
-/* About page alignment from the reference: a 55/45 hero, full-width stat
-   band, and balanced editorial rows. */
-[data-testid="about-page"] [data-testid="about-hero"] {
-  min-height: 560px;
-  background: var(--reference-cream);
-}
-
-[data-testid="about-page"] [data-testid="about-hero"] > div.absolute.right-0 {
-  left: 55%;
-  right: 0;
-  width: 45%;
-  height: 100%;
-}
-
-/* FIX: these were forcing object-fit: cover !important on the About hero
-   and Our Story images, which silently overrode the object-contain class
-   set in the component JSX — this was the actual root cause of the
-   cropping, not stale code or caching. Changed cover → contain so the
-   full photo (including any baked-in text) is always shown, never cropped. */
-[data-testid="about-page"] [data-testid="about-hero"] > div.absolute.right-0 img,
-[data-testid="about-page"] [data-testid="about-story"] > div:first-child img {
-  object-fit: contain !important;
-  object-position: center;
-  background: var(--reference-cream);
-}
-
-/* FIX: same issue — was forcing cover !important on the Manufacturing
-   Strength and Values images. Changed to contain. */
-[data-testid="about-page"] [data-testid="about-strength"] > div:first-child img,
-[data-testid="about-page"] [data-testid="about-values"] img {
-  object-fit: contain !important;
-  object-position: center;
-  background: var(--reference-cream-alt);
-}
+/* ═══════════════ ABOUT PAGE ═══════════════
+   Hero, Story and Manufacturing images are now sized in the JSX (natural
+   aspect ratio), so no position / object-fit overrides live here anymore. */
 
 [data-testid="about-page"] [data-testid="about-stats"] > div {
   width: 100%;
@@ -235,10 +258,6 @@ dt {
 }
 
 @media (min-width: 1024px) {
-  [data-testid="about-page"] [data-testid="about-values"] [data-testid="values-grid"] {
-    width: 68%;
-  }
-
   [data-testid="about-page"] [data-testid="about-values"] [data-testid="values-grid"] > div + div {
     border-left: 1px solid rgba(173, 130, 71, .28);
   }
@@ -253,42 +272,11 @@ dt {
   grid-template-columns: 1.15fr .85fr;
 }
 
-[data-testid="about-page"] [data-testid="about-global"] [data-testid="india-map-panel"] {
-  min-height: 260px;
-  border: 0;
-  background: transparent;
-}
-
-[data-testid="about-page"] [data-testid="india-map-panel"] svg {
-  display: none;
-}
-
 [data-testid="about-page"] [data-testid="about-cta"] {
   background: var(--reference-green);
 }
 
 @media (max-width: 1023px) {
-  [data-testid="home-page"] [data-testid="hero-section"],
-  [data-testid="about-page"] [data-testid="about-hero"] {
-    min-height: auto;
-  }
-
-  [data-testid="home-page"] [data-testid="hero-section"] > div.absolute.right-0,
-  [data-testid="about-page"] [data-testid="about-hero"] > div.absolute.right-0 {
-    top: auto;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 260px;
-  }
-
-  /* FIX: was forcing cover !important on both mobile heroes. Changed to
-     contain so nothing is cropped on small screens either. */
-  [data-testid="home-page"] [data-testid="hero-section"] > div.absolute.right-0 img,
-  [data-testid="about-page"] [data-testid="about-hero"] > div.absolute.right-0 img {
-    object-fit: contain !important;
-  }
-
   [data-testid="about-page"] [data-testid="about-stats"] > div {
     width: 100%;
   }
@@ -303,6 +291,9 @@ dt {
   }
 }
 
+/* ═══════════════ HOME PAGE ═══════════════
+   Hero + Manufacturing images are sized in the JSX (natural aspect ratio). */
+
 /* Landing reference: available collection cards form a centered row.  The
    number of cards is data-driven, so two, three, or more cards never stick
    to the left or leave an artificial empty grid behind them. */
@@ -312,28 +303,7 @@ dt {
   align-items: stretch;
 }
 
-/* Keep the hero photography as a clean right-hand panel on desktop.  The
-   source component remains responsive on smaller screens. */
 @media (min-width: 1024px) {
-  [data-testid="home-page"] [data-testid="hero-section"] {
-    min-height: 470px;
-  }
-
-  /* FIX: was forcing cover !important on the Home hero (desktop). Changed
-     to contain so the full hero photo is always shown, never cropped. */
-  [data-testid="home-page"] [data-testid="hero-section"] > div.absolute.right-0 img {
-    object-fit: contain !important;
-    object-position: center;
-    background: var(--reference-cream);
-  }
-
-  [data-testid="home-page"] [data-testid="hero-section"] > div.absolute.right-0 {
-    left: 55%;
-    right: 0;
-    width: 45%;
-    height: 100%;
-  }
-
   [data-testid="home-page"] [data-testid="hero-features"] {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -361,6 +331,8 @@ dt {
   [data-testid="home-page"] [data-testid="manufacturing-process"] { grid-template-columns: 1fr; }
   [data-testid="home-page"] [data-testid="manufacturing-process"] > div:last-child { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════ FOOTER ═══════════════ */
 
 [data-testid="footer-copyright"] { display: none; }
 
@@ -415,6 +387,8 @@ dt {
   color: #6B4D27 !important;
 }
 
+/* ═══════════════ UTILITIES ═══════════════ */
+
 .tracking-wider2 {
   letter-spacing: 0.18em;
 }
@@ -429,12 +403,10 @@ dt {
   border-radius: 6px;
 }
 
-/* These heroes stay on the reference's light cream canvas in both themes.
-   Keep their photography and typography at their native, readable contrast. */
+/* Heroes stay on the reference's light cream canvas in both themes. */
 [data-testid="home-page"] [data-testid="hero-section"],
 [data-testid="about-page"] [data-testid="about-hero"] { color: #2A2620; }
-[data-testid="home-page"] [data-testid="hero-section"] > div.absolute.inset-0,
-[data-testid="about-page"] [data-testid="about-hero"] > div.absolute.inset-0 { background: transparent !important; }
+
 [data-testid="home-page"] [data-testid="hero-section"] .text-ink-2,
 [data-testid="about-page"] [data-testid="about-hero"] .text-ink-2 { color: #706958 !important; }
 
