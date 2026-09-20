@@ -6,15 +6,16 @@ import Image from 'next/image';
 import { whatsappUrl } from '@/components/layout/WhatsAppWidget';
 
 const columns = [
-  { name: 'Company', links: [['/shop', 'Full catalogue'], ['/about', 'Our story'], ['/wholesale', 'Wholesale'], ['/contact', 'Contact']] },
-  { name: 'Support', links: [['/shipping-policy', 'Shipping'], ['/return-policy', 'Returns'], ['/privacy', 'Privacy']] },
+  { name: 'Product Categories', links: [['/shop/bedroom', 'Bedroom Collection'], ['/shop/living-room', 'Living Room Collection'], ['/shop/bath', 'Bath Collection'], ['/shop/home-decor', 'Home Décor'], ['/shop/handloom-heritage', 'Handloom Heritage'], ['/shop/handicrafts', 'Handicrafts'], ['/shop', 'Seasonal Collection']] },
+  { name: 'Bulk Solutions', links: [['/wholesale?industry=hotels', 'For Hotels'], ['/wholesale?industry=resorts', 'For Resorts'], ['/wholesale?industry=hospitals', 'For Hospitals'], ['/wholesale?industry=hostels', 'For Hostels'], ['/wholesale?industry=retail', 'For Retail Stores'], ['/wholesale?industry=interior-designers', 'For Interior Designers'], ['/wholesale?industry=corporate-gifting', 'For Corporate Gifting'], ['/wholesale', 'Custom Manufacturing']] },
+  { name: 'Company', links: [['/about', 'About Us'], ['/about#strength', 'Our Strength'], ['/about#values', 'Quality & Sustainability'], ['/wholesale', 'Infrastructure'], ['/contact', 'Our Clients'], ['/contact', 'Contact Us']] },
 ] as const;
 
 export default function Footer() {
   return (
-    <footer data-testid="footer" className="page-footer">
+    <footer data-testid="footer" className="page-footer bg-[var(--dark-green)] text-bg">
       <div className="mx-auto w-[90%] max-w-[1200px] py-14 lg:py-16">
-        <div className="footer-grid grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_2fr]">
+        <div className="footer-grid grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_1.15fr_1.15fr_1fr_1.15fr]">
           <div className="footer-brand-info lg:col-span-1">
             <Link href="/" data-testid="footer-logo" aria-label="Bhavita Textiles — home" className="inline-flex items-center gap-4">
               <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f5efe0] shadow-sm ring-1 ring-gold/40">
@@ -56,4 +57,3 @@ export default function Footer() {
     </footer>
   );
 }
-

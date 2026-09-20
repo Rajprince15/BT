@@ -111,6 +111,8 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), 'Cinzel', Georgia, seri
 [data-testid="home-page"] [data-testid="manufacturing-process"] { min-height: 230px; grid-template-columns: 23% 77%; }
 [data-testid="home-page"] [data-testid="manufacturing-process"] > div:first-child { min-height: 230px; }
 [data-testid="home-page"] [data-testid="manufacturing-process"] > div:last-child { grid-template-columns: 1fr 1.25fr; }
+[data-testid="home-page"] [data-testid="manufacturing-process"] > div:last-child > div:last-child > div:last-child { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+[data-testid="home-page"] [data-testid="featured-range"] > div > div:last-child { grid-template-columns: repeat(auto-fit, minmax(160px, 220px)); justify-content: center; }
 [data-testid="about-page"] [data-testid="about-hero"] { min-height: 325px; }
 [data-testid="about-page"] [data-testid="about-story"] { min-height: 225px; grid-template-columns: 42% 58%; }
 [data-testid="about-page"] [data-testid="about-stats"] { min-height: 125px; background: var(--cream-bg) !important; }
@@ -120,6 +122,21 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), 'Cinzel', Georgia, seri
 [data-testid="about-page"] [data-testid="about-global"] { min-height: 150px; }
 [data-testid="about-page"] [data-testid="about-cta"] { min-height: 100px; }
 .bg-dark-green { background-color: var(--dark-green) !important; }
+[data-testid="footer-logo"] { max-width: 190px; }
+[data-testid="footer-logo"] > span:first-child { width: 180px; height: 145px; border-radius: 0; background: transparent; box-shadow: none; ring: 0; }
+[data-testid="footer-logo"] > span:first-child img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: screen; }
+[data-testid="footer-logo"] > span:last-child { display: none; }
+[data-testid="home-page"] [data-testid="hero-section"] > img,
+[data-testid="about-page"] [data-testid="about-hero"] > img { left: 0 !important; width: 100% !important; max-width: 100% !important; }
+[data-testid="about-page"] [data-testid="about-hero"]::after { content: "MORE THAN TEXTILES.\\A A PARTNER IN PROGRESS."; white-space: pre; position: absolute; right: 2rem; bottom: 1.5rem; z-index: 2; padding: .75rem 1rem; border-left: 1px solid var(--gold); background: rgba(42,38,32,.78); color: var(--bg); font: 10px/1.7 var(--font-sans), sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+@media (min-width: 1024px) {
+  [data-testid="home-page"] [data-testid="hero-section"] > img,
+  [data-testid="about-page"] [data-testid="about-hero"] > img { left: 55% !important; width: 45% !important; max-width: none !important; }
+  [data-testid="home-page"] [data-testid="manufacturing-process"] > div:last-child > div:last-child > div:last-child { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+}
+@media (max-width: 639px) {
+  [data-testid="about-page"] [data-testid="about-hero"]::after { right: 1rem; bottom: 1rem; font-size: 8px; }
+}
 [data-testid="home-page"], [data-testid="home-page"] > section.bg-bg { background-color: transparent !important; }
 .page-grid .py-20 { padding-block: 3.5rem; }
 .page-grid .py-24 { padding-block: 4rem; }

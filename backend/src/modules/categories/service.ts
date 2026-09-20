@@ -48,7 +48,13 @@ function buildTree(rows: CategoryRow[]): CategoryNode[] {
 export const categoryService = {
   async publicWithCounts() {
     const rows = await categoryRepo.publicWithCounts();
-    return rows.filter((r) => r.product_count > 0).map((r) => ({ ...toNode(r), productCount: Number(r.product_count) }));
+    const counts = new Map(rows.map((r) => [r.id, Number(r.product_count)]));
+    const parentOf = new Map(rows.map((r) => [r.id, r.parent_id]));
+    const depth = (id: number) => { let value = 0; let parent = parentOf.get(id); const seen = new Set<number>(); while (parent && !seen.has(parent)) { seen.add(parent); value += 1; parent = parentOf.get(parent); } return value; };
+    for (const row of [...rows].sort((a, b) => depth(b.id) - depth(a.id))) {
+      if (row.parent_id) counts.set(row.parent_id, (counts.get(row.parent_id) ?? 0) + (counts.get(row.id) ?? 0));
+    }
+    return rows.filter((r) => (counts.get(r.id) ?? 0) > 0).map((r) => ({ ...toNode(r), productCount: counts.get(r.id) }));
   },
   async publicTree() {
     const rows = await categoryRepo.listActive();
